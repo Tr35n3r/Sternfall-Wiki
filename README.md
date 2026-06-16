@@ -8,7 +8,7 @@
 
 **Fluch des Sternenfalls** ("Curse of the Starfall") is an interactive campaign compendium for a homebrew Dungeons & Dragons 5e campaign set in the world of **Atherion** — a realm threatened by a cosmic catastrophe known as the Starfall.
 
-This repository hosts the player-facing wiki (`sternenfall_kompendium_v2.html`): a self-contained HTML file featuring an interactive world map, NPC profiles, faction lore, location entries, and a live search function — with progressive content reveal as the campaign unfolds across four realms:
+This repository hosts the player-facing wiki (`index.html`): a self-contained HTML file featuring an interactive world map, NPC profiles, faction lore, location entries, and a live search function — with progressive content reveal as the campaign unfolds across four realms:
 
 | Realm | Theme |
 |---|---|
