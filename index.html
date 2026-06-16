@@ -1,0 +1,2270 @@
+<!DOCTYPE html>
+<!-- ================================================================
+  Fluch des Sternenfalls — Kompendium v2 (GitHub Pages Version)
+
+  DATEISTRUKTUR (beibehalten!):
+    index.html          <- diese Datei
+    portraits/          <- NPC-Portraits (JPG, ca. 360x449px)
+      berthold.jpg, voss.jpg, elara.jpg, ...
+    karte/              <- Weltkarte
+      atherion.jpg
+
+  NEUES PORTRAIT HINZUFUEGEN:
+    1. Portrait als JPG in portraits/ ablegen
+    2. Im HTML: <img src="portraits/DATEINAME.jpg" ...>
+    3. Auf GitHub hochladen
+
+  DM-FREISCHALTUNG:
+    Phase 1 (Holzhein):  nebelnacht
+    Phase 2 (Geister):   aschenkind
+================================================================ -->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluch des Sternenfalls — Kompendium</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #EDE0B5;
+  --bg-card:      #F6EED4;
+  --bg-card-alt:  #EDE3C2;
+  --ink-1:        #1C0A02;
+  --ink-2:        #3D1C08;
+  --ink-3:        #6B3A1F;
+  --ink-4:        #9B6535;
+  --gold:         #A07818;
+  --gold-lt:      #C49A22;
+  --gold-pale:    #E8D090;
+  --red:          #7A1818;
+  --green:        #285028;
+  --purple:       #3A2858;
+  --border:       #9B7840;
+  --border-lt:    #C4A870;
+  --nav-bg:       #2C1505;
+  --nav-bg2:      #4A2510;
+  --sh-sm:        2px 3px 8px rgba(28,10,2,.20);
+  --sh-md:        4px 6px 16px rgba(28,10,2,.26);
+  --sh-lg:        8px 14px 28px rgba(28,10,2,.32);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--ink-2);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 18% 12%, rgba(242,218,152,.45) 0%, transparent 55%),
+    radial-gradient(ellipse at 82% 88%, rgba(196,152,70,.3)  0%, transparent 52%),
+    radial-gradient(ellipse at 52% 50%, rgba(255,248,210,.18) 0%, transparent 68%);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.site-header {
+  background: linear-gradient(175deg, #1A0802 0%, #3D1C08 60%, #5C3218 100%);
+  color: #F2E5C8;
+  padding: 2.8rem 1.5rem 2.2rem;
+  text-align: center;
+  border-bottom: 3px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 25% 50%, rgba(180,120,30,.18) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 50%, rgba(180,120,30,.14) 0%, transparent 60%);
+  pointer-events: none;
+}
+.header-ornament {
+  font-size: 1.1rem;
+  letter-spacing: .5em;
+  color: var(--gold-lt);
+  margin-bottom: .8rem;
+  position: relative;
+}
+.site-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.6rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: #F5EDD0;
+  text-shadow: 0 2px 12px rgba(180,120,30,.5), 0 0 30px rgba(196,163,50,.2);
+  position: relative;
+  margin-bottom: .45rem;
+}
+.site-sub {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--gold-pale);
+  letter-spacing: .04em;
+  position: relative;
+}
+
+/* ── NAV ── */
+.main-nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: linear-gradient(180deg, var(--nav-bg) 0%, var(--nav-bg2) 100%);
+  border-bottom: 2px solid var(--border);
+  box-shadow: 0 4px 14px rgba(28,10,2,.38);
+}
+.nav-inner {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 .5rem;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-btn {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-top: 3px;
+  color: #B8956A;
+  font-family: 'Cinzel', serif;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  padding: .8rem 1.1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .18s, border-color .18s;
+  display: flex;
+  align-items: center;
+  gap: .38rem;
+}
+.nav-btn .nav-icon { font-size: 1rem; }
+.nav-btn:hover { color: #F5EDD0; border-bottom-color: rgba(196,163,50,.5); }
+.nav-btn.active { color: #F5EDD0; border-bottom-color: var(--gold-lt); }
+
+/* ── SEARCH ── */
+.search-wrap {
+  max-width: 620px;
+  margin: 1.6rem auto;
+  padding: 0 1rem;
+  position: relative;
+}
+.search-wrap input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: .7rem 1rem .7rem 2.8rem;
+  font-family: 'EB Garamond', serif;
+  font-size: 1rem;
+  color: var(--ink-2);
+  box-shadow: var(--sh-sm);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.search-wrap input:focus { border-color: var(--gold); box-shadow: var(--sh-md); }
+.search-wrap input::placeholder { color: var(--ink-4); font-style: italic; }
+.search-icon {
+  position: absolute;
+  left: 1.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  color: var(--ink-4);
+  pointer-events: none;
+}
+
+/* ── CONTENT ── */
+.main-content { padding: 0 1rem 4rem; }
+.content-section { display: none; }
+.content-section.active { display: block; animation: fadeIn .35s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+.section-inner { max-width: 1100px; margin: 0 auto; padding-top: 2.2rem; }
+
+/* ── SECTION HEADING ── */
+.sec-heading {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-lt);
+}
+.sec-heading h2 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  color: var(--ink-1);
+  letter-spacing: .08em;
+  margin-bottom: .5rem;
+}
+.sec-heading .orn {
+  color: var(--gold);
+  font-size: 1.1rem;
+  letter-spacing: .4em;
+}
+.sec-heading p {
+  font-style: italic;
+  color: var(--ink-4);
+  margin-top: .4rem;
+}
+
+/* ── CARDS ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.card-grid-wide {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 1.5rem;
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1.5rem;
+  box-shadow: var(--sh-sm);
+  position: relative;
+  transition: transform .2s, box-shadow .2s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.card::before {
+  content: '';
+  position: absolute;
+  top: 5px; right: 5px; bottom: 5px; left: 5px;
+  border: 1px solid rgba(196,168,112,.35);
+  border-radius: 1px;
+  pointer-events: none;
+}
+.card.locked {
+  background: #E8DDB8;
+  filter: grayscale(.35);
+}
+.card.locked .card-body { filter: blur(4px); user-select: none; pointer-events: none; }
+.locked-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif; font-size: .85rem;
+  color: var(--ink-4); letter-spacing: .15em;
+  z-index: 2;
+}
+.locked-overlay span { background: var(--bg-card); padding: .3rem .8rem; border: 1px solid var(--border-lt); border-radius: 1px; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: .18rem .6rem;
+  border-radius: 1px;
+  margin-bottom: .7rem;
+}
+.badge-entdeckt  { background: var(--green);  color: #F5EDD0; }
+.badge-bekannt   { background: var(--ink-3);  color: #F5EDD0; }
+.badge-gerücht   { background: #5A5040;       color: #C8BCA0; }
+.badge-gefürchtet{ background: var(--red);    color: #F5EDD0; }
+.badge-inquisition{ background: var(--red);   color: #F5EDD0; }
+.badge-geister   { background: var(--purple); color: #D0CCE8; }
+.badge-bald      { background: var(--gold);   color: #F5EDD0; }
+.badge-hauptstadt{ background: var(--ink-2);  color: #F5EDD0; }
+.badge-dorf      { background: #4A3820;       color: #D4C098; }
+.badge-ruine     { background: #3A3020;       color: #C0B080; }
+
+/* ── NPC CARD ── */
+.npc-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .12rem;
+  line-height: 1.3;
+}
+.npc-title {
+  font-style: italic;
+  color: var(--ink-4);
+  font-size: .92rem;
+  margin-bottom: .15rem;
+}
+.npc-location {
+  font-size: .82rem;
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  letter-spacing: .05em;
+  margin-bottom: .8rem;
+}
+.npc-divider {
+  border: none;
+  border-top: 1px solid var(--border-lt);
+  margin: .8rem 0;
+}
+.npc-desc { font-size: .95rem; color: var(--ink-3); line-height: 1.7; }
+.npc-quote {
+  margin-top: .9rem;
+  padding: .6rem .9rem;
+  background: rgba(160,120,24,.08);
+  border-left: 3px solid var(--gold);
+  font-style: italic;
+  font-size: .9rem;
+  color: var(--ink-3);
+}
+
+/* ── ORE / LOCATION CARD ── */
+.ort-type {
+  font-family: 'Cinzel', serif;
+  font-size: .72rem;
+  color: var(--gold);
+  letter-spacing: .1em;
+  margin-bottom: .5rem;
+  text-transform: uppercase;
+}
+.ort-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .6rem;
+}
+.ort-meta {
+  font-size: .85rem;
+  color: var(--ink-4);
+  font-style: italic;
+  margin-bottom: .8rem;
+}
+.ort-desc { font-size: .95rem; color: var(--ink-3); line-height: 1.7; }
+.ort-list {
+  list-style: none;
+  margin-top: .8rem;
+  padding-top: .8rem;
+  border-top: 1px solid var(--border-lt);
+}
+.ort-list li {
+  padding: .2rem 0 .2rem 1.2rem;
+  font-size: .9rem;
+  color: var(--ink-3);
+  position: relative;
+}
+.ort-list li::before { content: '✦'; position: absolute; left: 0; color: var(--gold); font-size: .6rem; top: .45rem; }
+
+/* ── FACTIONS ── */
+.faction-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1.75rem;
+  box-shadow: var(--sh-sm);
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.faction-card::before {
+  content: '';
+  position: absolute;
+  top: 5px; right: 5px; bottom: 5px; left: 5px;
+  border: 1px solid rgba(196,168,112,.3);
+  pointer-events: none;
+}
+.faction-card.faction-lum { border-left: 5px solid var(--gold-lt); }
+.faction-card.faction-inq { border-left: 5px solid var(--red); }
+.faction-card.faction-ber { border-left: 5px solid var(--purple); }
+.faction-card.faction-neb { border-left: 5px solid #5A5A5A; }
+.faction-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+.faction-symbol {
+  font-size: 2rem; line-height: 1;
+  width: 2.5rem; text-align: center; flex-shrink: 0;
+}
+.faction-info { flex: 1; }
+.faction-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .15rem;
+}
+.faction-tagline { font-style: italic; color: var(--ink-4); font-size: .9rem; }
+.faction-body { color: var(--ink-3); font-size: .95rem; line-height: 1.75; }
+.faction-body strong { font-family: 'Cinzel', serif; font-size: .8rem; letter-spacing: .06em; color: var(--ink-2); }
+.faction-body p + p { margin-top: .6rem; }
+.faction-note {
+  margin-top: .9rem;
+  padding: .6rem .9rem;
+  background: rgba(196,168,112,.12);
+  border: 1px dashed var(--border-lt);
+  font-style: italic;
+  font-size: .88rem;
+  color: var(--ink-4);
+}
+
+/* ── MERCHANTS ── */
+.merchant-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1.75rem;
+  box-shadow: var(--sh-sm);
+  margin-bottom: 2rem;
+}
+.merchant-card::before {
+  content: '';
+  position: absolute;
+  top: 5px; right: 5px; bottom: 5px; left: 5px;
+  border: 1px solid rgba(196,168,112,.3);
+  pointer-events: none;
+}
+.merchant-card { position: relative; }
+.merchant-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .2rem;
+}
+.merchant-keeper { font-style: italic; color: var(--ink-4); font-size: .9rem; margin-bottom: 1.2rem; }
+.price-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.price-table th {
+  font-family: 'Cinzel', serif;
+  font-size: .72rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  padding: .4rem .7rem;
+  border-bottom: 2px solid var(--border-lt);
+  text-align: left;
+}
+.price-table th:last-child { text-align: right; }
+.price-table td {
+  padding: .5rem .7rem;
+  color: var(--ink-3);
+  border-bottom: 1px solid rgba(196,168,112,.3);
+}
+.price-table td:last-child { text-align: right; font-family: 'Cinzel', serif; font-size: .85rem; color: var(--gold); }
+.price-table tr:hover td { background: rgba(196,168,112,.1); }
+.price-section-head td {
+  font-family: 'Cinzel', serif;
+  font-size: .72rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding-top: 1rem;
+  border-bottom: 1px solid var(--border-lt);
+}
+.merchant-note {
+  margin-top: 1rem;
+  font-style: italic;
+  font-size: .88rem;
+  color: var(--ink-4);
+  border-top: 1px solid var(--border-lt);
+  padding-top: .8rem;
+}
+
+/* ── LORE ── */
+.lore-entry {
+  max-width: 75ch;
+  margin: 0 auto 2.2rem;
+  padding: 1.8rem 2rem 1.8rem 2.5rem;
+  background: var(--bg-card);
+  border-left: 4px solid var(--border);
+  border-right: 1px solid var(--border-lt);
+  border-top: 1px solid var(--border-lt);
+  border-bottom: 1px solid var(--border-lt);
+  box-shadow: var(--sh-sm);
+}
+.lore-entry h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .7rem;
+  padding-bottom: .5rem;
+  border-bottom: 1px solid var(--border-lt);
+  letter-spacing: .04em;
+}
+.lore-entry p { font-size: .98rem; color: var(--ink-3); line-height: 1.85; }
+.lore-entry p + p { margin-top: .7rem; }
+.lore-initial {
+  float: left;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3.2rem;
+  line-height: .9;
+  color: var(--gold);
+  margin-right: .2rem;
+  margin-top: .1rem;
+}
+
+/* ── CHRONIK ── */
+.welcome-block {
+  max-width: 70ch;
+  margin: 0 auto 3rem;
+  text-align: center;
+  padding: 2.2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  box-shadow: var(--sh-md);
+  position: relative;
+}
+.welcome-block::before {
+  content: '';
+  position: absolute; top: 6px; right: 6px; bottom: 6px; left: 6px;
+  border: 1px solid rgba(196,168,112,.4);
+  pointer-events: none;
+}
+.welcome-block h3 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.3rem;
+  color: var(--ink-1);
+  margin-bottom: 1rem;
+}
+.welcome-block p { font-style: italic; color: var(--ink-3); font-size: 1.02rem; line-height: 1.85; }
+.session-list { max-width: 70ch; margin: 0 auto; }
+.session-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--sh-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.session-item.upcoming { border-left: 4px solid var(--gold); opacity: .85; }
+.session-info h4 {
+  font-family: 'Cinzel', serif;
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .2rem;
+}
+.session-info p { font-size: .88rem; color: var(--ink-4); font-style: italic; }
+
+/* ── PARTY ── */
+.party-grid { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin: 2rem auto; max-width: 900px; }
+.party-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1rem 1.3rem;
+  box-shadow: var(--sh-sm);
+  min-width: 160px;
+  text-align: center;
+  flex: 1;
+  max-width: 200px;
+}
+.party-name { font-family: 'Cinzel', serif; font-size: .95rem; font-weight: 700; color: var(--ink-1); margin-bottom: .25rem; }
+.party-class { font-size: .82rem; color: var(--gold); font-style: italic; }
+.party-race { font-size: .78rem; color: var(--ink-4); }
+.party-icon { font-size: 1.8rem; margin-bottom: .4rem; }
+
+/* ── MAP ── */
+.map-wrap { position: relative; display: inline-block; width: 100%; }
+.map-wrap img { width: 100%; height: auto; display: block; border: 3px solid var(--border); box-shadow: var(--sh-lg); }
+.map-marker {
+  position: absolute;
+  /* width:0 + dot centered => translate(-50%,-50%) anchors exactly on the dot,
+     independent of label width (fixes the zoom offset) */
+  width: 0; height: 0;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 5;
+}
+.marker-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--gold-lt);
+  border: 2px solid var(--ink-2);
+  position: absolute;
+  top: -6px; left: -6px;
+  transition: transform .2s;
+}
+.map-marker:hover .marker-dot,
+.map-marker.active .marker-dot { transform: scale(1.4); }
+.map-marker:hover, .map-marker.active { z-index: 30; }
+.marker-dot::after {
+  content: '';
+  position: absolute;
+  top: -5px; left: -5px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(196,163,50,.35);
+  animation: mPulse 2.2s ease-in-out infinite;
+}
+.map-marker.m-start .marker-dot { background: #D04010; border-color: var(--ink-1); width: 16px; height: 16px; top:-8px; left:-8px; }
+.map-marker.m-start .marker-dot::after { top:-6px;left:-6px;width:28px;height:28px;background:rgba(210,70,20,.3); }
+.map-marker.m-capital .marker-dot { background: var(--ink-2); }
+.map-marker.m-feared .marker-dot { background: var(--red); }
+.marker-lbl {
+  position: absolute;
+  top: 9px; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Cinzel', serif;
+  font-size: .55rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  white-space: nowrap;
+  text-align: center;
+  text-shadow: 0 0 5px var(--bg-card), 0 0 5px var(--bg-card), 0 0 5px var(--bg-card);
+  letter-spacing: .05em;
+  display: none;            /* hidden by default to declutter */
+  pointer-events: none;
+}
+/* major sites stay labelled; minor sites reveal on hover/tap */
+.map-marker.m-capital .marker-lbl,
+.map-marker.m-feared .marker-lbl,
+.map-marker.m-start .marker-lbl,
+.map-marker:hover .marker-lbl,
+.map-marker.active .marker-lbl { display: block; }
+.map-marker.m-start .marker-lbl { color: var(--red); font-size: .62rem; top: 11px; }
+.map-tooltip {
+  position: absolute;
+  bottom: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink-1);
+  color: #F5EDD0;
+  font-family: 'EB Garamond', serif;
+  font-size: .82rem;
+  line-height: 1.35;
+  padding: .45rem .7rem;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  width: max-content;
+  max-width: 220px;
+  white-space: normal;
+  text-align: center;
+  display: none;
+  z-index: 40;
+  pointer-events: none;
+  box-shadow: var(--sh-md);
+}
+.map-marker:hover .map-tooltip,
+.map-marker.active .map-tooltip { display: block; }
+.map-legend {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1.2rem 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow: var(--sh-sm);
+  font-size: .9rem;
+  color: var(--ink-3);
+}
+.map-legend h4 { font-family: 'Cinzel', serif; font-size: .85rem; letter-spacing: .08em; color: var(--ink-2); margin-bottom: .75rem; }
+.legend-items { display: flex; flex-wrap: wrap; gap: .75rem 2rem; }
+.legend-item { display: flex; align-items: center; gap: .4rem; font-size: .85rem; }
+.leg-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--ink-2); flex-shrink: 0; }
+.leg-start { background: #D04010; }
+.leg-capital { background: var(--ink-2); }
+.leg-known { background: var(--gold-lt); }
+.leg-feared { background: var(--red); }
+@keyframes mPulse {
+  0%,100% { opacity:0; transform:scale(.7); }
+  50%      { opacity:1; transform:scale(1.15); }
+}
+
+/* ── FOOTER ── */
+.site-footer {
+  background: var(--nav-bg);
+  color: #8B6535;
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  font-family: 'Cinzel', serif;
+  font-size: .72rem;
+  letter-spacing: .1em;
+  border-top: 2px solid var(--border);
+}
+
+/* ── DIVIDER ── */
+.orn-divider {
+  text-align: center;
+  color: var(--gold);
+  letter-spacing: .5em;
+  margin: 2rem 0;
+  font-size: .9rem;
+}
+
+/* ── PHASE GATING ── */
+.gated { display: none !important; }
+.gone  { display: none !important; }
+.lock-notice {
+  grid-column: 1 / -1;
+  text-align: center;
+  background: rgba(196,168,112,.14);
+  border: 1px dashed var(--border-lt);
+  border-radius: 2px;
+  padding: 1.1rem 1.4rem;
+  color: var(--ink-4);
+  font-style: italic;
+  font-size: .95rem;
+  margin: .5rem 0;
+}
+.lock-notice .lock-ic { font-size: 1.2rem; display:block; margin-bottom:.3rem; }
+
+/* ── DM UNLOCK ── */
+.dm-key-btn {
+  background: none; border: 1px solid var(--border);
+  color: #8B6535; font-family: 'Cinzel', serif; font-size: .68rem;
+  letter-spacing: .1em; padding: .35rem .8rem; border-radius: 2px;
+  cursor: pointer; transition: color .2s, border-color .2s;
+}
+.dm-key-btn:hover { color: var(--gold-lt); border-color: var(--gold); }
+.unlock-modal-bg {
+  position: fixed; inset: 0; background: rgba(28,10,2,.65);
+  display: none; align-items: center; justify-content: center; z-index: 500; padding: 1rem;
+}
+.unlock-modal-bg.show { display: flex; }
+.unlock-modal {
+  background: var(--bg-card); border: 2px solid var(--border); border-radius: 3px;
+  padding: 1.8rem; max-width: 380px; width: 100%; text-align: center;
+  box-shadow: 0 12px 40px rgba(0,0,0,.4);
+}
+.unlock-modal h3 { font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--ink-1); margin-bottom: .4rem; }
+.unlock-modal p { font-size: .9rem; color: var(--ink-4); font-style: italic; margin-bottom: 1rem; }
+.unlock-modal input {
+  width: 100%; font-family: 'EB Garamond', serif; font-size: 1rem;
+  padding: .6rem .8rem; border: 1px solid var(--border); border-radius: 2px;
+  background: #FBF6E5; color: var(--ink-1); text-align: center; letter-spacing: .05em;
+}
+.unlock-actions { display: flex; gap: .6rem; margin-top: 1rem; }
+.unlock-actions button {
+  flex: 1; font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .05em;
+  padding: .55rem; border-radius: 2px; cursor: pointer; border: 1px solid var(--border);
+}
+.unlock-actions .ub-go { background: var(--gold); color: #F5EDD0; }
+.unlock-actions .ub-cancel { background: var(--bg-card-alt); color: var(--ink-2); }
+.unlock-status { margin-top: .8rem; font-size: .82rem; min-height: 1.2em; }
+.unlock-status.ok  { color: var(--green); }
+.unlock-status.err { color: var(--red); }
+.phase-badge {
+  display:inline-block; font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.1em;
+  background: var(--green); color:#F5EDD0; padding:.12rem .5rem; border-radius:1px; margin-left:.4rem;
+}
+
+/* ── ZOOM MAP ── */
+.map-toolbar { display:flex; gap:.5rem; align-items:center; margin-bottom:.8rem; flex-wrap:wrap; }
+.map-toolbar button {
+  font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.05em;
+  background: var(--ink-2); color:#F5EDD0; border:1px solid var(--border);
+  padding:.45rem .9rem; border-radius:2px; cursor:pointer;
+}
+.map-toolbar button:hover { background: var(--ink-3); }
+.map-toolbar .zlbl { font-family:'Cinzel',serif; font-size:.75rem; color:var(--ink-3); min-width:48px; text-align:center; }
+.map-toolbar .hint { font-style:italic; font-size:.82rem; color:var(--ink-4); margin-left:auto; }
+.map-frame {
+  position: relative; width: 100%; overflow: hidden;
+  border: 3px solid var(--border); box-shadow: var(--sh-lg);
+  background: #1A0802; border-radius: 2px; cursor: grab; touch-action: none;
+}
+.map-frame.grabbing { cursor: grabbing; }
+.map-stage { position: relative; transform-origin: 0 0; }
+.map-stage img { width:100%; height:auto; display:block; pointer-events:none; user-select:none; }
+
+/* full legend table */
+.legend-full { margin-top: 1.2rem; }
+.legend-toggle {
+  font-family:'Cinzel',serif; font-size:.78rem; letter-spacing:.06em;
+  background: var(--bg-card); border:1px solid var(--border-lt); color:var(--ink-2);
+  padding:.5rem 1rem; border-radius:2px; cursor:pointer; width:100%;
+}
+.legend-table { width:100%; border-collapse:collapse; font-size:.85rem; margin-top:.8rem; display:none; }
+.legend-table.show { display: table; }
+.legend-table th { font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-4); text-align:left; padding:.4rem .6rem; border-bottom:2px solid var(--border-lt); }
+.legend-table td { padding:.35rem .6rem; color:var(--ink-3); border-bottom:1px solid rgba(196,168,112,.3); }
+.legend-table td:first-child { font-family:'Cinzel',serif; color:var(--gold); width:2.5rem; }
+.legend-table tr:hover td { background: rgba(196,168,112,.1); }
+
+
+/* ── PORTRAIT EXTERN ── */
+/* Wenn Bilder nicht geladen werden koennen (Datei fehlt), */
+/* zeige ein Parchment-Platzhalter-Feld statt gebrochenem Icon */
+.npc-portrait { background: var(--bg-card-alt); }
+.npc-portrait img, .merchant-portrait img {
+  display: block; min-height: 10px;
+}
+/* ── VERFOLGUNGSGRAD ── */
+.vf-rule {
+  background: rgba(122,24,24,.08); border: 1px solid var(--border-lt);
+  border-left: 4px solid var(--red); border-radius: 2px;
+  padding: 1rem 1.3rem; margin-bottom: 1.6rem; font-size: .95rem; color: var(--ink-2);
+}
+.vf-rule strong { font-family:'Cinzel',serif; font-size:.82rem; color: var(--red); }
+.vf-tracker {
+  background: var(--bg-card); border: 2px solid var(--border); border-radius: 3px;
+  padding: 1.6rem; text-align: center; box-shadow: var(--sh-md); margin-bottom: 2rem;
+  transition: border-color .3s, box-shadow .3s;
+}
+.vf-current-label { font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color: var(--ink-4); }
+.vf-big {
+  font-family:'Cinzel Decorative',serif; font-size: 4rem; line-height:1; font-weight:700;
+  color: var(--green); margin:.3rem 0; transition: color .3s;
+}
+.vf-name { font-family:'Cinzel',serif; font-size:1.2rem; font-weight:700; color: var(--ink-1); letter-spacing:.04em; }
+.vf-desc { font-style: italic; color: var(--ink-3); font-size:.95rem; margin-top:.3rem; min-height:1.4em; }
+.vf-scale { display:flex; gap:.4rem; justify-content:center; margin:1.2rem 0; }
+.vf-scale .seg { flex:1; max-width:60px; height:10px; border-radius:2px; background: var(--bg-card-alt); border:1px solid var(--border-lt); transition: background .2s; }
+.vf-buttons { display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; margin-top:.5rem; }
+.vf-btn {
+  font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.04em;
+  border:1px solid var(--border); border-radius:2px; padding:.5rem .9rem; cursor:pointer;
+  background: var(--bg-card-alt); color: var(--ink-2); transition: background .15s, transform .1s;
+}
+.vf-btn:active { transform: scale(.96); }
+.vf-btn.up  { background: var(--ink-3); color:#F5EDD0; }
+.vf-btn.dn  { background: var(--green); color:#F5EDD0; }
+.vf-btn.dis { background: var(--gold); color:#F5EDD0; }
+.vf-btn.ent { background: var(--red); color:#F5EDD0; }
+.vf-h { font-family:'Cinzel',serif; font-size:1rem; letter-spacing:.05em; color:var(--ink-2); text-align:center; margin:1.5rem 0 1rem; }
+.vf-levels { display:grid; gap:.5rem; margin-bottom:2rem; }
+.vf-lvl { display:flex; align-items:center; gap:1rem; background:var(--bg-card); border:1px solid var(--border-lt); border-radius:2px; padding:.7rem 1rem; font-size:.9rem; color:var(--ink-3); }
+.vf-lvl .vn { font-family:'Cinzel Decorative',serif; font-size:1.5rem; font-weight:700; width:2rem; text-align:center; flex-shrink:0; }
+.vf-lvl b { font-family:'Cinzel',serif; color:var(--ink-1); font-size:.92rem; }
+.vf-lvl.l0 { border-left:5px solid #3E7A3E; } .vf-lvl.l0 .vn { color:#3E7A3E; }
+.vf-lvl.l1 { border-left:5px solid #8AA32A; } .vf-lvl.l1 .vn { color:#8AA32A; }
+.vf-lvl.l2 { border-left:5px solid #C49A22; } .vf-lvl.l2 .vn { color:#C49A22; }
+.vf-lvl.l3 { border-left:5px solid #C4701A; } .vf-lvl.l3 .vn { color:#C4701A; }
+.vf-lvl.l4 { border-left:5px solid #A83418; } .vf-lvl.l4 .vn { color:#A83418; }
+.vf-lvl.l5 { border-left:5px solid #7A1818; background:rgba(122,24,24,.07); } .vf-lvl.l5 .vn { color:#7A1818; }
+.vf-mods { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-bottom:2rem; }
+.vf-mod-col { background:var(--bg-card); border:1px solid var(--border-lt); border-radius:2px; padding:1rem 1.2rem; }
+.vf-mod-col.up { border-top:4px solid var(--red); }
+.vf-mod-col.dn { border-top:4px solid var(--green); }
+.vf-mod-col h4 { font-family:'Cinzel',serif; font-size:.85rem; letter-spacing:.05em; margin-bottom:.6rem; color:var(--ink-1); }
+.vf-mod-col table { width:100%; border-collapse:collapse; font-size:.88rem; }
+.vf-mod-col td { padding:.32rem .2rem; color:var(--ink-3); border-bottom:1px solid rgba(196,168,112,.3); }
+.vf-mod-col td:last-child { text-align:right; font-family:'Cinzel',serif; font-weight:700; }
+.vf-mod-col.up td:last-child { color: var(--red); }
+.vf-mod-col.dn td:last-child { color: var(--green); }
+.vf-disguise { background:var(--bg-card); border:1px solid var(--border-lt); border-left:4px solid var(--gold); border-radius:2px; padding:1.1rem 1.3rem; margin-bottom:1.5rem; }
+.vf-disguise h4 { font-family:'Cinzel',serif; font-size:.88rem; color:var(--ink-1); margin-bottom:.6rem; }
+.vf-disguise p { font-size:.9rem; color:var(--ink-3); margin-bottom:.4rem; }
+.vf-disguise strong { font-family:'Cinzel',serif; font-size:.78rem; color:var(--ink-2); }
+.vf-foot { text-align:center; font-family:'Cinzel',serif; font-size:.78rem; letter-spacing:.06em; color:var(--gold); padding:1rem 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 620px) {
+  .card-grid, .card-grid-wide { grid-template-columns: 1fr; }
+  .lore-entry { padding: 1.3rem 1.2rem 1.3rem 1.6rem; }
+  .party-card { max-width: 140px; }
+  .vf-mods { grid-template-columns: 1fr; }
+}
+@media (max-width: 400px) {
+  .nav-btn .nav-label { display: none; }
+  .nav-btn { padding: .8rem .8rem; }
+}
+
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-ornament">✦ · ✦ · ✦</div>
+  <h1 class="site-title">Fluch des Sternenfalls</h1>
+  <p class="site-sub">Kampagnen-Kompendium &nbsp;·&nbsp; Atherion &amp; die vier Reiche</p>
+</header>
+
+<nav class="main-nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" data-section="chronik"><span class="nav-icon">❋</span><span class="nav-label">Chronik</span></button>
+    <button class="nav-btn" data-section="personen"><span class="nav-icon">⚔</span><span class="nav-label">Personen</span></button>
+    <button class="nav-btn" data-section="orte"><span class="nav-icon">⌂</span><span class="nav-label">Orte</span></button>
+    <button class="nav-btn" data-section="fraktionen"><span class="nav-icon">⚜</span><span class="nav-label">Fraktionen</span></button>
+    <button class="nav-btn" data-section="verfolgung"><span class="nav-icon">⚠</span><span class="nav-label">Verfolgung</span></button>
+    <button class="nav-btn" data-section="haendler"><span class="nav-icon">◈</span><span class="nav-label">Händler</span></button>
+    <button class="nav-btn" data-section="lore"><span class="nav-icon">✦</span><span class="nav-label">Lore</span></button>
+    <button class="nav-btn" data-section="karte"><span class="nav-icon">⊙</span><span class="nav-label">Karte</span></button>
+  </div>
+</nav>
+
+<div class="search-wrap">
+  <span class="search-icon">⌕</span>
+  <input type="text" id="searchInput" placeholder="Suchen … (/ zum Fokussieren)" autocomplete="off" spellcheck="false">
+</div>
+
+<main class="main-content">
+
+<section id="chronik" class="content-section active">
+<div class="section-inner">
+  <div class="sec-heading">
+    <div class="orn">✦ ✧ ✦</div>
+    <h2>Chronik</h2>
+    <p>Die Geschichte eurer Reise durch die vier Reiche</p>
+  </div>
+
+  <div class="welcome-block searchable" data-search="willkommen atherion fluch sternenfalls chronik intro">
+    <h3>Willkommen in Atherion</h3>
+    <p>
+      Atherion zittert. Dreihundert Jahre nach dem grossen Sternenfall, der Magie in die Welt brachte,
+      herrscht die Inquisition des Luminarismus mit eiserner Hand. In dem nebligen Dorf Holzhein,
+      an der Grenze zwischen Wald und Grossem Strom, versammeln sich fünf Reisende —
+      verbunden durch ein Schicksal, das grösser ist als sie ahnen.
+    </p>
+    <br>
+    <p>
+      <em>Die Sterne halten den Atem an. Eure Saga beginnt.</em>
+    </p>
+  </div>
+
+  <div class="orn-divider">· ✦ ·</div>
+
+  <div style="max-width:70ch;margin:0 auto 2rem;">
+    <h3 style="font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.08em;color:var(--ink-2);margin-bottom:1.2rem;text-align:center;">DIE REISEGEFÄHRTEN</h3>
+    <div class="party-grid">
+      <div class="party-card">
+        <div class="party-icon">⚕</div>
+        <div class="party-name">Davian</div>
+        <div class="party-class">Kleriker</div>
+        <div class="party-race">Halbelf</div>
+      </div>
+      <div class="party-card">
+        <div class="party-icon">⚔</div>
+        <div class="party-name">Drazhar Do'Veyr</div>
+        <div class="party-class">Paladin</div>
+        <div class="party-race">Drow</div>
+      </div>
+      <div class="party-card">
+        <div class="party-icon">✦</div>
+        <div class="party-name">Menrom</div>
+        <div class="party-class">Zauberer</div>
+        <div class="party-race">Mensch</div>
+      </div>
+      <div class="party-card">
+        <div class="party-icon">◈</div>
+        <div class="party-name">Nyktarion Kharos</div>
+        <div class="party-class">Hexer</div>
+        <div class="party-race">Teuflingsblut</div>
+      </div>
+      <div class="party-card">
+        <div class="party-icon">❋</div>
+        <div class="party-name">Skall Ghartuk</div>
+        <div class="party-class">Druide</div>
+        <div class="party-race">Goliath</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="orn-divider">· ✦ ·</div>
+
+  <h3 style="font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.08em;color:var(--ink-2);margin-bottom:1.2rem;text-align:center;">SESSIONEN</h3>
+  <div class="session-list">
+    <div class="session-item upcoming searchable" data-search="session 1 holzhein todeshaus nacht erwachens">
+      <span class="badge badge-bald">Bald</span>
+      <div class="session-info">
+        <h4>Session 1 — Die Nacht des Erwachens</h4>
+        <p>Holzhein · Stufe 1</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="personen" class="content-section">
+<div class="section-inner">
+  <div class="sec-heading">
+    <div class="orn">✦ ✧ ✦</div>
+    <h2>Personen</h2>
+    <p>Bekannte Gesichter und gefürchtete Namen in Atherion</p>
+  </div>
+
+  <div class="card-grid">
+
+    <div class="lock-notice p1n">
+      <span class="lock-ic">🔒</span>
+      Die Begegnungen in Holzhein werden freigeschaltet, sobald ihr das Dorf erreicht.
+    </div>
+
+    <!-- Berthold Knappe -->
+    <div class="card searchable gated p1" data-search="berthold knappe gastwirt holzhein zum goldenen ast wirt">
+      <span class="badge badge-dorf">In Holzhein</span>
+      <div class="card-body">
+        <div class="npc-portrait"><img src="portraits/berthold.jpg" alt="Portrait" loading="lazy"></div>
+        <div class="npc-name">Berthold Knappe</div>
+        <div class="npc-title">Gastwirt · Zum Goldenen Ast</div>
+        <div class="npc-location">⌂ Holzhein</div>
+        <hr class="npc-divider">
+        <div class="npc-desc">
+          Ein stämmiger Mann mittleren Alters mit nervösen Augen und einer Schürze,
+          die nach altem Holz und verschüttetem Bier riecht. Als Wirt des
+          «Zum Goldenen Ast» weiss er alles über die Dorfbewohner — und noch mehr,
+          worüber er schweigt. Seit einer Woche trinkt er deutlich mehr als üblich.
+        </div>
+        <div class="npc-quote">
+          «Ich sage nichts. Aber wenn ihr wirklich wissen wollt, wo das Kind ist …
+          schaut beim alten Haus am Waldrand. Und dann vergesst meinen Namen.»
+        </div>
+      </div>
+    </div>
+
+    <!-- Adar Voss -->
+    <div class="card searchable gated p1" data-search="adar voss inquisitor sergeant schwertflamme holzhein kontrolle">
+      <span class="badge badge-inquisition">Inquisition</span>
+      <div class="card-body">
+        <div class="npc-portrait"><img src="portraits/voss.jpg" alt="Portrait" loading="lazy"></div>
+        <div class="npc-name">Sergeant Adar Voss</div>
+        <div class="npc-title">Inquisitor-Sergeant · Schwertflamme</div>
+        <div class="npc-location">⌂ Holzhein (derzeit)</div>
+        <hr class="npc-divider">
+        <div class="npc-desc">
+          Ein pflichtbewusster Soldat in weissem Mantel, der die Hausdurchsuchungen
+          in Holzhein leitet. Nicht grausam von Natur — aber er gehorcht Befehlen.
+          Sein Leuchtamulett an der Brust glimmt orange, wenn Kosmische Energie
+          in der Nähe ist. Wer keinen Reinheitsausweis hat, wird registriert.
+        </div>
+        <div class="npc-quote">
+          «Eure Zertifikate der Reinheit, bitte. Das ist keine Bitte.»
+        </div>
+      </div>
+    </div>
+
+    <!-- Elara & Tomasz -->
+    <div class="card searchable gated p2" data-search="elara tomasz villanescu geister kinder todeshaus waldrand">
+      <span class="badge badge-geister">Geister</span>
+      <div class="card-body">
+        <div class="npc-portrait"><img src="portraits/elara.jpg" alt="Portrait" loading="lazy"></div>
+        <div class="npc-name">Elara &amp; Tomasz Villanescu</div>
+        <div class="npc-title">Die Geister der Villa · Verlorene Kinder</div>
+        <div class="npc-location">⌂ Waldrand, Holzhein</div>
+        <hr class="npc-divider">
+        <div class="npc-desc">
+          Zwei kleine Geisterkinder — Tochter und Sohn der einst wohlhabenden
+          Familie Villanescu. Ihre Augen sind leer, ihre Stimmen kommen von weit her.
+          Sie erscheinen nur in der Dunkelheit, am Waldrand, und zeigen stumm
+          auf das verlassene Herrenhaus.
+        </div>
+        <div class="npc-quote">
+          «Rettet uns. Das Böse im Haus frisst unsere Seelen.
+          Wir können nicht fliehen. Und die Kinder … die Kinder sind noch drin.»
+        </div>
+      </div>
+    </div>
+
+    <!-- Valerian -->
+    <div class="card searchable" data-search="valerian lichtschwert hochprälat luminarismus reinheim heiliger henker">
+      <span class="badge badge-gefürchtet">Gefürchtet</span>
+      <div class="card-body">
+        <div class="npc-portrait"><img src="portraits/valerian.jpg" alt="Portrait" loading="lazy"></div>
+        <div class="npc-name">Hochprälat Valerian Lichtschwert</div>
+        <div class="npc-title">Oberhaupt des Luminarismus · Der Heilige Henker</div>
+        <div class="npc-location">⌂ Reinheim (Hauptstadt)</div>
+        <hr class="npc-divider">
+        <div class="npc-desc">
+          Einst ein einfacher Bauer, ist Valerian zum mächtigsten Mann Atherions
+          aufgestiegen. Sein weisses Gewand mit goldener Sonne, sein holzig-goldener
+          Sonnenstab — diese Symbole flüstern Ehrfurcht und Angst in gleichen Teilen.
+          Er predigt das Reine Licht von Sylva und Noctis, und lässt alle verbrennen,
+          die Magie tragen.
+        </div>
+        <div class="npc-quote">
+          «Das Licht von Sylva möge euch leiten … oder verbrennen.»
+        </div>
+      </div>
+    </div>
+
+    <!-- Seraphine -->
+    <div class="card searchable" data-search="seraphine aschenherz inquisitorin schwertflamme tempelstadt jägerin">
+      <span class="badge badge-gefürchtet">Sehr Gefürchtet</span>
+      <div class="card-body">
+        <div class="npc-portrait"><img src="portraits/seraphine.jpg" alt="Portrait" loading="lazy"></div>
+        <div class="npc-name">Inquisitorin Seraphine Aschenherz</div>
+        <div class="npc-title">Chefin der Schwertflamme · Jägerin der Berührten</div>
+        <div class="npc-location">⌂ Tempelstadt (Hauptquartier)</div>
+        <hr class="npc-divider">
+        <div class="npc-desc">
+          Eine schwarzgepanzerte Erscheinung mit Augen wie glühende Kohle.
+          Ihr Name ist ein Flüstern, das Reisende verstummen lässt. Sie soll
+          Trophäen ihrer Gejagten als Kette tragen.
+          Niemand weiss genau, wo sie gerade ist — ausser, es ist zu spät.
+        </div>
+        <div class="npc-quote">
+          «Halt! Im Namen des Reinen Lichts — wer seid ihr?
+          Eure Augen verraten Schuld.»
+        </div>
+      </div>
+    </div>
+
+    <!-- Elira — Gerücht -->
+    <div class="card searchable gated p1" data-search="elira reinheim bürgermeisterin gerücht">
+      <span class="badge badge-gerücht">Gerücht</span>
+      <div class="card-body">
+        <div class="npc-name">Elira von Reinheim</div>
+        <div class="npc-title">Bürgermeisterin · Reinheim</div>
+        <div class="npc-location">⌂ Reinheim</div>
+        <hr class="npc-divider">
+        <div class="npc-desc">
+          Man hört von einer älteren Dame in Reinheim, die Fremden gegenüber
+          ungewöhnlich freundlich sein soll — auch jenen ohne Reinheitsausweis.
+          Mehr als ein Gerücht ist es bisher nicht.
+        </div>
+      </div>
+    </div>
+
+    <!-- Galen — Gerücht -->
+    <div class="card searchable gated p1" data-search="galen blutklinge ritter kommandant reinheim gerücht">
+      <span class="badge badge-gerücht">Gerücht</span>
+      <div class="card-body">
+        <div class="npc-portrait"><img src="portraits/galen.jpg" alt="Portrait" loading="lazy"></div>
+        <div class="npc-name">Sir Galen Blutklinge</div>
+        <div class="npc-title">Ritterkommandant · Reinheim</div>
+        <div class="npc-location">⌂ Reinheim</div>
+        <hr class="npc-divider">
+        <div class="npc-desc">
+          Der Kommandant der Ritter von Reinheim. Man sagt, er trage eine zerbrochene
+          Rüstung und blicke immer so, als würde er etwas Entsetzliches erinnern.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<section id="orte" class="content-section">
+<div class="section-inner">
+  <div class="sec-heading">
+    <div class="orn">✦ ✧ ✦</div>
+    <h2>Orte</h2>
+    <p>Bekannte Siedlungen, Ruinen und Wildnisse in Atherion</p>
+  </div>
+
+  <div class="card-grid-wide">
+
+    <div class="lock-notice p1n">
+      <span class="lock-ic">🔒</span>
+      Holzhein und seine Umgebung werden freigeschaltet, sobald ihr dort ankommt.
+    </div>
+
+    <!-- Holzhein -->
+    <div class="card searchable gated p1" data-search="holzhein dorf wald nebel gasthaus schmiede todeshaus grosser strom">
+      <span class="badge badge-entdeckt">✦ Aktueller Ort</span>
+      <div class="card-body">
+        <div class="ort-type">Dorf · Holzhein-Wald · Atherion</div>
+        <div class="ort-name">Holzhein</div>
+        <div class="ort-meta">Am Rande des Holzhein-Walds, unweit des Grossen Stroms</div>
+        <div class="ort-desc">
+          Ein mittelgrosses, nebliges Dorf, das von Jagd, Fischerei und Holzhandel lebt.
+          Die Häuser sind aus dunklem Eichenholz, die Gassen kopfsteingepflastert.
+          In der Nacht liegt etwas Schweres in der Luft — Inquisitoren ziehen von Tür zu Tür,
+          Leuchtamulette in den Fäusten. Niemand öffnet seine Tür ganz weit.
+        </div>
+        <ul class="ort-list">
+          <li>Gasthaus «Zum Goldenen Ast» — Treffpunkt der Reisenden, Wirt Berthold Knappe</li>
+          <li>Dorfplatz mit Sylva-Schrein — Inquisitionsbekanntmachungen angeschlagen</li>
+          <li>Schmiede von Marta Brandt — Informantin, hilft gegen Bezahlung</li>
+          <li>Friedhof am Waldrand — Manche Gräber sind frisch aufgebrochen. Von innen.</li>
+          <li>Das Todeshaus — Am nordöstlichen Waldrand. Niemand redet gern darüber.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Das Todeshaus -->
+    <div class="card searchable gated p1" data-search="todeshaus herrenhaus villanescu ruine waldrand holzhein dunkel geister">
+      <span class="badge badge-ruine">Verlassenes Herrenhaus</span>
+      <div class="card-body">
+        <div class="ort-type">Ruine · Waldrand nordöstlich von Holzhein</div>
+        <div class="ort-name">Das Todeshaus</div>
+        <div class="ort-meta">Ehemaliger Sitz der Familie Villanescu</div>
+        <div class="ort-desc">
+          Ein grosses, dreigeschossiges Herrenhaus am Rande des Finsterforsts —
+          seit dreissig Jahren verlassen. Dornenranken halten die Zufahrt fest.
+          Über dem Eingang: ein verblasstes Wappen mit zwei ineinandergreifenden Kreisen.
+          Die Dorfbewohner wechseln das Thema, wenn man davon spricht.
+          Wer es betreten hat, kam nicht zurück — oder kam verändert zurück.
+        </div>
+        <div class="npc-quote" style="margin-top:.9rem;">
+          «Das Haus atmet.»
+        </div>
+      </div>
+    </div>
+
+    <!-- Reinheim -->
+    <div class="card searchable" data-search="reinheim hauptstadt atherion valerian luminarismus tempel">
+      <span class="badge badge-hauptstadt">Hauptstadt · Atherion</span>
+      <div class="card-body">
+        <div class="ort-type">Stadt · Zentrales Atherion</div>
+        <div class="ort-name">Reinheim</div>
+        <div class="ort-meta">Sitz von Hochprälat Valerian Lichtschwert</div>
+        <div class="ort-desc">
+          Die grösste Stadt Atherions — ein Ort der Tempel, Türme und weissen Mäntel.
+          Der Luminarismus thront hier über allem. Händler aus allen Reichen kommen
+          hierher, doch wer Magie trägt, geht besser nicht durch das grosse Tor.
+          Die Strassen sind breit und sauber, die Augen überall.
+        </div>
+      </div>
+    </div>
+
+    <!-- Tempelstadt -->
+    <div class="card searchable" data-search="tempelstadt inquisition seraphine blutrinne hinrichtung verbrennung">
+      <span class="badge badge-gefürchtet">Gefürchtet</span>
+      <div class="card-body">
+        <div class="ort-type">Stadt · Südliches Atherion</div>
+        <div class="ort-name">Tempelstadt</div>
+        <div class="ort-meta">Hauptquartier der Schwertflamme-Inquisition</div>
+        <div class="ort-desc">
+          Reisende reden ungern über die Tempelstadt. Die Blutrinne — ein Fluss neben
+          der Stadt — trägt ihren Namen aus gutem Grund. Inquisitions-Tribunale,
+          Verhörkammern, öffentliche Verbrennungen. Wer hierher zitiert wird,
+          betet, dass er auch zurückkehren darf.
+        </div>
+      </div>
+    </div>
+
+    <!-- Unentdeckt ×3 -->
+    <div class="card locked searchable" data-search="unentdeckt ort">
+      <span class="badge badge-gerücht">Unentdeckt</span>
+      <div class="card-body">
+        <div class="ort-name">???</div>
+        <div class="ort-desc">Dieser Ort wurde noch nicht bereist.</div>
+      </div>
+      <div class="locked-overlay"><span>🔒 Noch nicht entdeckt</span></div>
+    </div>
+    <div class="card locked searchable" data-search="unentdeckt ort">
+      <span class="badge badge-gerücht">Unentdeckt</span>
+      <div class="card-body">
+        <div class="ort-name">???</div>
+        <div class="ort-desc">Dieser Ort wurde noch nicht bereist.</div>
+      </div>
+      <div class="locked-overlay"><span>🔒 Noch nicht entdeckt</span></div>
+    </div>
+    <div class="card locked searchable" data-search="unentdeckt ort">
+      <span class="badge badge-gerücht">Unentdeckt</span>
+      <div class="card-body">
+        <div class="ort-name">???</div>
+        <div class="ort-desc">Dieser Ort wurde noch nicht bereist.</div>
+      </div>
+      <div class="locked-overlay"><span>🔒 Noch nicht entdeckt</span></div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<section id="fraktionen" class="content-section">
+<div class="section-inner">
+  <div class="sec-heading">
+    <div class="orn">✦ ✧ ✦</div>
+    <h2>Fraktionen</h2>
+    <p>Mächte, Orden und Netzwerke, die Atherion formen</p>
+  </div>
+
+  <div style="max-width:900px;margin:0 auto;">
+
+    <div class="faction-card faction-lum searchable" data-search="luminarismus sylva noctis licht religion glauben valerian reinheit">
+      <div class="faction-header">
+        <div class="faction-symbol">☀</div>
+        <div class="faction-info">
+          <div class="faction-name">Der Luminarismus</div>
+          <div class="faction-tagline">Staatsreligion Atherions · «Das Reine Licht»</div>
+        </div>
+        <span class="badge badge-bekannt" style="flex-shrink:0;">Bekannt</span>
+      </div>
+      <div class="faction-body">
+        <p>
+          Der Luminarismus verehrt die zwei Götter: <strong>Sylva</strong>, die Sonnengöttin des Lebens und Feuers,
+          und <strong>Noctis</strong>, den Mondgott der Nächte und Geheimnisse.
+          Priester — die Luminari — führen das Reine Licht in heiligen Stätten wie der
+          Zidatelle des Lichts. Tempel und Schreine für Sylva und Noctis sind in jedem
+          Dorf Atherions zu finden.
+        </p>
+        <p>
+          Der Luminarismus erklärt die Kosmische Energie des Sternenfalls als <em>Fluch</em> —
+          als Verunreinigung des göttlichen Gleichgewichts. Wer Magie trägt oder wirkt,
+          trägt nach dieser Lehre einen Seelenschaden, der das ganze Volk gefährdet.
+          Hochprälat Valerian Lichtschwert führt diese Doktrin zur absoluten Konsequenz.
+        </p>
+        <div class="faction-note">
+          <strong>Bekannte Stätten:</strong> Reinheim (Hochprälat), Tempelstadt (Inquisition), Lichtfall (Luminari-Akademie)
+        </div>
+      </div>
+    </div>
+
+    <div class="faction-card faction-inq searchable" data-search="inquisition schwertflamme seraphine aschenherz leuchtamulett reinheitsausweis verfolgung">
+      <div class="faction-header">
+        <div class="faction-symbol">🔥</div>
+        <div class="faction-info">
+          <div class="faction-name">Die Schwertflamme-Inquisition</div>
+          <div class="faction-tagline">Bewaffneter Arm des Luminarismus · «Feuer reinigt»</div>
+        </div>
+        <span class="badge badge-gefürchtet" style="flex-shrink:0;">Gefürchtet</span>
+      </div>
+      <div class="faction-body">
+        <p>
+          Die Inquisition ist der Langen Arm des Hochprälats. Inquisitoren in weissen Mänteln
+          patrouillieren Dörfer und Städte, Leuchtamulette zur Magiedetektion in der Faust.
+          Hausdurchsuchungen, Verhöre, Scheiterhaufen — die Schwertflamme kennt keine Gnade.
+        </p>
+        <p>
+          Jeder Bürger Atherions benötigt ein <strong>Zertifikat der Reinheit</strong> —
+          ein Dokument, das bescheinigt, keine Kosmische Energie zu tragen.
+          Wer keines hat, wird registriert. Wer beim Zaubern erwischt wird, wird
+          abgeführt. Was dann passiert, wird nicht gesagt.
+        </p>
+        <div class="faction-note">
+          <strong>Führung:</strong> Inquisitorin Seraphine Aschenherz (Tempelstadt) ·
+          Vor Ort in Holzhein: Sergeant Adar Voss
+        </div>
+      </div>
+    </div>
+
+    <div class="faction-card faction-ber searchable" data-search="berührte magier kosmische energie verfolgung flüchtlinge verboten">
+      <div class="faction-header">
+        <div class="faction-symbol">✦</div>
+        <div class="faction-info">
+          <div class="faction-name">Die Berührten</div>
+          <div class="faction-tagline">Jene, die Magie tragen · Die Geächteten</div>
+        </div>
+        <span class="badge badge-bekannt" style="flex-shrink:0;">Bekannt</span>
+      </div>
+      <div class="faction-body">
+        <p>
+          «Die Berührten» — so nennen Einheimische jene, die von der Kosmischen Energie
+          des Sternenfalls erwacht sind und Magie wirken können.
+          In Atherion sind sie Geächtete: verfolgt, verjagt, verbrannt.
+          Viele fliehen nach Arkanis, Salzklinge oder verstecken sich in den Wäldern.
+        </p>
+        <p>
+          In anderen Reichen ist es anders: In Arkanis leben Magier-Enklaven offen,
+          in Salzklinge schätzen Piraten Windmagie, in Auregant zählt
+          Gold mehr als Glaube. Doch in Atherion bedeutet Magie —
+          sichtbar oder nicht — Lebensgefahr.
+        </p>
+        <div class="faction-note">
+          «Unter den richtigen Leuten … kann man vielleicht Hilfe finden.»
+        </div>
+      </div>
+    </div>
+
+    <div class="faction-card faction-neb searchable" data-search="nebelkrallen schmuggler gerücht flüchtlinge magie gold">
+      <div class="faction-header">
+        <div class="faction-symbol">🌫</div>
+        <div class="faction-info">
+          <div class="faction-name">Die Nebelkrallen</div>
+          <div class="faction-tagline">Gerüchte · Schmuggler im Schatten</div>
+        </div>
+        <span class="badge badge-gerücht" style="flex-shrink:0;">Gerücht</span>
+      </div>
+      <div class="faction-body">
+        <p>
+          Reisende flüstern von einer Schmugglerbande, die Berührte aus Atherion
+          herausschmuggelt — über Flüsse und dunkle Waldwege, für Gold.
+          Manche sagen, sie operieren von Reinheim aus. Andere sagen, ihr Anführer
+          trägt Krähenfedern im Haar.
+        </p>
+        <div class="faction-note">
+          Ob dieses Netzwerk wirklich existiert — und ob man ihm trauen kann —
+          weiss in Holzhein niemand sicher zu sagen.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<section id="verfolgung" class="content-section">
+<div class="section-inner">
+  <div class="sec-heading">
+    <div class="orn">✦ ✧ ✦</div>
+    <h2>Verfolgungsgrad</h2>
+    <p>Inquisition Atherion — Bedrohungsanzeiger</p>
+  </div>
+
+  <div class="lock-notice p1n">
+    <span class="lock-ic">🔒</span>
+    Der Bedrohungsanzeiger wird freigeschaltet, sobald euch die Inquisition ins Visier nimmt.
+  </div>
+
+  <div class="gated p1" style="max-width:760px;margin:0 auto;">
+
+    <div class="vf-rule">
+      <strong>⚠ Grundregel:</strong> Der Verfolgungsgrad steigt <em>einmal pro Szene</em> — nicht pro Zauber.
+      Entscheidend ist nur: Wurde Magie in dieser Szene beobachtet? Mehrere Zauber in derselben Begegnung zählen als <em>ein</em> Ereignis.
+    </div>
+
+    <!-- LIVE TRACKER -->
+    <div class="vf-tracker" id="vfTracker">
+      <div class="vf-current-label">Aktueller Stand</div>
+      <div class="vf-big" id="vfBig">0</div>
+      <div class="vf-name" id="vfName">Unauffällig</div>
+      <div class="vf-desc" id="vfDesc">Keine bekannten Vorkommnisse. Ihr seid frei.</div>
+      <div class="vf-scale" id="vfScale"></div>
+      <div class="vf-buttons">
+        <button class="vf-btn dn" onclick="vfStep(-1)">▼ −1</button>
+        <button class="vf-btn up" onclick="vfStep(1)">▲ +1</button>
+        <button class="vf-btn dis" onclick="vfStep(-2)">♛ Verkleiden −2</button>
+        <button class="vf-btn ent" onclick="vfStep(4)">Entlarvt +4</button>
+        <button class="vf-btn rs" onclick="vfSet(0)">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- LEVELS -->
+    <h3 class="vf-h">Die sechs Stufen</h3>
+    <div class="vf-levels">
+      <div class="vf-lvl l0"><span class="vn">0</span><div><b>Unauffällig</b><br>Keine Vorkommnisse. Ihr seid frei.</div></div>
+      <div class="vf-lvl l1"><span class="vn">1</span><div><b>Erste Gerüchte</b><br>Flüsterer haben etwas bemerkt.</div></div>
+      <div class="vf-lvl l2"><span class="vn">2</span><div><b>Verdächtigung</b><br>Ein Wächter beobachtet euch.</div></div>
+      <div class="vf-lvl l3"><span class="vn">3</span><div><b>Inquisition mobil</b><br>Inquisitor in der Gegend.</div></div>
+      <div class="vf-lvl l4"><span class="vn">4</span><div><b>Direktes Verhör</b><br>Ihr wurdet gemeldet.</div></div>
+      <div class="vf-lvl l5"><span class="vn">5</span><div><b>Seraphine!</b><br>Sie leitet die Jagd persönlich.</div></div>
+    </div>
+
+    <!-- MODIFIERS -->
+    <div class="vf-mods">
+      <div class="vf-mod-col up">
+        <h4>▲ Stufe erhöhen</h4>
+        <table>
+          <tr><td>Magie in Menschenmenge</td><td>+5</td></tr>
+          <tr><td>Magie in der Stadt</td><td>+3</td></tr>
+          <tr><td>Tarnung durchschaut</td><td>+4</td></tr>
+          <tr><td>Verborgen in Siedlung gezaubert</td><td>+1</td></tr>
+          <tr><td>Wildnis / Einsamkeit</td><td>±0</td></tr>
+        </table>
+      </div>
+      <div class="vf-mod-col dn">
+        <h4>▼ Stufe senken</h4>
+        <table>
+          <tr><td>Reich wechseln</td><td>−5</td></tr>
+          <tr><td>Ablassbrief erwerben</td><td>−3</td></tr>
+          <tr><td>Long Rest / Ortswechsel</td><td>−2</td></tr>
+          <tr><td>Verkleidung anlegen</td><td>−2</td></tr>
+          <tr><td>Bestechung</td><td>−2</td></tr>
+          <tr><td>Short Rest + Ruhe halten</td><td>−1</td></tr>
+          <tr><td>Verstecken (Stealth gelingt)</td><td>−1</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- DISGUISE -->
+    <div class="vf-disguise">
+      <h4>♛ Verkleidungsset — Tarnung &amp; Entlarvung</h4>
+      <p><strong>Anlegen:</strong> Geschicklichkeit (Verkleidungsset, Übungsbonus). Bei Erfolg: Verfolgungsgrad −2.</p>
+      <p><strong>Entlarvung:</strong> Ein NPC würfelt Weisheit (Einsicht) oder Intelligenz (Nachforschung) gegen eure Probe. Gelingt es ihm: +4 — sie kennen nun euer Gesicht.</p>
+      <p><strong>Ab Stufe 4:</strong> NPCs würfeln mit Vorteil. <em>Seraphine hat immer Vorteil.</em></p>
+    </div>
+
+    <div class="vf-foot">✦&nbsp;&nbsp;Magie ist verboten in Atherion — Sylvas Licht richtet euch&nbsp;&nbsp;✦</div>
+
+  </div>
+</div>
+</section>
+
+<section id="haendler" class="content-section">
+<div class="section-inner">
+  <div class="sec-heading">
+    <div class="orn">✦ ✧ ✦</div>
+    <h2>Händler &amp; Angebote</h2>
+    <p>Waren, Preise und Dienste in Holzhein</p>
+  </div>
+
+  <div style="max-width:820px;margin:0 auto;">
+
+    <div class="lock-notice p1n">
+      <span class="lock-ic">🔒</span>
+      Die Händler von Holzhein öffnen ihre Auslagen, sobald ihr das Dorf erreicht.
+    </div>
+
+    <!-- GASTHAUS -->
+    <div class="merchant-card searchable gated p1" data-search="zum goldenen ast berthold knappe gasthaus bier eintopf unterkunft fackel rations holzhein">
+      <div class="merchant-name">🍺 Gasthaus «Zum Goldenen Ast»</div>
+      <div class="merchant-keeper">Wirt: Berthold Knappe — Klatschmaul &amp; notorischer Übertreiber</div>
+      <table class="price-table">
+        <tr><th>Artikel</th><th>Preis</th></tr>
+        <tr class="price-section-head"><td colspan="2">Speisen &amp; Getränke</td></tr>
+        <tr><td>Dünnes Holzheiner Bier (Pint)</td><td>2 KM</td></tr>
+        <tr><td>Einfaches Mahl (Brot, Schmalz, Käse, Lauch)</td><td>4 KM</td></tr>
+        <tr><td>Eintopf des Hauses</td><td>8 KM</td></tr>
+        <tr><td>Geräucherter Waldschinken</td><td>3 SM</td></tr>
+        <tr><td>Rotwein aus dem Süden (Karaffe)</td><td>5 SM</td></tr>
+        <tr><td>Kräuterschnaps «Holzheinbrand»</td><td>1 SM</td></tr>
+        <tr class="price-section-head"><td colspan="2">Unterkunft</td></tr>
+        <tr><td>Scheunenlager (Stroh, 2 Hühner inkl.)</td><td>2 SM</td></tr>
+        <tr><td>Gemeinschaftskammer (4 Betten)</td><td>4 SM / Person</td></tr>
+        <tr><td>Privatzimmer «Die Eichenstube» (mit Riegel)</td><td>8 SM</td></tr>
+        <tr class="price-section-head"><td colspan="2">Reisebedarf</td></tr>
+        <tr><td>Fackel (Bündel zu 5)</td><td>1 SM</td></tr>
+        <tr><td>Feuerstein &amp; Stahl</td><td>5 KM</td></tr>
+        <tr><td>Reiserationen (3 Tage)</td><td>2 SM</td></tr>
+        <tr><td>Schreibset (Tinte, Feder, Pergament)</td><td>5 SM</td></tr>
+        <tr><td>Heilkrautbündel (+1 auf Stabilisierung)</td><td>5 SM</td></tr>
+        <tr class="price-section-head"><td colspan="2">Kuriosum des Hauses</td></tr>
+        <tr><td>„Stein der Wettervorhersage“ ✦</td><td>3 GM</td></tr>
+      </table>
+      <div class="merchant-note">
+        Berthold schwört, der Stein sei ein magisches Artefakt. Er lügt nicht bewusst — er irrt sich nur. (Der Stein wird nass, wenn es regnet.)
+      </div>
+    </div>
+
+    <!-- GREGOR -->
+    <div class="merchant-card searchable gated p1" data-search="gregor schilfmund reisender händler heiltrank antitoxin alchimistenfeuer seil laterne diebeswerkzeug verkleidung">
+      <div class="npc-portrait merchant-portrait"><img src="portraits/gregor.jpg" alt="Portrait" loading="lazy"></div>
+      <div class="merchant-name">🧭 Gregor Schilfmund</div>
+      <div class="merchant-keeper">Reisender Händler &amp; Kuriositäten-Sammler — parkt am Brunnen, stellt keine Fragen</div>
+      <table class="price-table">
+        <tr><th>Artikel</th><th>Preis</th></tr>
+        <tr class="price-section-head"><td colspan="2">Kräuter, Tränke &amp; Alchimie</td></tr>
+        <tr><td>Heiltrank (2W4+2 TP)</td><td>50 GM</td></tr>
+        <tr><td>Heilkräuter-Balsam (1W4 TP)</td><td>8 GM</td></tr>
+        <tr><td>Antitoxin-Fläschchen (1 Std. Vorteil vs. Gift)</td><td>50 GM</td></tr>
+        <tr><td>Alchimistenfeuer (1W4 Feuer/Runde)</td><td>50 GM</td></tr>
+        <tr><td>Säure-Fläschchen (2W6 Säureschaden)</td><td>25 GM</td></tr>
+        <tr class="price-section-head"><td colspan="2">Reisebedarf &amp; Zubehör</td></tr>
+        <tr><td>Seil (15 m, Hanf)</td><td>1 GM</td></tr>
+        <tr><td>Laterne (mit Öl)</td><td>6 SM</td></tr>
+        <tr><td>Heilerskit</td><td>5 GM</td></tr>
+        <tr><td>Fallensteller-Kit</td><td>5 GM</td></tr>
+        <tr><td>Diebeswerkzeug „für Schlosserei“</td><td>25 GM</td></tr>
+        <tr><td>Spiegel (kleiner Stahl)</td><td>5 GM</td></tr>
+        <tr><td>Verkleidungsset</td><td>25 GM</td></tr>
+        <tr class="price-section-head"><td colspan="2">Kuriositäten</td></tr>
+        <tr><td>Schriftrolle des Lesens</td><td>45 GM</td></tr>
+        <tr><td>„Allsehendes Auge“ ✦ (Visionen ohne Nutzen)</td><td>120 GM</td></tr>
+      </table>
+      <div class="merchant-note">
+        Gregor handelt bis tief in die Nacht und hat „beinahe alles“ — fragt nur nicht, woher.
+      </div>
+    </div>
+
+    <!-- ALDARA -->
+    <div class="merchant-card searchable gated p1" data-search="schwester aldara weisshand kräuterhaus heiler luminarismus weihwasser symbol entgiftung sylva">
+      <div class="npc-portrait merchant-portrait"><img src="portraits/aldara.jpg" alt="Portrait" loading="lazy"></div>
+      <div class="merchant-name">☀ Schwester Aldaras Kräuterhaus</div>
+      <div class="merchant-keeper">Aldara Weisshand — Laienschwester des Luminarismus, fromm und gut informiert</div>
+      <table class="price-table">
+        <tr><th>Artikel</th><th>Preis</th></tr>
+        <tr class="price-section-head"><td colspan="2">Heilkräuter &amp; Medizin</td></tr>
+        <tr><td>Schafgarbenverband (5 St.)</td><td>3 SM</td></tr>
+        <tr><td>Beruhigungstee «Noctis’ Schlummer» (3 Port.)</td><td>5 SM</td></tr>
+        <tr><td>Heilertasche / Healer’s Kit (10 Anw.)</td><td>5 GM</td></tr>
+        <tr><td>Entgiftungstrank «Reines Herz» (selten)</td><td>40 GM</td></tr>
+        <tr class="price-section-head"><td colspan="2">Fromme Waren &amp; Symbole</td></tr>
+        <tr><td>Heiliges Symbol (Sylva-Sonnenscheibe, Fokus)</td><td>5 GM</td></tr>
+        <tr><td>Räucherkerzen (Luminari-Weihrauch)</td><td>2 SM</td></tr>
+        <tr><td>Sylva-Reliquie (Holzkette)</td><td>1 GM</td></tr>
+        <tr><td>Weihwasser-Fläschchen (2W6 vs. Untote/Teufel)</td><td>25 GM</td></tr>
+        <tr><td>Verkleidungsset «Pilger» (+Vorteil vs. Luministen)</td><td>15 GM</td></tr>
+        <tr><td>Nebelkrauttinktur (Täuschung +2, 1 Szene)</td><td>12 GM</td></tr>
+      </table>
+      <div class="merchant-note">
+        Wer Aldara vertraut, bekommt mehr als Kräuter. Sie weiss genau, was in ihrem Dorf vorgeht.
+      </div>
+    </div>
+
+    <!-- MARTA -->
+    <div class="merchant-card searchable gated p1" data-search="marta brandt schmiede waffe rüstung dolch kurzschwert armbrust kettenhemd schild reparatur holzhein">
+      <div class="npc-portrait merchant-portrait"><img src="portraits/marta.jpg" alt="Portrait" loading="lazy"></div>
+      <div class="merchant-name">⚒ Brandts Schmiede</div>
+      <div class="merchant-keeper">Marta Brandt — hartgesotten, fair, Informantin (neutral, hilft gegen Bezahlung)</div>
+      <table class="price-table">
+        <tr><th>Artikel</th><th>Preis</th></tr>
+        <tr class="price-section-head"><td colspan="2">Waffen</td></tr>
+        <tr><td>Dolch (1W4, Finesse, Wurf)</td><td>2 GM</td></tr>
+        <tr><td>Speer (1W6, Vielseitig 1W8)</td><td>1 GM</td></tr>
+        <tr><td>Handaxt (1W6, Wurf)</td><td>5 GM</td></tr>
+        <tr><td>Kurzschwert (1W6, Finesse, Leicht)</td><td>10 GM</td></tr>
+        <tr><td>Leichte Armbrust (1W8, mit 20 Bolzen)</td><td>25 GM</td></tr>
+        <tr><td>Vorschlaghammer (2W6, Schwer, Zweihändig)</td><td>2 GM</td></tr>
+        <tr class="price-section-head"><td colspan="2">Rüstung &amp; Schutz</td></tr>
+        <tr><td>Lederrüstung (RK 11 + GES)</td><td>10 GM</td></tr>
+        <tr><td>Schild (Holz &amp; Eisen, +2 RK)</td><td>10 GM</td></tr>
+        <tr><td>Kettenhemd (RK 16, mittel)</td><td>50 GM</td></tr>
+        <tr><td>Schuppenpanzer (RK 14 +GES max 2)</td><td>50 GM</td></tr>
+        <tr class="price-section-head"><td colspan="2">Werkzeug &amp; Ausrüstung</td></tr>
+        <tr><td>Eisenspikes (10 St.)</td><td>1 GM</td></tr>
+        <tr><td>Fussangeln / Caltrops (20 St.)</td><td>1 GM</td></tr>
+        <tr><td>Enterhaken (mit 15 m Seil)</td><td>2 GM</td></tr>
+        <tr><td>Diebeswerkzeug</td><td>25 GM</td></tr>
+        <tr><td>Unvergängliche Fackel (nur bei Sonnenlicht)</td><td>8 GM</td></tr>
+      </table>
+      <div class="merchant-note">
+        <strong>Sonderleistung:</strong> Rüstungsreparatur — 10 % des Ursprungspreises pro 5 fehlende RK. Keine Fragen.<br>
+        Münzwerte: 10 KM = 1 SM · 10 SM = 1 GM
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<section id="lore" class="content-section">
+<div class="section-inner">
+  <div class="sec-heading">
+    <div class="orn">✦ ✧ ✦</div>
+    <h2>Lore</h2>
+    <p>Geschichte, Kosmologie und das Wissen der Welt</p>
+  </div>
+
+  <div class="lore-entry searchable" data-search="sternenfall komet arkanis kosmische energie magie ursprung">
+    <h3>Der Sternenfall</h3>
+    <p>
+      <span class="lore-initial">V</span>or dreihundert Jahren durchbohrte ein gewaltiger Komet den Nachthimmel
+      und schlug in der Wüste von Arkanis ein — dort, wo heute der glühende Krater
+      des <em>Sternenfalls</em> pulsiert wie ein ewiges Herz.
+      Mit ihm kam etwas, das die Welt nie zuvor gekannt hatte: die Kosmische Energie.
+    </p>
+    <p>
+      Eine wilde, sternengleiche Macht, die Visionen, Wunder und das Erwachen der Magie brachte.
+      Die ersten <em>Berührten</em> erwachten mit Gaben: Sie heilten mit Sternenlicht, beschworen
+      Winde, liessen Kristalle singen. Eine Zeit der Wunder begann.
+    </p>
+    <p>
+      Doch mit dem Licht kam auch etwas Dunkles. Tief im Kern des Kometen schlief etwas,
+      das noch keinen Namen hatte. Es schlief … zunächst.
+    </p>
+  </div>
+
+  <div class="lore-entry searchable" data-search="sylva noctis sonnengöttin mondgott licht schatten götter glaube">
+    <h3>Sylva &amp; Noctis</h3>
+    <p>
+      <span class="lore-initial">Z</span>wei Götter teilen sich die Welt: <strong>Sylva</strong>,
+      die Sonnengöttin, spendet Leben, Wärme und das heilende Feuer.
+      Ihre Priester — die Luminari — führen das Reine Licht in Tempeln und Zidatellen.
+      Ernten gedeihen unter ihrem Segen, Wunden schliessen sich im Schein ihrer Flammen.
+    </p>
+    <p>
+      <strong>Noctis</strong>, der Mondgott, hütet die Nächte, die Geheimnisse und die Toten.
+      Er ist nicht böse — nur still. Sein Licht zeigt Dinge, die das Tageslicht verbirgt.
+      Zusammen bilden Sylva und Noctis das Gleichgewicht: Licht und Schatten, Leben und Vergehen.
+    </p>
+    <p>
+      Zumindest in der Theologie des Luminarismus. Andere Völker sehen diese Götter anders —
+      oder verehren sie gar nicht.
+    </p>
+  </div>
+
+  <div class="lore-entry searchable" data-search="vier reiche atherion arkanis salzklinge auregant welt überblick">
+    <h3>Die vier Reiche</h3>
+    <p>
+      <span class="lore-initial">D</span>ie bekannte Welt besteht aus vier Reichen, getrennt durch
+      Meere, Gebirge und grosse Wildnis:
+    </p>
+    <p>
+      <strong>Atherion</strong> — Das Kernland der Ritter und Tempel.
+      Hier herrscht der Luminarismus über alles. Felder und Wälder, befestigte Städte,
+      weisse Mäntel an jeder Ecke. Magie ist verboten.
+    </p>
+    <p>
+      <strong>Arkanis</strong> — Die Weite der Wüste. Nomaden und Gelehrte,
+      Sanddünen und glühende Nächte. Hier finden die Berührten Zuflucht.
+      Der Sternenfall-Krater liegt im Herzen dieses Reichs.
+    </p>
+    <p>
+      <strong>Salzklinge</strong> — Die sturmgepeitschte Piratenküste.
+      Freiheit oder Tod auf hoher See. Piratenflotten, Schmuggler,
+      Nebelhäfen. Hier zählt Gold mehr als Glaube.
+    </p>
+    <p>
+      <strong>Auregant</strong> — Die Berge der Söldner und Goldgräber.
+      Neutrales Reich, reich an Erz und Mineral.
+      Weder Luminarismus noch Magie-Verfolgung — nur Handel und Bezahlung.
+    </p>
+  </div>
+
+  <div class="lore-entry searchable" data-search="kosmische energie magie verboten berührt sternenlicht kristall luminarismus fluch">
+    <h3>Kosmische Energie</h3>
+    <p>
+      <span class="lore-initial">D</span>ie Macht, die der Sternenfall in die Welt brachte, nennen Gelehrte
+      <em>Kosmische Energie</em>. Sie ist keine Magie der Götter — sie kommt von den Sternen,
+      wild und ungezähmt. Wer von ihr berührt wird, erwacht mit Gaben:
+      das Werfen von Feuer, das Lesen von Gedanken, das Erschaffen von Licht.
+    </p>
+    <p>
+      In Atherion ist sie verboten. Der Luminarismus nennt sie einen Fluch,
+      der Seelen stiehlt und das Gleichgewicht der Götter verdirbt.
+      In Arkanis und Salzklinge sehen das die Menschen anders.
+    </p>
+    <p>
+      Kristalle aus dem Sternenfall-Krater sollen Kosmische Energie speichern und freigeben können.
+      Schmuggler handeln mit ihnen — heimlich, teuer, gefährlich.
+    </p>
+  </div>
+
+  <div class="lore-entry searchable" data-search="luminarismus geschichte reinigung genozid valerian bauer schwester inquisition">
+    <h3>Geschichte des Luminarismus</h3>
+    <p>
+      <span class="lore-initial">N</span>ach einer Zeit, in der Magie und Glaube nebeneinander existierten,
+      explodierte in Atherion die Angst. Valerian Lichtschwert — einst ein Bauer —
+      erhob sich zum Hochprälat mit einer einfachen Botschaft:
+      Die Kosmische Energie ist ein Fluch. Magie ist Sünde. Das Feuer reinigt.
+    </p>
+    <p>
+      Was als Vertreibung begann, wurde zur Grossen Reinigung.
+      Magier flohen massenhaft — nach Arkanis, nach Salzklinge, in die Wälder.
+      Dörfer brannten. Kinder wurden ihren Familien entrissen.
+      Die Schmugglernetzwerke, die heute im Verborgenen operieren,
+      entstanden damals aus purer Not.
+    </p>
+    <p>
+      Das war vor fünfzig Jahren. Heute ist der Luminarismus die einzige anerkannte
+      Macht in Atherion. Sein Gedächtnis ist lang. Sein Arm reicht weit.
+    </p>
+  </div>
+
+</div>
+</section>
+
+<section id="karte" class="content-section">
+<div class="section-inner">
+  <div class="sec-heading">
+    <div class="orn">✦ ✧ ✦</div>
+    <h2>Karte von Atherion</h2>
+    <p>Die bekannte Welt — vier Reiche, ein Schicksal</p>
+  </div>
+
+  <div class="map-toolbar">
+    <button onclick="mapZoom(1.3)">+ Zoom</button>
+    <button onclick="mapZoom(0.77)">− Zoom</button>
+    <span class="zlbl" id="mapZlbl">100%</span>
+    <button onclick="mapReset()">↺ Zurücksetzen</button>
+    <span class="hint">Mausrad zum Zoomen · Ziehen zum Verschieben</span>
+  </div>
+
+  <div class="map-frame" id="mapFrame">
+    <div class="map-stage" id="mapStage">
+    <img src="karte/atherion.jpg" alt="Karte von Atherion — Die vier Reiche">
+
+    <div class="map-marker" style="left:22.2%;top:9.7%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Nord Wach</div>
+  <div class="map-tooltip">Befestigung, sehr stark bewacht.</div>
+</div>
+<div class="map-marker" style="left:26.1%;top:21.8%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Ost Wach</div>
+  <div class="map-tooltip">Befestigung, sehr stark bewacht.</div>
+</div>
+<div class="map-marker" style="left:24.6%;top:35.7%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Süd Wach</div>
+  <div class="map-tooltip">Befestigung, sehr stark bewacht.</div>
+</div>
+<div class="map-marker" style="left:19%;top:23.2%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">West Wach</div>
+  <div class="map-tooltip">Befestigung, sehr stark bewacht.</div>
+</div>
+<div class="map-marker m-capital" style="left:21.4%;top:21.4%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Goldwacht</div>
+  <div class="map-tooltip">Hauptstadt des Goldreichs Auregant. Sitz und Hauptquartier von Grosskommandant Rorik Eisenherz.</div>
+</div>
+<div class="map-marker" style="left:21.7%;top:26.5%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Das Auge</div>
+  <div class="map-tooltip">See. Perfekt rund mit mittiger Insel. Klares blaues Wasser.</div>
+</div>
+<div class="map-marker" style="left:21.7%;top:31.1%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Goldrinne</div>
+  <div class="map-tooltip">Fluss. Fliesst vom Auge in die weite Leere.</div>
+</div>
+<div class="map-marker" style="left:22.7%;top:35.3%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Münzbruch</div>
+  <div class="map-tooltip">Grosses Dorf und Hafen von Auregant. Stark befestigt.</div>
+</div>
+<div class="map-marker m-feared" style="left:26.6%;top:30.3%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Rabenhorst Mine (Ruine)</div>
+  <div class="map-tooltip">Ruine der Rabenhorst-Mine.</div>
+</div>
+<div class="map-marker" style="left:24.2%;top:26%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Goldklamm Gebirge</div>
+  <div class="map-tooltip">Gebirge. Trägt diesen Namen aufgrund von sehr reichen Goldvorkommen - der Grund für Auregants Reichtum.  Das Gebirge hütet ein Geheimnis... nur wenige wissen davon.</div>
+</div>
+<div class="map-marker m-capital" style="left:71%;top:6.7%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Arkenfall</div>
+  <div class="map-tooltip">Hauptstadt von Arkanis. Sitz der Erzmagierin Niamh Mondschatten.</div>
+</div>
+<div class="map-marker" style="left:82.4%;top:6.8%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Zitadelle des Lichts</div>
+  <div class="map-tooltip">Die Sternenwache wacht über diesen Ort.</div>
+</div>
+<div class="map-marker m-feared" style="left:95%;top:4.9%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Der Sternenfall</div>
+  <div class="map-tooltip">Oase, Krater, lebendig und doch abiotisch -  der Beginn von allem!</div>
+</div>
+<div class="map-marker" style="left:82.9%;top:23.3%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Aschenfeld</div>
+  <div class="map-tooltip">Mittelgrosses Dorf. Trägt Namen einer grossen schrecklichen Schlacht.</div>
+</div>
+<div class="map-marker" style="left:77.6%;top:34%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Noctisburg</div>
+  <div class="map-tooltip">Grosses Dorf.</div>
+</div>
+<div class="map-marker" style="left:78.3%;top:25.1%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Aschenbach</div>
+  <div class="map-tooltip">Fluss. Fliesst von Noctis Auge ins Nordmeer.</div>
+</div>
+<div class="map-marker m-feared" style="left:91.4%;top:34.3%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Finsterforst</div>
+  <div class="map-tooltip">Wald. Gross, dicht, dunkel, unheimlich.</div>
+</div>
+<div class="map-marker" style="left:95.6%;top:34.5%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Finsterloch</div>
+  <div class="map-tooltip">See. Dunkles Wasser - immer kalt.</div>
+</div>
+<div class="map-marker m-feared" style="left:95.5%;top:32.2%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Finsterburg</div>
+  <div class="map-tooltip">Grosse, dunkle Burg. Quelle von Mythen und Legenden... und mehr.</div>
+</div>
+<div class="map-marker" style="left:84.4%;top:43.3%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Noctis Augen</div>
+  <div class="map-tooltip">Seen die wie Augen aussehen.</div>
+</div>
+<div class="map-marker" style="left:68.9%;top:32.2%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Untere Sylvasquell</div>
+  <div class="map-tooltip">Fluss. Fliesst von Sylvas Tiefen ins Nordmeer.</div>
+</div>
+<div class="map-marker" style="left:72.2%;top:39.2%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Sylvas Tiefen</div>
+  <div class="map-tooltip">See. Trägt den Namen aufgrund Sylvaswacht.</div>
+</div>
+<div class="map-marker" style="left:72.6%;top:44%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Sylvaswacht</div>
+  <div class="map-tooltip">Dorf. Einfach ein Dorf.</div>
+</div>
+<div class="map-marker" style="left:78.6%;top:47.4%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Obere Sylvasquell</div>
+  <div class="map-tooltip">Fluss. Fliesst vom Spiegel des Lichts in Sylvas Tiefen</div>
+</div>
+<div class="map-marker" style="left:87.4%;top:57.1%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Lichtfall</div>
+  <div class="map-tooltip">Stadt und Hauptquartier der Luminari.</div>
+</div>
+<div class="map-marker" style="left:80%;top:61.3%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Spiegel des Lichts</div>
+  <div class="map-tooltip">See. Trägt den Namen aufgrund der Stadt Lichtfall.</div>
+</div>
+<div class="map-marker" style="left:90.7%;top:74.7%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Grosser Strom</div>
+  <div class="map-tooltip">Fluss. Wird durch unzählige Bäche und Flüsse gespeist, bis er in der Piratenbucht mündet.</div>
+</div>
+<div class="map-marker m-start" style="left:72.2%;top:83.9%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Holzhein</div>
+  <div class="map-tooltip">Dorf. Trägt den Namen aufgrund des gleichnamigen Waldes welcher das Dorf umgibt.</div>
+</div>
+<div class="map-marker" style="left:73.7%;top:88.9%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Holzhein</div>
+  <div class="map-tooltip">Wald. Grosser- und kleiner Strom fliessen hier durch.</div>
+</div>
+<div class="map-marker" style="left:63.2%;top:86%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Ewigwasser</div>
+  <div class="map-tooltip">Fluss. Fliesst in die Piratenbucht.</div>
+</div>
+<div class="map-marker" style="left:73.1%;top:70.7%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Geweihtes Wasser</div>
+  <div class="map-tooltip">Fluss. Fliesst vom Spiegel des Lichts zur Tempelstadt - wo er seinen Namen wechselt...</div>
+</div>
+<div class="map-marker m-feared" style="left:65%;top:73%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Tempelstadt</div>
+  <div class="map-tooltip">Stadt. Hauptquartier der Inquisition.</div>
+</div>
+<div class="map-marker m-feared" style="left:60.2%;top:78.1%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Die Blutrinne</div>
+  <div class="map-tooltip">Fluss. Das Wasser färbt sich aufgrund der armen Seelen, welche im Wasser treiben, rot - Opfer der Inquisition.</div>
+</div>
+<div class="map-marker" style="left:64.8%;top:51.6%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Das Kreuz</div>
+  <div class="map-tooltip">Mittelgrosses Dorf. Trägt den Namen aufgrund der Wasser in der Gegend.</div>
+</div>
+<div class="map-marker" style="left:62.5%;top:49.1%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Kreuzwasser</div>
+  <div class="map-tooltip">See. Trägt den Namen aufgrund des Flusses der aus ihm entsteht.</div>
+</div>
+<div class="map-marker" style="left:57.8%;top:46.3%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Kreuzfluss</div>
+  <div class="map-tooltip">Fluss. Trägt den Namen aufgrund alten Steinkreuzen am Ufer. Keiner weiss wer die Kreuze, wann aufgestellt hat. Leuchten in der Nacht. Bei Vollmond ist Summen zu hören. Pilgerstätte der Luminari.</div>
+</div>
+<div class="map-marker" style="left:51.9%;top:36.6%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Die Zwillinge</div>
+  <div class="map-tooltip">Zwei grosse Farmen, welche nördlich des Dümpels liegen und im Osten sowie im Westen von je einem Fluss eingerahmt sind.</div>
+</div>
+<div class="map-marker" style="left:50.7%;top:35.4%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Die Zwillinge</div>
+  <div class="map-tooltip">Flüsse. Entspringen aus dem Dümpel, fliessen östlich und westlich an den gleichnamigen Farmen vorbei.</div>
+</div>
+<div class="map-marker" style="left:54.5%;top:40.5%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Der Dümpel</div>
+  <div class="map-tooltip">See. Keiner weiss wieso er Dümpel heisst - vermutlich aufgrund seiner Dümpelhaftigkeit.</div>
+</div>
+<div class="map-marker" style="left:51.9%;top:54.7%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Gasthaus des Lichts</div>
+  <div class="map-tooltip">Gasthaus. Treffpunkt von Reisenden, Inquisitoren, Luminari und anderem Klientel - Gerüchteküche.</div>
+</div>
+<div class="map-marker" style="left:50.2%;top:71.2%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Schwertwall</div>
+  <div class="map-tooltip">Dorf. Truppenhafen von Atherion.</div>
+</div>
+<div class="map-marker" style="left:45.2%;top:62.4%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Glanzflut</div>
+  <div class="map-tooltip">Fluss. Trägt seinen Namen aufgrund der Schönheit des Flusses und der Landschaft drumherum.</div>
+</div>
+<div class="map-marker m-capital" style="left:38.8%;top:49.4%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Reinheim</div>
+  <div class="map-tooltip">Hauptstadt von Atherion. Sitz und Hauptquartier von Hochprälat Valerian Lichtschwert.</div>
+</div>
+<div class="map-marker" style="left:33%;top:49.1%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Reinwasser</div>
+  <div class="map-tooltip">Fluss. Trägt den Namen aufgrund seines äusserst klaren und sauberen Wassers.</div>
+</div>
+<div class="map-marker" style="left:26.3%;top:62.8%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Kettenbruch</div>
+  <div class="map-tooltip">Mittelgrosses Dorf. Handelshafen von Atherion.</div>
+</div>
+<div class="map-marker" style="left:23.6%;top:67.4%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Krähennest</div>
+  <div class="map-tooltip">Grosses Dorf. Haupthafen des Piratenreichs Salzklinge.</div>
+</div>
+<div class="map-marker" style="left:24.9%;top:77.2%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Salzstrom</div>
+  <div class="map-tooltip">Fluss. Trägt Namen einer Quelle welche in einer Salzmine entspringt.</div>
+</div>
+<div class="map-marker" style="left:22.9%;top:81.1%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Nebelhain</div>
+  <div class="map-tooltip">Wald. Oft im Nebel.</div>
+</div>
+<div class="map-marker" style="left:18.7%;top:80.8%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Schwarzfluss</div>
+  <div class="map-tooltip">Fluss. Namen aufgrund des dunklen Gesteins im Flussbett.</div>
+</div>
+<div class="map-marker m-capital" style="left:24.2%;top:86.7%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Piratenfels</div>
+  <div class="map-tooltip">Hauptstadt von Salzklinge. Sitz und Hauptquartier der Piratenkönigin Calypsa Nebelklinge.</div>
+</div>
+<div class="map-marker" style="left:12.8%;top:92.2%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Salzklamm</div>
+  <div class="map-tooltip">Klamm. Eine Klamm halt.</div>
+</div>
+<div class="map-marker m-feared" style="left:9.5%;top:89.3%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Klingental</div>
+  <div class="map-tooltip">Dorf. Versteck im Gebirge, von unzähligen Minen umgeben, gefährlich für Fremde.</div>
+</div>
+<div class="map-marker" style="left:8%;top:92.9%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Haizahn Gebirge</div>
+  <div class="map-tooltip">Hohes Gebirge, durchzieht Salzklinge von Ost nach Westen.</div>
+</div>
+<div class="map-marker" style="left:65.3%;top:5.3%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Die Flüsterer</div>
+  <div class="map-tooltip">Gebirge. Bei Vollmond sind die Stimmen verstorbener Magier zu hören (kann nur von Personen wahrgenommen werden, die Magie beherrschen).</div>
+</div>
+<div class="map-marker" style="left:42.4%;top:86.1%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Piratenbucht</div>
+  <div class="map-tooltip">Meer im Süden. Austragungsort grosser Seeschlachten.</div>
+</div>
+<div class="map-marker" style="left:11.2%;top:48%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Die weite Leere</div>
+  <div class="map-tooltip">Meer im Westen. Niemand segelte je bis an ihr Ende.</div>
+</div>
+<div class="map-marker" style="left:45.4%;top:18.7%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Nordmeer</div>
+  <div class="map-tooltip">Meer im Norden. Stürmisch und kalt.</div>
+</div>
+<div class="map-marker" style="left:28.3%;top:44.4%;">
+  <div class="marker-dot"></div>
+  <div class="marker-lbl">Reinfels</div>
+  <div class="map-tooltip">Gebirge. Besonders reines Gestein.</div>
+</div>
+
+
+  </div><!-- /map-stage --></div><!-- /map-frame -->
+
+  <div class="map-legend">
+    <h4>KARTENLEGENDE</h4>
+    <div class="legend-items">
+      <div class="legend-item"><div class="leg-dot leg-start"></div>Euer aktueller Standort</div>
+      <div class="legend-item"><div class="leg-dot leg-capital"></div>Hauptstadt / Wichtige Stadt</div>
+      <div class="legend-item"><div class="leg-dot leg-known"></div>Bekannter Ort</div>
+      <div class="legend-item"><div class="leg-dot leg-feared"></div>Gefürchteter Ort</div>
+    </div>
+    <p style="margin-top:.8rem;font-style:italic;font-size:.85rem;color:var(--ink-4);">
+      Hauptstädte und markante Orte sind beschriftet. Für alle übrigen Orte (Dörfer, Flüsse, Seen, Gebirge)
+      auf den Punkt zeigen oder tippen — Name und Beschreibung erscheinen dann.
+    </p>
+  </div>
+
+
+</div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  FLUCH DES STERNENFALLS &nbsp;·&nbsp; KAMPAGNEN-KOMPENDIUM &nbsp;·&nbsp; VERSION 2.0 &nbsp;·&nbsp; STUFE 1
+  <div style="margin-top:.9rem;">
+    <button class="dm-key-btn" onclick="document.getElementById('unlockBg').classList.add('show');setTimeout(function(){document.getElementById('unlockInput').focus();},50);">🔑 DM-Freischaltung</button>
+  </div>
+</footer>
+
+<div class="unlock-modal-bg" id="unlockBg">
+  <div class="unlock-modal">
+    <h3>DM-Freischaltung</h3>
+    <p>Code eingeben, um die nächste Phase für die Spieler sichtbar zu machen.</p>
+    <input type="text" id="unlockInput" placeholder="Code …" autocomplete="off" spellcheck="false"
+           onkeydown="if(event.key==='Enter')tryUnlock();">
+    <div class="unlock-status" id="unlockStatus"></div>
+    <div class="unlock-actions">
+      <button class="ub-cancel" onclick="document.getElementById('unlockBg').classList.remove('show');document.getElementById('unlockStatus').textContent='';">Schliessen</button>
+      <button class="ub-go" onclick="tryUnlock();">Freischalten</button>
+    </div>
+    <div style="margin-top:.9rem;border-top:1px solid var(--border-lt);padding-top:.7rem;">
+      <button class="dm-key-btn" onclick="resetUnlocks();">↺ Alle Phasen zurücksetzen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+(function() {
+
+  // ── Navigation ──
+  var btns = document.querySelectorAll('.nav-btn');
+  var sections = document.querySelectorAll('.content-section');
+
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id = this.getAttribute('data-section');
+      sections.forEach(function(s) { s.classList.remove('active'); });
+      var target = document.getElementById(id);
+      if (target) target.classList.add('active');
+      btns.forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      // Reset search
+      var si = document.getElementById('searchInput');
+      if (si) { si.value = ''; }
+      document.querySelectorAll('.searchable').forEach(function(c) { c.style.display = ''; });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }.bind(btn));
+  });
+
+  // ── Search ──
+  var searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      var q = this.value.toLowerCase().trim();
+      var items = document.querySelectorAll('.searchable');
+      items.forEach(function(item) {
+        var text = (item.getAttribute('data-search') || item.textContent || '').toLowerCase();
+        item.style.display = (!q || text.includes(q)) ? '' : 'none';
+      });
+    });
+  }
+
+  // ── Keyboard shortcut: / to focus search ──
+  document.addEventListener('keydown', function(e) {
+    if (e.key === '/' && document.activeElement !== searchInput) {
+      e.preventDefault();
+      if (searchInput) searchInput.focus();
+    }
+    if (e.key === 'Escape' && searchInput) {
+      searchInput.value = '';
+      searchInput.dispatchEvent(new Event('input'));
+      searchInput.blur();
+    }
+  });
+
+})();
+
+/* ══════════ PHASE UNLOCK (global) ══════════ */
+var PHASE_CODES = { 'nebelnacht': 1, 'aschenkind': 2 };
+var PHASE_NAMES = { 1: 'Phase 1 — Ankunft in Holzhein', 2: 'Phase 2 — Die Geister am Waldrand' };
+
+function applyPhase(p) {
+  document.querySelectorAll('.p' + p).forEach(function(el){ el.classList.remove('gated'); });
+  document.querySelectorAll('.p' + p + 'n').forEach(function(el){ el.classList.add('gone'); });
+}
+function getUnlocked() {
+  try { var s = localStorage.getItem('atherion_phases'); return s ? JSON.parse(s) : []; }
+  catch(e){ return window._phases || []; }
+}
+function setUnlocked(arr) {
+  window._phases = arr;
+  try { localStorage.setItem('atherion_phases', JSON.stringify(arr)); } catch(e){}
+}
+function tryUnlock() {
+  var code = (document.getElementById('unlockInput').value || '').trim().toLowerCase();
+  var st = document.getElementById('unlockStatus');
+  if (PHASE_CODES.hasOwnProperty(code)) {
+    var p = PHASE_CODES[code];
+    var arr = getUnlocked();
+    if (arr.indexOf(p) === -1) arr.push(p);
+    setUnlocked(arr);
+    applyPhase(p);
+    st.className = 'unlock-status ok';
+    st.textContent = '✓ ' + PHASE_NAMES[p] + ' freigeschaltet.';
+    document.getElementById('unlockInput').value = '';
+  } else {
+    st.className = 'unlock-status err';
+    st.textContent = '✗ Unbekannter Code.';
+  }
+}
+function resetUnlocks() {
+  setUnlocked([]);
+  document.querySelectorAll('.gated-restore').forEach(function(el){ el.classList.add('gated'); });
+  document.getElementById('unlockStatus').className = 'unlock-status';
+  document.getElementById('unlockStatus').textContent = 'Zurückgesetzt — Seite neu laden für Spieler-Ansicht.';
+  setTimeout(function(){ location.reload(); }, 900);
+}
+(function initPhases(){
+  // tag gated elements so reset can re-hide them
+  document.querySelectorAll('.p1,.p2').forEach(function(el){ el.classList.add('gated-restore'); });
+  getUnlocked().forEach(function(p){ applyPhase(p); });
+})();
+
+/* ══════════ ZOOMABLE MAP (global) ══════════ */
+(function initMap(){
+  var frame = document.getElementById('mapFrame');
+  var stage = document.getElementById('mapStage');
+  if (!frame || !stage) return;
+  var img = stage.querySelector('img');
+  var zoom = 1, panX = 0, panY = 0;
+
+  function apply(){
+    stage.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + zoom + ')';
+    var lbl = document.getElementById('mapZlbl'); if (lbl) lbl.textContent = Math.round(zoom*100) + '%';
+    stage.querySelectorAll('.map-marker').forEach(function(m){
+      m.style.transform = 'translate(-50%,-50%) scale(' + (1/zoom) + ')';
+    });
+  }
+  function clamp(){
+    var fw = frame.clientWidth, fh = frame.clientHeight;
+    var sw = fw*zoom, sh = (img.clientHeight||fh)*zoom;
+    panX = Math.min(0, Math.max(fw - sw, panX));
+    panY = Math.min(0, Math.max(fh - sh, panY));
+  }
+  window.mapZoom = function(f){ zoom = Math.min(6, Math.max(1, zoom*f)); clamp(); apply(); };
+  window.mapReset = function(){ zoom = 1; panX = 0; panY = 0; apply(); };
+
+  frame.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var rect = frame.getBoundingClientRect();
+    var cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+    var oz = zoom;
+    zoom = Math.min(6, Math.max(1, zoom*(e.deltaY < 0 ? 1.15 : 0.87)));
+    panX = cx - (cx - panX)*(zoom/oz);
+    panY = cy - (cy - panY)*(zoom/oz);
+    clamp(); apply();
+  }, { passive:false });
+
+  var drag=false, sx=0, sy=0, spx=0, spy=0;
+  frame.addEventListener('pointerdown', function(e){
+    if (e.target.closest('.map-marker')) return;
+    drag=true; sx=e.clientX; sy=e.clientY; spx=panX; spy=panY;
+    frame.classList.add('grabbing'); frame.setPointerCapture(e.pointerId);
+  });
+  frame.addEventListener('pointermove', function(e){
+    if(!drag) return;
+    panX = spx + (e.clientX - sx); panY = spy + (e.clientY - sy); clamp(); apply();
+  });
+  frame.addEventListener('pointerup', function(){ drag=false; frame.classList.remove('grabbing'); });
+
+  if (img.complete) apply(); else img.addEventListener('load', apply);
+
+  // tap/click a marker to toggle its label + tooltip (mobile-friendly)
+  stage.querySelectorAll('.map-marker').forEach(function(mk){
+    mk.addEventListener('click', function(e){
+      e.stopPropagation();
+      var wasActive = mk.classList.contains('active');
+      stage.querySelectorAll('.map-marker.active').forEach(function(o){ o.classList.remove('active'); });
+      if (!wasActive) mk.classList.add('active');
+    });
+  });
+  frame.addEventListener('pointerdown', function(e){
+    if (e.target.closest('.map-marker')) return;
+    stage.querySelectorAll('.map-marker.active').forEach(function(o){ o.classList.remove('active'); });
+  });
+})();
+
+/* ══════════ VERFOLGUNGSGRAD COUNTER (global) ══════════ */
+(function initVf(){
+  var LEVELS = [
+    { n:'Unauffällig',      d:'Keine bekannten Vorkommnisse. Ihr seid frei.',        c:'#3E7A3E' },
+    { n:'Erste Gerüchte',   d:'Flüsterer haben etwas bemerkt.',                       c:'#8AA32A' },
+    { n:'Verdächtigung',    d:'Ein Wächter beobachtet euch.',                         c:'#C49A22' },
+    { n:'Inquisition mobil',d:'Ein Inquisitor ist in der Gegend.',                    c:'#C4701A' },
+    { n:'Direktes Verhör',  d:'Ihr wurdet gemeldet. Man sucht euch.',                 c:'#A83418' },
+    { n:'Seraphine!',       d:'Seraphine Aschenherz leitet die Jagd persönlich. Flieht oder verhandelt — sofort.', c:'#7A1818' }
+  ];
+  var cur = 0;
+  try { var s = localStorage.getItem('atherion_vf'); if (s!==null) cur = Math.max(0, Math.min(5, parseInt(s,10)||0)); } catch(e){}
+
+  function render(){
+    var big = document.getElementById('vfBig'); if(!big) return;
+    var L = LEVELS[cur];
+    big.textContent = cur; big.style.color = L.c;
+    document.getElementById('vfName').textContent = L.n;
+    document.getElementById('vfName').style.color = (cur>=4 ? L.c : 'var(--ink-1)');
+    document.getElementById('vfDesc').textContent = L.d;
+    var tr = document.getElementById('vfTracker');
+    if (tr) { tr.style.borderColor = (cur>=3 ? L.c : 'var(--border)'); tr.style.boxShadow = (cur>=5 ? '0 0 0 3px rgba(122,24,24,.35), '+'4px 6px 16px rgba(28,10,2,.26)' : 'var(--sh-md)'); }
+    var sc = document.getElementById('vfScale');
+    if (sc) {
+      sc.innerHTML = '';
+      for (var i=0;i<6;i++){
+        var seg = document.createElement('div'); seg.className='seg';
+        if (i<=cur) seg.style.background = LEVELS[i].c;
+        sc.appendChild(seg);
+      }
+    }
+    try { localStorage.setItem('atherion_vf', String(cur)); } catch(e){}
+  }
+  window.vfStep = function(delta){ cur = Math.max(0, Math.min(5, cur+delta)); render(); };
+  window.vfSet  = function(v){ cur = Math.max(0, Math.min(5, v)); render(); };
+  render();
+})();
+
+</script>
+</body>
+</html>
