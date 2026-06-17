@@ -999,6 +999,7 @@ function inject(id, html) {
 function realmFilter(r) {
   var any = false;
   document.querySelectorAll('#app [data-realm]').forEach(function(c) {
+    if (c.classList.contains('gated')) return; // Gating hat Vorrang
     var show = (r === 'all' || c.dataset.realm === r);
     c.style.display = show ? '' : 'none';
     if (show) any = true;
