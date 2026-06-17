@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluch des Sternenfalls &#8212; Kompendium</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #EDE0B5;
+  --bg-card:      #F6EED4;
+  --bg-card-alt:  #EDE3C2;
+  --ink-1:        #1C0A02;
+  --ink-2:        #3D1C08;
+  --ink-3:        #6B3A1F;
+  --ink-4:        #9B6535;
+  --gold:         #A07818;
+  --gold-lt:      #C49A22;
+  --gold-pale:    #E8D090;
+  --red:          #7A1818;
+  --green:        #285028;
+  --purple:       #3A2858;
+  --border:       #9B7840;
+  --border-lt:    #C4A870;
+  --nav-bg:       #2C1505;
+  --nav-bg2:      #4A2510;
+  --sh-sm:        2px 3px 8px rgba(28,10,2,.20);
+  --sh-md:        4px 6px 16px rgba(28,10,2,.26);
+  --sh-lg:        8px 14px 28px rgba(28,10,2,.32);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--ink-2);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 18% 12%, rgba(242,218,152,.45) 0%, transparent 55%),
+    radial-gradient(ellipse at 82% 88%, rgba(196,152,70,.3)  0%, transparent 52%),
+    radial-gradient(ellipse at 52% 50%, rgba(255,248,210,.18) 0%, transparent 68%);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.site-header {
+  background: linear-gradient(175deg, #1A0802 0%, #3D1C08 60%, #5C3218 100%);
+  color: #F2E5C8;
+  padding: 2.8rem 1.5rem 2.2rem;
+  text-align: center;
+  border-bottom: 3px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 25% 50%, rgba(180,120,30,.18) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 50%, rgba(180,120,30,.14) 0%, transparent 60%);
+  pointer-events: none;
+}
+.header-ornament {
+  font-size: 1.1rem;
+  letter-spacing: .5em;
+  color: var(--gold-lt);
+  margin-bottom: .8rem;
+  position: relative;
+}
+.site-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.6rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: #F5EDD0;
+  text-shadow: 0 2px 12px rgba(180,120,30,.5), 0 0 30px rgba(196,163,50,.2);
+  position: relative;
+  margin-bottom: .45rem;
+}
+.site-sub {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--gold-pale);
+  letter-spacing: .04em;
+  position: relative;
+}
+
+/* ── NAV ── */
+.main-nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: linear-gradient(180deg, var(--nav-bg) 0%, var(--nav-bg2) 100%);
+  border-bottom: 2px solid var(--border);
+  box-shadow: 0 4px 14px rgba(28,10,2,.38);
+}
+.nav-inner {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 .5rem;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-btn {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-top: 3px;
+  color: #B8956A;
+  font-family: 'Cinzel', serif;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  padding: .8rem 1.1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .18s, border-color .18s;
+  display: flex;
+  align-items: center;
+  gap: .38rem;
+}
+.nav-btn .nav-icon { font-size: 1rem; }
+.nav-btn:hover { color: #F5EDD0; border-bottom-color: rgba(196,163,50,.5); }
+.nav-btn.active { color: #F5EDD0; border-bottom-color: var(--gold-lt); }
+
+/* ── SEARCH ── */
+.search-wrap {
+  max-width: 620px;
+  margin: 1.6rem auto;
+  padding: 0 1rem;
+  position: relative;
+}
+.search-wrap input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: .7rem 1rem .7rem 2.8rem;
+  font-family: 'EB Garamond', serif;
+  font-size: 1rem;
+  color: var(--ink-2);
+  box-shadow: var(--sh-sm);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.search-wrap input:focus { border-color: var(--gold); box-shadow: var(--sh-md); }
+.search-wrap input::placeholder { color: var(--ink-4); font-style: italic; }
+.search-icon {
+  position: absolute;
+  left: 1.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  color: var(--ink-4);
+  pointer-events: none;
+}
+
+/* ── CONTENT ── */
+.main-content { padding: 0 1rem 4rem; }
+/* .content-section (legacy) */
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+.section-inner { max-width: 1100px; margin: 0 auto; padding-top: 2.2rem; }
+
+/* ── SECTION HEADING ── */
+.sec-heading {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-lt);
+}
+.sec-heading h2 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  color: var(--ink-1);
+  letter-spacing: .08em;
+  margin-bottom: .5rem;
+}
+.sec-heading .orn {
+  color: var(--gold);
+  font-size: 1.1rem;
+  letter-spacing: .4em;
+}
+.sec-heading p {
+  font-style: italic;
+  color: var(--ink-4);
+  margin-top: .4rem;
+}
+
+/* ── CARDS ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.card-grid-wide {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 1.5rem;
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1.5rem;
+  box-shadow: var(--sh-sm);
+  position: relative;
+  transition: transform .2s, box-shadow .2s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.card::before {
+  content: '';
+  position: absolute;
+  top: 5px; right: 5px; bottom: 5px; left: 5px;
+  border: 1px solid rgba(196,168,112,.35);
+  border-radius: 1px;
+  pointer-events: none;
+}
+.card.locked {
+  background: #E8DDB8;
+  filter: grayscale(.35);
+}
+.card.locked .card-body { filter: blur(4px); user-select: none; pointer-events: none; }
+.locked-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif; font-size: .85rem;
+  color: var(--ink-4); letter-spacing: .15em;
+  z-index: 2;
+}
+.locked-overlay span { background: var(--bg-card); padding: .3rem .8rem; border: 1px solid var(--border-lt); border-radius: 1px; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: .18rem .6rem;
+  border-radius: 1px;
+  margin-bottom: .7rem;
+}
+.badge-entdeckt  { background: var(--green);  color: #F5EDD0; }
+.badge-bekannt   { background: var(--ink-3);  color: #F5EDD0; }
+.badge-gerücht   { background: #5A5040;       color: #C8BCA0; }
+.badge-gefürchtet{ background: var(--red);    color: #F5EDD0; }
+.badge-inquisition{ background: var(--red);   color: #F5EDD0; }
+.badge-geister   { background: var(--purple); color: #D0CCE8; }
+.badge-bald      { background: var(--gold);   color: #F5EDD0; }
+.badge-hauptstadt{ background: var(--ink-2);  color: #F5EDD0; }
+.badge-dorf      { background: #4A3820;       color: #D4C098; }
+.badge-ruine     { background: #3A3020;       color: #C0B080; }
+
+/* ── NPC CARD ── */
+.npc-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .12rem;
+  line-height: 1.3;
+}
+.npc-title {
+  font-style: italic;
+  color: var(--ink-4);
+  font-size: .92rem;
+  margin-bottom: .15rem;
+}
+.npc-location {
+  font-size: .82rem;
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  letter-spacing: .05em;
+  margin-bottom: .8rem;
+}
+.npc-divider {
+  border: none;
+  border-top: 1px solid var(--border-lt);
+  margin: .8rem 0;
+}
+.npc-desc { font-size: .95rem; color: var(--ink-3); line-height: 1.7; }
+.npc-quote {
+  margin-top: .9rem;
+  padding: .6rem .9rem;
+  background: rgba(160,120,24,.08);
+  border-left: 3px solid var(--gold);
+  font-style: italic;
+  font-size: .9rem;
+  color: var(--ink-3);
+}
+
+/* ── ORE / LOCATION CARD ── */
+.ort-type {
+  font-family: 'Cinzel', serif;
+  font-size: .72rem;
+  color: var(--gold);
+  letter-spacing: .1em;
+  margin-bottom: .5rem;
+  text-transform: uppercase;
+}
+.ort-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .6rem;
+}
+.ort-meta {
+  font-size: .85rem;
+  color: var(--ink-4);
+  font-style: italic;
+  margin-bottom: .8rem;
+}
+.ort-desc { font-size: .95rem; color: var(--ink-3); line-height: 1.7; }
+.ort-list {
+  list-style: none;
+  margin-top: .8rem;
+  padding-top: .8rem;
+  border-top: 1px solid var(--border-lt);
+}
+.ort-list li {
+  padding: .2rem 0 .2rem 1.2rem;
+  font-size: .9rem;
+  color: var(--ink-3);
+  position: relative;
+}
+.ort-list li::before { content: '✦'; position: absolute; left: 0; color: var(--gold); font-size: .6rem; top: .45rem; }
+
+/* ── FACTIONS ── */
+.faction-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1.75rem;
+  box-shadow: var(--sh-sm);
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.faction-card::before {
+  content: '';
+  position: absolute;
+  top: 5px; right: 5px; bottom: 5px; left: 5px;
+  border: 1px solid rgba(196,168,112,.3);
+  pointer-events: none;
+}
+.faction-card.faction-lum { border-left: 5px solid var(--gold-lt); }
+.faction-card.faction-inq { border-left: 5px solid var(--red); }
+.faction-card.faction-ber { border-left: 5px solid var(--purple); }
+.faction-card.faction-neb { border-left: 5px solid #5A5A5A; }
+.faction-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+.faction-symbol {
+  font-size: 2rem; line-height: 1;
+  width: 2.5rem; text-align: center; flex-shrink: 0;
+}
+.faction-info { flex: 1; }
+.faction-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .15rem;
+}
+.faction-tagline { font-style: italic; color: var(--ink-4); font-size: .9rem; }
+.faction-body { color: var(--ink-3); font-size: .95rem; line-height: 1.75; }
+.faction-body strong { font-family: 'Cinzel', serif; font-size: .8rem; letter-spacing: .06em; color: var(--ink-2); }
+.faction-body p + p { margin-top: .6rem; }
+.faction-note {
+  margin-top: .9rem;
+  padding: .6rem .9rem;
+  background: rgba(196,168,112,.12);
+  border: 1px dashed var(--border-lt);
+  font-style: italic;
+  font-size: .88rem;
+  color: var(--ink-4);
+}
+
+/* ── MERCHANTS ── */
+.merchant-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1.75rem;
+  box-shadow: var(--sh-sm);
+  margin-bottom: 2rem;
+}
+.merchant-card::before {
+  content: '';
+  position: absolute;
+  top: 5px; right: 5px; bottom: 5px; left: 5px;
+  border: 1px solid rgba(196,168,112,.3);
+  pointer-events: none;
+}
+.merchant-card { position: relative; }
+.merchant-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .2rem;
+}
+.merchant-keeper { font-style: italic; color: var(--ink-4); font-size: .9rem; margin-bottom: 1.2rem; }
+.price-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.price-table th {
+  font-family: 'Cinzel', serif;
+  font-size: .72rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  padding: .4rem .7rem;
+  border-bottom: 2px solid var(--border-lt);
+  text-align: left;
+}
+.price-table th:last-child { text-align: right; }
+.price-table td {
+  padding: .5rem .7rem;
+  color: var(--ink-3);
+  border-bottom: 1px solid rgba(196,168,112,.3);
+}
+.price-table td:last-child { text-align: right; font-family: 'Cinzel', serif; font-size: .85rem; color: var(--gold); }
+.price-table tr:hover td { background: rgba(196,168,112,.1); }
+.price-section-head td {
+  font-family: 'Cinzel', serif;
+  font-size: .72rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding-top: 1rem;
+  border-bottom: 1px solid var(--border-lt);
+}
+.merchant-note {
+  margin-top: 1rem;
+  font-style: italic;
+  font-size: .88rem;
+  color: var(--ink-4);
+  border-top: 1px solid var(--border-lt);
+  padding-top: .8rem;
+}
+
+/* ── LORE ── */
+.lore-entry {
+  max-width: 75ch;
+  margin: 0 auto 2.2rem;
+  padding: 1.8rem 2rem 1.8rem 2.5rem;
+  background: var(--bg-card);
+  border-left: 4px solid var(--border);
+  border-right: 1px solid var(--border-lt);
+  border-top: 1px solid var(--border-lt);
+  border-bottom: 1px solid var(--border-lt);
+  box-shadow: var(--sh-sm);
+}
+.lore-entry h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .7rem;
+  padding-bottom: .5rem;
+  border-bottom: 1px solid var(--border-lt);
+  letter-spacing: .04em;
+}
+.lore-entry p { font-size: .98rem; color: var(--ink-3); line-height: 1.85; }
+.lore-entry p + p { margin-top: .7rem; }
+.lore-initial {
+  float: left;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3.2rem;
+  line-height: .9;
+  color: var(--gold);
+  margin-right: .2rem;
+  margin-top: .1rem;
+}
+
+/* ── CHRONIK ── */
+.welcome-block {
+  max-width: 70ch;
+  margin: 0 auto 3rem;
+  text-align: center;
+  padding: 2.2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  box-shadow: var(--sh-md);
+  position: relative;
+}
+.welcome-block::before {
+  content: '';
+  position: absolute; top: 6px; right: 6px; bottom: 6px; left: 6px;
+  border: 1px solid rgba(196,168,112,.4);
+  pointer-events: none;
+}
+.welcome-block h3 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.3rem;
+  color: var(--ink-1);
+  margin-bottom: 1rem;
+}
+.welcome-block p { font-style: italic; color: var(--ink-3); font-size: 1.02rem; line-height: 1.85; }
+.session-list { max-width: 70ch; margin: 0 auto; }
+.session-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--sh-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.session-item.upcoming { border-left: 4px solid var(--gold); opacity: .85; }
+.session-info h4 {
+  font-family: 'Cinzel', serif;
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: .2rem;
+}
+.session-info p { font-size: .88rem; color: var(--ink-4); font-style: italic; }
+
+/* ── PARTY ── */
+.party-grid { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin: 2rem auto; max-width: 900px; }
+.party-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1rem 1.3rem;
+  box-shadow: var(--sh-sm);
+  min-width: 160px;
+  text-align: center;
+  flex: 1;
+  max-width: 200px;
+}
+.party-name { font-family: 'Cinzel', serif; font-size: .95rem; font-weight: 700; color: var(--ink-1); margin-bottom: .25rem; }
+.party-class { font-size: .82rem; color: var(--gold); font-style: italic; }
+.party-race { font-size: .78rem; color: var(--ink-4); }
+.party-icon { font-size: 1.8rem; margin-bottom: .4rem; }
+
+/* ── MAP ── */
+.map-wrap { position: relative; display: inline-block; width: 100%; }
+.map-wrap img { width: 100%; height: auto; display: block; border: 3px solid var(--border); box-shadow: var(--sh-lg); }
+.map-marker {
+  position: absolute;
+  /* width:0 + dot centered => translate(-50%,-50%) anchors exactly on the dot,
+     independent of label width (fixes the zoom offset) */
+  width: 0; height: 0;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 5;
+}
+.marker-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--gold-lt);
+  border: 2px solid var(--ink-2);
+  position: absolute;
+  top: -6px; left: -6px;
+  transition: transform .2s;
+}
+.map-marker:hover .marker-dot,
+.map-marker.active .marker-dot { transform: scale(1.4); }
+.map-marker:hover, .map-marker.active { z-index: 30; }
+.marker-dot::after {
+  content: '';
+  position: absolute;
+  top: -5px; left: -5px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(196,163,50,.35);
+  animation: mPulse 2.2s ease-in-out infinite;
+}
+.map-marker.m-start .marker-dot { background: #D04010; border-color: var(--ink-1); width: 16px; height: 16px; top:-8px; left:-8px; }
+.map-marker.m-start .marker-dot::after { top:-6px;left:-6px;width:28px;height:28px;background:rgba(210,70,20,.3); }
+.map-marker.m-capital .marker-dot { background: var(--ink-2); }
+.map-marker.m-feared .marker-dot { background: var(--red); }
+.marker-lbl {
+  position: absolute;
+  top: 9px; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Cinzel', serif;
+  font-size: .55rem;
+  font-weight: 700;
+  color: var(--ink-1);
+  white-space: nowrap;
+  text-align: center;
+  text-shadow: 0 0 5px var(--bg-card), 0 0 5px var(--bg-card), 0 0 5px var(--bg-card);
+  letter-spacing: .05em;
+  display: none;            /* hidden by default to declutter */
+  pointer-events: none;
+}
+/* major sites stay labelled; minor sites reveal on hover/tap */
+.map-marker.m-capital .marker-lbl,
+.map-marker.m-feared .marker-lbl,
+.map-marker.m-start .marker-lbl,
+.map-marker:hover .marker-lbl,
+.map-marker.active .marker-lbl { display: block; }
+.map-marker.m-start .marker-lbl { color: var(--red); font-size: .62rem; top: 11px; }
+.map-tooltip {
+  position: absolute;
+  bottom: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink-1);
+  color: #F5EDD0;
+  font-family: 'EB Garamond', serif;
+  font-size: .82rem;
+  line-height: 1.35;
+  padding: .45rem .7rem;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  width: max-content;
+  max-width: 220px;
+  white-space: normal;
+  text-align: center;
+  display: none;
+  z-index: 40;
+  pointer-events: none;
+  box-shadow: var(--sh-md);
+}
+.map-marker:hover .map-tooltip,
+.map-marker.active .map-tooltip { display: block; }
+.map-legend {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lt);
+  border-radius: 2px;
+  padding: 1.2rem 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow: var(--sh-sm);
+  font-size: .9rem;
+  color: var(--ink-3);
+}
+.map-legend h4 { font-family: 'Cinzel', serif; font-size: .85rem; letter-spacing: .08em; color: var(--ink-2); margin-bottom: .75rem; }
+.legend-items { display: flex; flex-wrap: wrap; gap: .75rem 2rem; }
+.legend-item { display: flex; align-items: center; gap: .4rem; font-size: .85rem; }
+.leg-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--ink-2); flex-shrink: 0; }
+.leg-start { background: #D04010; }
+.leg-capital { background: var(--ink-2); }
+.leg-known { background: var(--gold-lt); }
+.leg-feared { background: var(--red); }
+@keyframes mPulse {
+  0%,100% { opacity:0; transform:scale(.7); }
+  50%      { opacity:1; transform:scale(1.15); }
+}
+
+/* ── FOOTER ── */
+.site-footer {
+  background: var(--nav-bg);
+  color: #8B6535;
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  font-family: 'Cinzel', serif;
+  font-size: .72rem;
+  letter-spacing: .1em;
+  border-top: 2px solid var(--border);
+}
+
+/* ── DIVIDER ── */
+.orn-divider {
+  text-align: center;
+  color: var(--gold);
+  letter-spacing: .5em;
+  margin: 2rem 0;
+  font-size: .9rem;
+}
+
+/* ── PHASE GATING ── */
+.gated { display: none !important; }
+.gone  { display: none !important; }
+.lock-notice {
+  grid-column: 1 / -1;
+  text-align: center;
+  background: rgba(196,168,112,.14);
+  border: 1px dashed var(--border-lt);
+  border-radius: 2px;
+  padding: 1.1rem 1.4rem;
+  color: var(--ink-4);
+  font-style: italic;
+  font-size: .95rem;
+  margin: .5rem 0;
+}
+.lock-notice .lock-ic { font-size: 1.2rem; display:block; margin-bottom:.3rem; }
+
+/* ── DM UNLOCK ── */
+.dm-key-btn {
+  background: none; border: 1px solid var(--border);
+  color: #8B6535; font-family: 'Cinzel', serif; font-size: .68rem;
+  letter-spacing: .1em; padding: .35rem .8rem; border-radius: 2px;
+  cursor: pointer; transition: color .2s, border-color .2s;
+}
+.dm-key-btn:hover { color: var(--gold-lt); border-color: var(--gold); }
+.unlock-modal-bg {
+  position: fixed; inset: 0; background: rgba(28,10,2,.65);
+  display: none; align-items: center; justify-content: center; z-index: 500; padding: 1rem;
+}
+.unlock-modal-bg.show { display: flex; }
+.unlock-modal {
+  background: var(--bg-card); border: 2px solid var(--border); border-radius: 3px;
+  padding: 1.8rem; max-width: 380px; width: 100%; text-align: center;
+  box-shadow: 0 12px 40px rgba(0,0,0,.4);
+}
+.unlock-modal h3 { font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--ink-1); margin-bottom: .4rem; }
+.unlock-modal p { font-size: .9rem; color: var(--ink-4); font-style: italic; margin-bottom: 1rem; }
+.unlock-modal input {
+  width: 100%; font-family: 'EB Garamond', serif; font-size: 1rem;
+  padding: .6rem .8rem; border: 1px solid var(--border); border-radius: 2px;
+  background: #FBF6E5; color: var(--ink-1); text-align: center; letter-spacing: .05em;
+}
+.unlock-actions { display: flex; gap: .6rem; margin-top: 1rem; }
+.unlock-actions button {
+  flex: 1; font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .05em;
+  padding: .55rem; border-radius: 2px; cursor: pointer; border: 1px solid var(--border);
+}
+.unlock-actions .ub-go { background: var(--gold); color: #F5EDD0; }
+.unlock-actions .ub-cancel { background: var(--bg-card-alt); color: var(--ink-2); }
+.unlock-status { margin-top: .8rem; font-size: .82rem; min-height: 1.2em; }
+.unlock-status.ok  { color: var(--green); }
+.unlock-status.err { color: var(--red); }
+.phase-badge {
+  display:inline-block; font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.1em;
+  background: var(--green); color:#F5EDD0; padding:.12rem .5rem; border-radius:1px; margin-left:.4rem;
+}
+
+/* ── ZOOM MAP ── */
+.map-toolbar { display:flex; gap:.5rem; align-items:center; margin-bottom:.8rem; flex-wrap:wrap; }
+.map-toolbar button {
+  font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.05em;
+  background: var(--ink-2); color:#F5EDD0; border:1px solid var(--border);
+  padding:.45rem .9rem; border-radius:2px; cursor:pointer;
+}
+.map-toolbar button:hover { background: var(--ink-3); }
+.map-toolbar .zlbl { font-family:'Cinzel',serif; font-size:.75rem; color:var(--ink-3); min-width:48px; text-align:center; }
+.map-toolbar .hint { font-style:italic; font-size:.82rem; color:var(--ink-4); margin-left:auto; }
+.map-frame {
+  position: relative; width: 100%; overflow: hidden;
+  border: 3px solid var(--border); box-shadow: var(--sh-lg);
+  background: #1A0802; border-radius: 2px; cursor: grab; touch-action: none;
+}
+.map-frame.grabbing { cursor: grabbing; }
+.map-stage { position: relative; transform-origin: 0 0; }
+.map-stage img { width:100%; height:auto; display:block; pointer-events:none; user-select:none; }
+
+/* full legend table */
+.legend-full { margin-top: 1.2rem; }
+.legend-toggle {
+  font-family:'Cinzel',serif; font-size:.78rem; letter-spacing:.06em;
+  background: var(--bg-card); border:1px solid var(--border-lt); color:var(--ink-2);
+  padding:.5rem 1rem; border-radius:2px; cursor:pointer; width:100%;
+}
+.legend-table { width:100%; border-collapse:collapse; font-size:.85rem; margin-top:.8rem; display:none; }
+.legend-table.show { display: table; }
+.legend-table th { font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-4); text-align:left; padding:.4rem .6rem; border-bottom:2px solid var(--border-lt); }
+.legend-table td { padding:.35rem .6rem; color:var(--ink-3); border-bottom:1px solid rgba(196,168,112,.3); }
+.legend-table td:first-child { font-family:'Cinzel',serif; color:var(--gold); width:2.5rem; }
+.legend-table tr:hover td { background: rgba(196,168,112,.1); }
+
+
+/* ── PORTRAIT EXTERN ── */
+/* Wenn Bilder nicht geladen werden koennen (Datei fehlt), */
+/* zeige ein Parchment-Platzhalter-Feld statt gebrochenem Icon */
+.npc-portrait { background: var(--bg-card-alt); }
+.npc-portrait img, .merchant-portrait img {
+  display: block; min-height: 10px;
+}
+/* ── VERFOLGUNGSGRAD ── */
+.vf-rule {
+  background: rgba(122,24,24,.08); border: 1px solid var(--border-lt);
+  border-left: 4px solid var(--red); border-radius: 2px;
+  padding: 1rem 1.3rem; margin-bottom: 1.6rem; font-size: .95rem; color: var(--ink-2);
+}
+.vf-rule strong { font-family:'Cinzel',serif; font-size:.82rem; color: var(--red); }
+.vf-tracker {
+  background: var(--bg-card); border: 2px solid var(--border); border-radius: 3px;
+  padding: 1.6rem; text-align: center; box-shadow: var(--sh-md); margin-bottom: 2rem;
+  transition: border-color .3s, box-shadow .3s;
+}
+.vf-current-label { font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color: var(--ink-4); }
+.vf-big {
+  font-family:'Cinzel Decorative',serif; font-size: 4rem; line-height:1; font-weight:700;
+  color: var(--green); margin:.3rem 0; transition: color .3s;
+}
+.vf-name { font-family:'Cinzel',serif; font-size:1.2rem; font-weight:700; color: var(--ink-1); letter-spacing:.04em; }
+.vf-desc { font-style: italic; color: var(--ink-3); font-size:.95rem; margin-top:.3rem; min-height:1.4em; }
+.vf-scale { display:flex; gap:.4rem; justify-content:center; margin:1.2rem 0; }
+.vf-scale .seg { flex:1; max-width:60px; height:10px; border-radius:2px; background: var(--bg-card-alt); border:1px solid var(--border-lt); transition: background .2s; }
+.vf-buttons { display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; margin-top:.5rem; }
+.vf-btn {
+  font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.04em;
+  border:1px solid var(--border); border-radius:2px; padding:.5rem .9rem; cursor:pointer;
+  background: var(--bg-card-alt); color: var(--ink-2); transition: background .15s, transform .1s;
+}
+.vf-btn:active { transform: scale(.96); }
+.vf-btn.up  { background: var(--ink-3); color:#F5EDD0; }
+.vf-btn.dn  { background: var(--green); color:#F5EDD0; }
+.vf-btn.dis { background: var(--gold); color:#F5EDD0; }
+.vf-btn.ent { background: var(--red); color:#F5EDD0; }
+.vf-h { font-family:'Cinzel',serif; font-size:1rem; letter-spacing:.05em; color:var(--ink-2); text-align:center; margin:1.5rem 0 1rem; }
+.vf-levels { display:grid; gap:.5rem; margin-bottom:2rem; }
+.vf-lvl { display:flex; align-items:center; gap:1rem; background:var(--bg-card); border:1px solid var(--border-lt); border-radius:2px; padding:.7rem 1rem; font-size:.9rem; color:var(--ink-3); }
+.vf-lvl .vn { font-family:'Cinzel Decorative',serif; font-size:1.5rem; font-weight:700; width:2rem; text-align:center; flex-shrink:0; }
+.vf-lvl b { font-family:'Cinzel',serif; color:var(--ink-1); font-size:.92rem; }
+.vf-lvl.l0 { border-left:5px solid #3E7A3E; } .vf-lvl.l0 .vn { color:#3E7A3E; }
+.vf-lvl.l1 { border-left:5px solid #8AA32A; } .vf-lvl.l1 .vn { color:#8AA32A; }
+.vf-lvl.l2 { border-left:5px solid #C49A22; } .vf-lvl.l2 .vn { color:#C49A22; }
+.vf-lvl.l3 { border-left:5px solid #C4701A; } .vf-lvl.l3 .vn { color:#C4701A; }
+.vf-lvl.l4 { border-left:5px solid #A83418; } .vf-lvl.l4 .vn { color:#A83418; }
+.vf-lvl.l5 { border-left:5px solid #7A1818; background:rgba(122,24,24,.07); } .vf-lvl.l5 .vn { color:#7A1818; }
+.vf-mods { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-bottom:2rem; }
+.vf-mod-col { background:var(--bg-card); border:1px solid var(--border-lt); border-radius:2px; padding:1rem 1.2rem; }
+.vf-mod-col.up { border-top:4px solid var(--red); }
+.vf-mod-col.dn { border-top:4px solid var(--green); }
+.vf-mod-col h4 { font-family:'Cinzel',serif; font-size:.85rem; letter-spacing:.05em; margin-bottom:.6rem; color:var(--ink-1); }
+.vf-mod-col table { width:100%; border-collapse:collapse; font-size:.88rem; }
+.vf-mod-col td { padding:.32rem .2rem; color:var(--ink-3); border-bottom:1px solid rgba(196,168,112,.3); }
+.vf-mod-col td:last-child { text-align:right; font-family:'Cinzel',serif; font-weight:700; }
+.vf-mod-col.up td:last-child { color: var(--red); }
+.vf-mod-col.dn td:last-child { color: var(--green); }
+.vf-disguise { background:var(--bg-card); border:1px solid var(--border-lt); border-left:4px solid var(--gold); border-radius:2px; padding:1.1rem 1.3rem; margin-bottom:1.5rem; }
+.vf-disguise h4 { font-family:'Cinzel',serif; font-size:.88rem; color:var(--ink-1); margin-bottom:.6rem; }
+.vf-disguise p { font-size:.9rem; color:var(--ink-3); margin-bottom:.4rem; }
+.vf-disguise strong { font-family:'Cinzel',serif; font-size:.78rem; color:var(--ink-2); }
+.vf-foot { text-align:center; font-family:'Cinzel',serif; font-size:.78rem; letter-spacing:.06em; color:var(--gold); padding:1rem 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 620px) {
+  .card-grid, .card-grid-wide { grid-template-columns: 1fr; }
+  .lore-entry { padding: 1.3rem 1.2rem 1.3rem 1.6rem; }
+  .party-card { max-width: 140px; }
+  .vf-mods { grid-template-columns: 1fr; }
+}
+@media (max-width: 400px) {
+  .nav-btn .nav-label { display: none; }
+  .nav-btn { padding: .8rem .8rem; }
+}
+
+
+/* ─── REALM FILTER ─── */
+.realm-filter{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem;}
+.rf{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.06em;
+  padding:.45rem 1rem;border:1px solid var(--border-lt);border-radius:2px;
+  background:var(--bg-card-alt);color:var(--ink-3);cursor:pointer;
+  transition:background .15s,color .15s;}
+.rf:hover{background:var(--bg-card);color:var(--ink-2);}
+.rf.active{color:#F5EDD0;border-color:transparent;}
+.rf[data-r="all"].active{background:var(--ink-2);}
+.rf[data-r="atherion"].active{background:#5C3A1A;}
+.rf[data-r="arkanis"].active{background:#3A2858;}
+.rf[data-r="salzklinge"].active{background:#1A3A40;}
+.rf[data-r="auregant"].active{background:#5A4A10;}
+.realm-empty{grid-column:1/-1;text-align:center;padding:2rem 1rem;
+  color:var(--ink-4);font-style:italic;display:none;}
+
+/* ─── SECTION CONTAINER ─── */
+#app{min-height:60vh;padding:0 1rem 4rem;}
+#app > div{animation:fadeIn .3s ease;}
+
+/* ─── LOADING ─── */
+.app-loading{text-align:center;padding:4rem 1rem;
+  font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:.1em;
+  color:var(--ink-4);}
+
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-ornament">&#10022; &middot; &#10022; &middot; &#10022;</div>
+  <h1 class="site-title">Fluch des Sternenfalls</h1>
+  <p class="site-sub">Kampagnen-Kompendium &nbsp;&middot;&nbsp; Atherion &amp; die vier Reiche</p>
+</header>
+
+<nav class="main-nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" data-s="chronik"><span class="nav-icon">&#10059;</span><span class="nav-label">Chronik</span></button>
+    <button class="nav-btn" data-s="personen"><span class="nav-icon">&#9876;</span><span class="nav-label">Personen</span></button>
+    <button class="nav-btn" data-s="orte"><span class="nav-icon">&#8962;</span><span class="nav-label">Orte</span></button>
+    <button class="nav-btn" data-s="fraktionen"><span class="nav-icon">&#9756;</span><span class="nav-label">Fraktionen</span></button>
+    <button class="nav-btn" data-s="verfolgung"><span class="nav-icon">&#9888;</span><span class="nav-label">Verfolgung</span></button>
+    <button class="nav-btn" data-s="haendler"><span class="nav-icon">&#9672;</span><span class="nav-label">H&auml;ndler</span></button>
+    <button class="nav-btn" data-s="lore"><span class="nav-icon">&#10022;</span><span class="nav-label">Lore</span></button>
+    <button class="nav-btn" data-s="karte"><span class="nav-icon">&#8857;</span><span class="nav-label">Karte</span></button>
+  </div>
+</nav>
+
+<div class="search-wrap">
+  <span class="search-icon">&#8981;</span>
+  <input type="text" id="srch" placeholder="Suchen &hellip;" autocomplete="off" spellcheck="false">
+</div>
+
+<main id="app">
+  <div class="app-loading">&#10022; &nbsp; Laden &nbsp; &#10022;</div>
+</main>
+
+<footer class="site-footer">
+  FLUCH DES STERNENFALLS &nbsp;·&nbsp; KAMPAGNEN-KOMPENDIUM &nbsp;·&nbsp; VERSION 2.0 &nbsp;·&nbsp; STUFE 1
+  <div style="margin-top:.9rem;">
+    <button class="dm-key-btn" onclick="document.getElementById('unlockBg').classList.add('show');setTimeout(function(){document.getElementById('unlockInput').focus();},50);">🔑 DM-Freischaltung</button>
+  </div>
+</footer>
+
+<div class="unlock-modal-bg" id="unlockBg">
+  <div class="unlock-modal">
+    <h3>DM-Freischaltung</h3>
+    <p>Code eingeben, um die nächste Phase für die Spieler sichtbar zu machen.</p>
+    <input type="text" id="unlockInput" placeholder="Code …" autocomplete="off" spellcheck="false"
+           onkeydown="if(event.key==='Enter')tryUnlock();">
+    <div class="unlock-status" id="unlockStatus"></div>
+    <div class="unlock-actions">
+      <button class="ub-cancel" onclick="document.getElementById('unlockBg').classList.remove('show');document.getElementById('unlockStatus').textContent='';">Schliessen</button>
+      <button class="ub-go" onclick="tryUnlock();">Freischalten</button>
+    </div>
+    <div style="margin-top:.9rem;border-top:1px solid var(--border-lt);padding-top:.7rem;">
+      <button class="dm-key-btn" onclick="resetUnlocks();">↺ Alle Phasen zurücksetzen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   STERNENFALL WIKI v4 — Main Script
+   Alle Sections werden per fetch() geladen.
+   Encoding: UTF-8 throughout.
+   ============================================================ */
+
+/* ── BASE URL (funktioniert in Unterverzeichnissen) ── */
+var BASE = (function(){
+  var p = window.location.pathname;
+  return p.substring(0, p.lastIndexOf('/') + 1);
+})();
+
+/* ── CACHE & STATE ── */
+var cache = {};
+var current = 'chronik';
+
+/* ── SECTION LADEN ── */
+function load(id) {
+  current = id;
+  // Nav: active class setzen
+  document.querySelectorAll('.nav-btn').forEach(function(b){
+    b.classList.toggle('active', b.dataset.s === id);
+  });
+  // Suche leeren
+  document.getElementById('srch').value = '';
+
+  if (cache[id]) { inject(id, cache[id]); return; }
+
+  document.getElementById('app').innerHTML =
+    '<div class="app-loading">&#10022; &nbsp; Lade &hellip; &nbsp; &#10022;</div>';
+
+  fetch(BASE + 'sections/' + id + '.html')
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status + ' — ' + BASE + 'sections/' + id + '.html');
+      return r.text();
+    })
+    .then(function(html) {
+      cache[id] = html;
+      if (current === id) inject(id, html);
+    })
+    .catch(function(err) {
+      document.getElementById('app').innerHTML =
+        '<div class="app-loading" style="color:#7A1818;">&#9888; ' +
+        err.message + '<br><small>Serverstart: <code>python3 -m http.server 8080</code></small></div>';
+    });
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+/* ── SECTION EINF&UUML;GEN ── */
+function inject(id, html) {
+  document.getElementById('app').innerHTML = html;
+  // Phase gating
+  (getUnlocked() || []).forEach(applyPhase);
+  // Realm filter
+  document.querySelectorAll('#app .realm-filter').forEach(function(rf) {
+    rf.querySelectorAll('.rf').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        rf.querySelectorAll('.rf').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        realmFilter(btn.dataset.r);
+      });
+    });
+  });
+  // Section-spezifische Inits
+  if (id === 'karte')     { if (typeof initMap === 'function')  initMap();  }
+  if (id === 'verfolgung'){ if (typeof initVf  === 'function')  initVf();   }
+  // Suche re-anwenden falls aktiv
+  var q = document.getElementById('srch').value.trim();
+  if (q) applySearch(q);
+}
+
+/* ── REALM FILTER ── */
+function realmFilter(r) {
+  var any = false;
+  document.querySelectorAll('#app [data-realm]').forEach(function(c) {
+    var show = (r === 'all' || c.dataset.realm === r);
+    c.style.display = show ? '' : 'none';
+    if (show) any = true;
+  });
+  document.querySelectorAll('#app .realm-empty').forEach(function(e) {
+    e.style.display = any ? 'none' : 'block';
+  });
+}
+
+/* ── SUCHE ── */
+function applySearch(q) {
+  q = q.toLowerCase().trim();
+  document.querySelectorAll('#app .searchable').forEach(function(el) {
+    var t = (el.dataset.search || el.textContent || '').toLowerCase();
+    el.style.display = (!q || t.includes(q)) ? '' : 'none';
+  });
+}
+document.getElementById('srch').addEventListener('input', function(){
+  applySearch(this.value);
+});
+document.addEventListener('keydown', function(e) {
+  var s = document.getElementById('srch');
+  if (e.key === '/' && document.activeElement !== s) { e.preventDefault(); s.focus(); }
+  if (e.key === 'Escape') { s.value = ''; applySearch(''); s.blur(); }
+});
+
+/* ── PHASE UNLOCK ── */
+var CODES = { nebelnacht: 1, aschenkind: 2 };
+var PNAMES = { 1: 'Phase 1 — Ankunft in Holzhein', 2: 'Phase 2 — Die Geister am Waldrand' };
+
+function getUnlocked() {
+  try { var v = localStorage.getItem('sfk_phases'); return v ? JSON.parse(v) : []; }
+  catch(e) { return window._ph || []; }
+}
+function setUnlocked(arr) {
+  window._ph = arr;
+  try { localStorage.setItem('sfk_phases', JSON.stringify(arr)); } catch(e) {}
+}
+function applyPhase(p) {
+  document.querySelectorAll('#app .p'+p).forEach(function(el){ el.classList.remove('gated'); });
+  document.querySelectorAll('#app .p'+p+'n').forEach(function(el){ el.classList.add('gone'); });
+}
+function tryUnlock() {
+  var code = (document.getElementById('unlockInput').value || '').trim().toLowerCase();
+  var st = document.getElementById('unlockStatus');
+  if (CODES.hasOwnProperty(code)) {
+    var p = CODES[code]; var arr = getUnlocked();
+    if (arr.indexOf(p) < 0) arr.push(p);
+    setUnlocked(arr); applyPhase(p);
+    st.className = 'unlock-status ok';
+    st.textContent = '\u2713 ' + PNAMES[p] + ' freigeschaltet.';
+    document.getElementById('unlockInput').value = '';
+  } else {
+    st.className = 'unlock-status err';
+    st.textContent = '\u2717 Unbekannter Code.';
+  }
+}
+function resetUnlocks() {
+  setUnlocked([]);
+  document.getElementById('unlockStatus').textContent = 'Zur\u00fcckgesetzt.';
+  setTimeout(function(){ location.reload(); }, 500);
+}
+var mb = document.getElementById('modalBg');
+if (mb) {
+  mb.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('show'); });
+}
+document.addEventListener('keydown', function(e){
+  var mb = document.getElementById('modalBg');
+  if (e.key === 'Escape' && mb) mb.classList.remove('show');
+});
+
+/* ── VF COUNTER ── */
+function initVf() {
+  var LV = [
+    {n:'Unauff\u00e4llig', d:'Keine bekannten Vorkommnisse.', c:'#3E7A3E'},
+    {n:'Erste Ger\u00fcchte', d:'Fl\u00fcsterer haben etwas bemerkt.', c:'#8AA32A'},
+    {n:'Verd\u00e4chtigung', d:'Ein W\u00e4chter beobachtet euch.', c:'#C49A22'},
+    {n:'Inquisition mobil', d:'Ein Inquisitor ist in der Gegend.', c:'#C4701A'},
+    {n:'Direktes Verh\u00f6r', d:'Ihr wurdet gemeldet.', c:'#A83418'},
+    {n:'Seraphine!', d:'Sie leitet die Jagd pers\u00f6nlich.', c:'#7A1818'}
+  ];
+  var cur = 0;
+  try { var s=localStorage.getItem('sfk_vf'); if(s!==null) cur=Math.max(0,Math.min(5,parseInt(s)||0)); } catch(e){}
+  function render() {
+    var big=document.getElementById('vfBig'); if(!big) return;
+    var L=LV[cur];
+    big.textContent=cur; big.style.color=L.c;
+    var nn=document.getElementById('vfName');
+    if(nn){nn.textContent=L.n; nn.style.color=(cur>=4?L.c:'var(--ink-1)');}
+    var dd=document.getElementById('vfDesc'); if(dd) dd.textContent=L.d;
+    var tr=document.getElementById('vfTracker');
+    if(tr) tr.style.borderColor=(cur>=3?L.c:'var(--border)');
+    var sc=document.getElementById('vfScale');
+    if(sc){sc.innerHTML='';for(var i=0;i<6;i++){var sg=document.createElement('div');sg.className='seg';if(i<=cur)sg.style.background=LV[i].c;sc.appendChild(sg);}}
+    try{localStorage.setItem('sfk_vf',String(cur));}catch(e){}
+  }
+  window.vfStep=function(d){cur=Math.max(0,Math.min(5,cur+d));render();};
+  window.vfSet =function(v){cur=Math.max(0,Math.min(5,v));render();};
+  render();
+}
+
+/* ── MAP ZOOM ── */
+function initMap() {
+  var frame=document.getElementById('mapFrame');
+  var stage=document.getElementById('mapStage');
+  if (!frame||!stage) return;
+  var img=stage.querySelector('img');
+  var zoom=1,px=0,py=0;
+  function apply(){
+    stage.style.transform='translate('+px+'px,'+py+'px) scale('+zoom+')';
+    var lbl=document.getElementById('mapZlbl'); if(lbl) lbl.textContent=Math.round(zoom*100)+'%';
+    stage.querySelectorAll('.map-marker').forEach(function(m){
+      m.style.transform='translate(-50%,-50%) scale('+(1/zoom)+')';
+    });
+  }
+  function clamp(){
+    var fw=frame.clientWidth,fh=frame.clientHeight,sw=fw*zoom,sh=(img.clientHeight||fh)*zoom;
+    px=Math.min(0,Math.max(fw-sw,px)); py=Math.min(0,Math.max(fh-sh,py));
+  }
+  window.mapZoom=function(f){zoom=Math.min(6,Math.max(1,zoom*f));clamp();apply();};
+  window.mapReset=function(){zoom=1;px=0;py=0;apply();};
+  frame.addEventListener('wheel',function(e){
+    e.preventDefault();
+    var r=frame.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top,oz=zoom;
+    zoom=Math.min(6,Math.max(1,zoom*(e.deltaY<0?1.15:0.87)));
+    px=cx-(cx-px)*(zoom/oz); py=cy-(cy-py)*(zoom/oz); clamp(); apply();
+  },{passive:false});
+  var drag=false,sx=0,sy=0,spx=0,spy=0;
+  frame.addEventListener('pointerdown',function(e){
+    if(e.target.closest('.map-marker')) return;
+    drag=true;sx=e.clientX;sy=e.clientY;spx=px;spy=py;
+    frame.classList.add('grabbing');frame.setPointerCapture(e.pointerId);
+  });
+  frame.addEventListener('pointermove',function(e){
+    if(!drag) return; px=spx+(e.clientX-sx); py=spy+(e.clientY-sy); clamp(); apply();
+  });
+  frame.addEventListener('pointerup',function(){drag=false;frame.classList.remove('grabbing');});
+  stage.querySelectorAll('.map-marker').forEach(function(mk){
+    mk.addEventListener('click',function(e){
+      e.stopPropagation();
+      var was=mk.classList.contains('active');
+      stage.querySelectorAll('.map-marker.active').forEach(function(o){o.classList.remove('active');});
+      if(!was) mk.classList.add('active');
+    });
+  });
+  frame.addEventListener('pointerdown',function(e){
+    if(e.target.closest('.map-marker')) return;
+    stage.querySelectorAll('.map-marker.active').forEach(function(o){o.classList.remove('active');});
+  });
+  if(img.complete) apply(); else img.addEventListener('load',apply);
+}
+
+/* ── PREFETCH ── */
+function prefetch() {
+  ['personen','orte','fraktionen','verfolgung','haendler','lore','karte'].forEach(function(id){
+    if (!cache[id]) {
+      fetch(BASE + 'sections/' + id + '.html')
+        .then(function(r){ return r.text(); })
+        .then(function(h){ cache[id]=h; })
+        .catch(function(){});
+    }
+  });
+}
+
+/* ── NAV INIT ── */
+document.querySelectorAll('.nav-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){ load(this.dataset.s); });
+});
+
+/* ── START ── */
+load('chronik');
+setTimeout(prefetch, 1200);
+</script>
+</body>
+</html>
