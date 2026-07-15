@@ -3,20 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Session 1 — Die Nacht des Erwachens</title>
+  <title>Session 1 &#8212; Die Nacht des Erwachens</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
   
   <style>
-    /* === ALLE STYLES AUS DER INDEX.HTML (kompakt) === */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #EDE0B5; --bg-card: #F6EED4; --bg-card-alt: #EDE3C2;
-      --ink-1: #1C0A02; --ink-2: #3D1C08; --ink-3: #6B3A1F; --ink-4: #9B6535;
-      --gold: #A07818; --gold-lt: #C49A22; --gold-pale: #E8D090;
-      --red: #7A1818; --green: #285028; --purple: #3A2858;
-      --border: #9B7840; --border-lt: #C4A870;
-      --sh-sm: 2px 3px 8px rgba(28,10,2,.20);
-      --sh-md: 4px 6px 16px rgba(28,10,2,.26);
+      --bg: #0C0808;
+      --bg-card: rgba(20,14,14,.95);
+      --ink-1: #E8DCC8;
+      --ink-2: #D0C8B8;
+      --ink-3: #A8A090;
+      --ink-4: rgba(200,180,255,.45);
+      --gold: rgba(196,154,34,.6);
+      --gold-lt: rgba(196,154,34,.8);
+      --purple: rgba(120,80,200,.4);
+      --border: rgba(120,80,200,.15);
+      --border-lt: rgba(120,80,200,.08);
+      --sh-sm: 0 2px 10px rgba(0,0,0,.4);
     }
     body {
       font-family: 'EB Garamond', Georgia, serif;
@@ -28,23 +32,28 @@
       padding: 1rem;
     }
     .section-inner { max-width: 1100px; margin: 0 auto; padding-top: 2.2rem; }
-    .sec-heading { text-align: center; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-lt); }
+    .sec-heading { text-align: center; margin-bottom: 2.5rem; padding-bottom: 1.5rem; position: relative; }
+    .sec-heading::after {
+      content: ''; position: absolute; bottom: 0; left: 25%; right: 25%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(120,80,200,.3), rgba(196,154,34,.3), rgba(120,80,200,.3), transparent);
+    }
     .sec-heading h2 {
       font-family: 'Cinzel Decorative', serif;
       font-size: clamp(1.5rem, 3.5vw, 2.1rem);
       color: var(--ink-1);
       letter-spacing: .08em;
     }
-    .sec-heading .orn { color: var(--gold); font-size: 1.1rem; letter-spacing: .4em; }
+    .sec-heading .orn { color: rgba(120,80,200,.35); font-size: 1.1rem; letter-spacing: .4em; }
+    .sec-heading p { font-style: italic; color: var(--ink-4); margin-top: .4rem; }
     .lore-entry {
       max-width: 75ch;
       margin: 0 auto 2.2rem;
       padding: 1.8rem 2rem 1.8rem 2.5rem;
       background: var(--bg-card);
-      border-left: 4px solid var(--border);
-      border-right: 1px solid var(--border-lt);
-      border-top: 1px solid var(--border-lt);
-      border-bottom: 1px solid var(--border-lt);
+      border-left: 3px solid rgba(196,154,34,.25);
+      border-right: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
       box-shadow: var(--sh-sm);
     }
     .lore-entry h3 {
@@ -54,48 +63,57 @@
       color: var(--ink-1);
       margin-bottom: .7rem;
       padding-bottom: .5rem;
-      border-bottom: 1px solid var(--border-lt);
+      border-bottom: 1px solid var(--border);
       letter-spacing: .04em;
     }
     .lore-entry p { font-size: .98rem; color: var(--ink-3); line-height: 1.85; }
     .lore-entry p + p { margin-top: .7rem; }
+    .back-link {
+      display: inline-block; margin-bottom: 1.5rem;
+      font-family: 'Cinzel', serif; font-size: .8rem; letter-spacing: .06em;
+      color: var(--gold-lt); text-decoration: none;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--ink-1); }
   </style>
 </head>
 <body>
 
 <div class="section-inner">
 
+  <a href="../index.html" class="back-link">&#9664; Zur&uuml;ck zum Kompendium</a>
+
   <div class="sec-heading">
-    <div class="orn">✦ ✧ ✦</div>
-    <h2>Session 1 — Die Nacht des Erwachens</h2>
-    <p>Holzhein · Stufe 1</p>
+    <div class="orn">&#10022; &#10023; &#10022;</div>
+    <h2>Session 1 &#8212; Die Nacht des Erwachens</h2>
+    <p>Holzhein &middot; Stufe 1</p>
   </div>
 
-  <div class="lore-entry searchable" data-search="session 1 nacht des erwachens holzhein">
+  <div class="lore-entry">
     <h3>Zusammenfassung</h3>
-    <p>Der Regen hatte aufgehört, aber der Nebel blieb. Fünf Fremde im Gasthaus Zum Goldenen Ast in Holzhein. Ein Dorf, das sich anfühlte, als hielte es den Atem an. Draussen hämmerten Stiefel auf schlammbedeckte Strassen: Inquisitoren, die von Tür zu Tür zogen, Fragen stellten und Namen notierten. Der Wirt, Berthold Knappe, schenkte dünnes Bier mit zitternden Händen, nervös.</p>
+    <p>Der Regen hatte aufgeh&ouml;rt, aber der Nebel blieb. F&uuml;nf Fremde im Gasthaus Zum Goldenen Ast in Holzhein. Ein Dorf, das sich anf&uuml;hlte, als hielte es den Atem an. Draussen h&auml;mmerten Stiefel auf schlammbedeckte Strassen: Inquisitoren, die von T&uuml;r zu T&uuml;r zogen, Fragen stellten und Namen notierten. Der Wirt, Berthold Knappe, schenkte d&uuml;nnes Bier mit zitternden H&auml;nden, nerv&ouml;s.</p>
     
-    <p>Dann zerriss ein Kinderschrei die Nacht. Und Elira, Bürgermeisterin von Reinheim - was tat sie in diesem Dorf - stürmte ins Gasthaus und verlangte Hilfe. Ein Kind war verschwunden. Mila, acht Jahre alt. Zuletzt gesehen am Waldrand, in Richtung eines Hauses, über das niemand sprechen wollte. 50 Goldmünzen pro Kopf, wenn das Kind lebend zurückkam. Die Fremden nahmen an.</p>
+    <p>Dann zerriss ein Kinderschrei die Nacht. Und Elira, B&uuml;rgermeisterin von Reinheim &mdash; was tat sie in diesem Dorf &mdash; st&uuml;rmte ins Gasthaus und verlangte Hilfe. Ein Kind war verschwunden. Mila, acht Jahre alt. Zuletzt gesehen am Waldrand, in Richtung eines Hauses, &uuml;ber das niemand sprechen wollte. 50 Goldm&uuml;nzen pro Kopf, wenn das Kind lebend zur&uuml;ckkam. Die Fremden nahmen an.</p>
     
-    <p>Draussen wartete Inquisitor-Sergeant Adar Voss. Kontrolle. Namen. Zertifikate der Reinheit für zehn Gold das Stück, ein Preis, den man nicht verhandelt. Davian und Nyktarion versuchten zu täuschen und wurden daran erinnert, wer in diesem Land das Sagen hat. Voss durchschaute sie. Die Namen wurden notiert. Alle Namen.</p>
+    <p>Draussen wartete Inquisitor-Sergeant Adar Voss. Kontrolle. Namen. Zertifikate der Reinheit f&uuml;r zehn Gold das St&uuml;ck, ein Preis, den man nicht verhandelt. Davian und Nyktarion versuchten zu t&auml;uschen und wurden daran erinnert, wer in diesem Land das Sagen hat. Voss durchschaute sie. Die Namen wurden notiert. Alle Namen.</p>
     
-    <p>Im Tempel öffnete ein Priester namens Hans die Tür und gewährte Davian Zugang zur kleinen Bibliothek. Der Priester erkannte in Davian ein Glaubensbruder. Skull fragte nach Büchern über das schwarze Mal an seinem Hals. Der Priester schüttelte den Kopf. Keine Antworten. Noch nicht.</p>
+    <p>Im Tempel &ouml;ffnete ein Priester namens Hans die T&uuml;r und gew&auml;hrte Davian Zugang zur kleinen Bibliothek. Der Priester erkannte in Davian ein Glaubensbruder. Skall fragte nach B&uuml;chern &uuml;ber das schwarze Mal an seinem Hals. Der Priester sch&uuml;ttelte den Kopf. Keine Antworten. Noch nicht.</p>
     
     <p>Am Waldrand erschienen die Geister zweier Kinder: Elara und Tomasz, verhungert im Dachgeschoss des Hauses, das die Dorfbewohner nur das Haus der Dursts nannten. Sie konnten nicht hinein. Sie konnten nur zeigen. Und bitten.</p>
     
-    <p>Das Haus empfing die Gruppe mit kalter Stille und dem Geruch von dreissig Jahren Verfall. Was sie fanden: drei Schriftrollen mit alten Tempelsegnungen. Eine Eigentumsurkunde für die Flussmühle am Grossen Strom. Das Testament der Familie Durst. Und in einer versteckten Ledertasche unter dem Bett der Herrschaften, ein silbernes Mondamulett, fünfzehn Goldmünzen und ein versiegelter Brief. Adressiert an eine Frau namens Niamh Mondschatten. In der Wüste Arkanis.</p>
+    <p>Das Haus empfing die Gruppe mit kalter Stille und dem Geruch von dreissig Jahren Verfall. Was sie fanden: drei Schriftrollen mit alten Tempelsegnungen. Eine Eigentumsurkunde f&uuml;r die Flussm&uuml;hle am Grossen Strom. Das Testament der Familie Villanescu. Und in einer versteckten Ledertasche unter dem Bett der Herrschaften, ein silbernes Mondamulett, f&uuml;nfzehn Goldm&uuml;nzen und ein versiegelter Brief. Adressiert an eine Frau namens Niamh Mondschatten. In der W&uuml;ste Arkanis.</p>
     
-    <p>Menrom brach das Siegel, zwei ineinandergreifende Kreise und las den Brief laut vor. Worte eines Mannes, der vor dreissig Jahren etwas im Wald gefunden hatte, das flüsterte. Worte über Zwillinge, die noch nicht geboren waren. Worte über einen Hunger, der wartet.</p>
+    <p>Menrom brach das Siegel, zwei ineinandergreifende Kreise und las den Brief laut vor. Worte eines Mannes, der vor dreissig Jahren etwas im Wald gefunden hatte, das fl&uuml;sterte. Worte &uuml;ber Zwillinge, die noch nicht geboren waren. Worte &uuml;ber einen Hunger, der wartet.</p>
     
     <p>Drazhar fand zwischen alten Stoffen im Garderobenschrank eine verblichene Robe mit angesengtem Sternensiegel. Er packte sie ein, ohne sie genauer anzusehen.</p>
     
-    <p>Im Erdgeschoss griff eine belebte Rüstung an. Davian überschätze sich. Im Stockwerk darüber lauerte der Geist des Kindermädchens, und für Sekundenbruchteile, zwischen den Angriffen, sahen sie eine junge Frau, die ein totes Kind wiegte, bevor das Zerrbild zurückkehrte.</p>
+    <p>Im Erdgeschoss griff eine belebte R&uuml;stung an. Davian &uuml;bersch&auml;tze sich. Im Stockwerk dar&uuml;ber lauerte der Geist des Kinderm&auml;dchens, und f&uuml;r Sekundenbruchteile, zwischen den Angriffen, sahen sie eine junge Frau, die ein totes Kind wiegte, bevor das Zerrbild zur&uuml;ckkehrte.</p>
     
-    <p>Im Kinderzimmer, hinter verschlossener Tür, lagen zwei kleine Skelette in ihren Betten. Elara und Tomasz, so wie sie starben. Ihre Geister sprachen, von Eltern, die sie eingesperrt hatten, von einem Monster im Keller, von einem anderen Kind, das noch unten sei. Menrom fand im Puppenhaus einen Geheimgang: eine winzige Tür im Dachgeschoss des Miniaturhauses, die auf eine echte Tür in der echten Wand deutete.</p>
+    <p>Im Kinderzimmer, hinter verschlossener T&uuml;r, lagen zwei kleine Skelette in ihren Betten. Elara und Tomasz, so wie sie starben. Ihre Geister sprachen, von Eltern, die sie eingesperrt hatten, von einem Monster im Keller, von einem anderen Kind, das noch unten sei. Menrom fand im Puppenhaus einen Geheimgang: eine winzige T&uuml;r im Dachgeschoss des Miniaturhauses, die auf eine echte T&uuml;r in der echten Wand deutete.</p>
     
-    <p>Die Gruppe nahm die Knochen der Kinder mit. Ein Versprechen, das noch nicht eingelöst ist.</p>
+    <p>Die Gruppe nahm die Knochen der Kinder mit. Ein Versprechen, das noch nicht eingel&ouml;st ist.</p>
     
-    <p>Die geheime Treppe führte nach unten. Fünfzehn Meter Dunkelheit. Spinnweben. Dort blieben sie stehen.</p>
+    <p>Die geheime Treppe f&uuml;hrte nach unten. F&uuml;nfzehn Meter Dunkelheit. Spinnweben. Und von irgendwo tief unter ihnen, ein Sprechgesang in einer Sprache, die niemand verstand. Dort blieben sie stehen.</p>
   </div>
 
 </div>
