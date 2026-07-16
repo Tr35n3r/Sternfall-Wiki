@@ -567,6 +567,66 @@ body {
   font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:.1em;
   color:var(--ink-4);}
 
+
+/* ─── NOTIZEN ─── */
+.notiz-toolbar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-bottom:1rem;}
+.notiz-btn{font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.05em;
+  background:rgba(20,14,14,.9);color:var(--ink-2);border:1px solid var(--border);
+  padding:.5rem 1rem;border-radius:2px;cursor:pointer;transition:border-color .2s,color .2s;}
+.notiz-btn:hover{border-color:rgba(196,154,34,.4);color:var(--ink-1);}
+.notiz-btn-warn{color:rgba(160,30,30,.7);}
+.notiz-btn-warn:hover{border-color:rgba(160,30,30,.4);}
+.notiz-status{font-family:'Cinzel',serif;font-size:.75rem;color:var(--gold-lt);margin-left:.5rem;}
+.notiz-tabs{display:flex;gap:0;margin-bottom:0;border-bottom:1px solid var(--border);}
+.notiz-tab{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.04em;
+  background:none;color:var(--ink-4);border:none;border-bottom:2px solid transparent;
+  padding:.6rem 1rem;cursor:pointer;transition:color .2s,border-color .2s;}
+.notiz-tab:hover{color:var(--ink-2);}
+.notiz-tab.active{color:var(--ink-1);border-bottom-color:var(--gold-lt);}
+.notiz-input{width:100%;min-height:400px;padding:1.2rem;font-family:'EB Garamond',serif;
+  font-size:1rem;line-height:1.7;color:var(--ink-2);background:rgba(14,10,10,.95);
+  border:1px solid var(--border);border-top:none;border-radius:0 0 2px 2px;
+  resize:vertical;outline:none;transition:border-color .2s;}
+.notiz-input:focus{border-color:rgba(196,154,34,.3);}
+.notiz-input::placeholder{color:rgba(200,180,255,.2);font-style:italic;}
+.notiz-hint{margin-top:.8rem;font-size:.8rem;color:rgba(200,180,255,.25);font-style:italic;text-align:center;}
+
+/* ─── MAP POPUP (erweitert) ─── */
+.map-popup{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:340px;max-width:90vw;max-height:80vh;overflow-y:auto;
+  background:rgba(14,10,10,.97);border:1px solid rgba(120,80,200,.2);
+  border-radius:3px;box-shadow:0 8px 40px rgba(0,0,0,.7),0 0 20px rgba(120,80,200,.06);
+  z-index:500;display:none;animation:fadeIn .25s ease;
+}
+.map-popup.show{display:block;}
+.map-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:499;display:none;}
+.map-popup-overlay.show{display:block;}
+.map-popup-title{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;
+  color:var(--ink-1);letter-spacing:.06em;padding:.8rem 1rem;
+  border-bottom:1px solid rgba(120,80,200,.1);}
+.map-popup-img{width:100%;height:auto;display:block;border-bottom:1px solid rgba(120,80,200,.1);transition:filter .3s;}
+.map-popup-img.blurry{filter:blur(10px) grayscale(.4) brightness(.7);}
+.map-popup-img-placeholder{width:100%;height:140px;display:flex;align-items:center;justify-content:center;
+  background:rgba(20,14,14,.8);color:rgba(200,180,255,.2);font-family:'Cinzel',serif;
+  font-size:.75rem;letter-spacing:.08em;border-bottom:1px solid rgba(120,80,200,.1);}
+.map-popup-links{padding:.6rem 1rem;border-bottom:1px solid rgba(120,80,200,.1);}
+.map-popup-links a{display:block;font-family:'Cinzel',serif;font-size:.78rem;
+  color:var(--gold-lt);text-decoration:none;padding:.2rem 0;transition:color .15s;}
+.map-popup-links a:hover{color:var(--ink-1);}
+.map-popup-desc{padding:.8rem 1rem;font-size:.9rem;color:var(--ink-3);line-height:1.6;}
+.map-popup-close{position:absolute;top:.5rem;right:.7rem;background:none;border:none;
+  color:var(--ink-4);font-size:1.2rem;cursor:pointer;padding:.2rem;line-height:1;}
+.map-popup-close:hover{color:var(--ink-1);}
+
+
+/* ─── Merchant Portrait Fix ─── */
+.merchant-portrait{max-width:200px;float:right;margin:0 0 .8rem 1rem;}
+.merchant-portrait img{border-radius:3px;}
+/* ─── Map Tooltip Bilder ─── */
+.map-tip-img{width:180px;height:auto;display:block;margin:0 auto .4rem;
+  border-radius:2px;border:1px solid rgba(120,80,200,.15);}
+
 /* ─── Location Portraits ─── */
 .ort-portrait {
   float: right;
@@ -648,6 +708,7 @@ body {
     <button class="nav-btn" data-s="haendler"><span class="nav-icon">&#9672;</span><span class="nav-label">H&auml;ndler</span></button>
     <button class="nav-btn" data-s="lore"><span class="nav-icon">&#10022;</span><span class="nav-label">Lore</span></button>
     <button class="nav-btn" data-s="karte"><span class="nav-icon">&#8857;</span><span class="nav-label">Karte</span></button>
+      <button class="nav-btn" data-s="notizen"><span class="nav-icon">&#9998;</span><span class="nav-label">Notizen</span></button>
   </div>
 </nav>
 
@@ -733,6 +794,83 @@ function load(id) {
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
+
+
+
+/* ── MAP POPUP (global, via onclick im HTML) ── */
+function showMapPopup(el){
+  // Overlay erstellen falls nötig
+  if(!document.getElementById('mapPopupOverlay')){
+    var ov=document.createElement('div');ov.className='map-popup-overlay';ov.id='mapPopupOverlay';
+    ov.onclick=function(){closeMapPopup();};
+    document.body.appendChild(ov);
+    var pd=document.createElement('div');pd.className='map-popup';pd.id='mapPopupDiv';
+    document.body.appendChild(pd);
+  }
+  var d=el.dataset;
+  var h='<button class="map-popup-close" onclick="closeMapPopup()">&times;</button>';
+  h+='<div class="map-popup-title">'+(d.popupTitle||'')+'</div>';
+  if(d.popupImg){
+    h+='<img src="'+d.popupImg+'" alt="" class="map-popup-img'+(d.popupBlur?' blurry':'')+'">';
+  }else{
+    h+='<div class="map-popup-img-placeholder">Noch nicht besucht</div>';
+  }
+  if(d.popupLinks){
+    h+='<div class="map-popup-links">';
+    d.popupLinks.split('|').forEach(function(lk){
+      var p=lk.split('::');if(p.length===2)h+='<a href="'+p[1]+'" target="_blank">'+p[0]+'</a>';
+    });
+    h+='</div>';
+  }
+  h+='<div class="map-popup-desc">'+(d.popupDesc||'')+'</div>';
+  document.getElementById('mapPopupDiv').innerHTML=h;
+  document.getElementById('mapPopupDiv').classList.add('show');
+  document.getElementById('mapPopupOverlay').classList.add('show');
+}
+function closeMapPopup(){
+  var p=document.getElementById('mapPopupDiv'),o=document.getElementById('mapPopupOverlay');
+  if(p)p.classList.remove('show');if(o)o.classList.remove('show');
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMapPopup();});
+
+/* -- NOTIZEN -- */
+function initNotizen(){
+  var tabs = document.querySelectorAll('#app .notiz-tab');
+  var area = document.getElementById('notizText');
+  if (!tabs.length || !area) return;
+  var currentTab = 'allgemein';
+  var KEY = 'sfk_notizen';
+  function loadAll(){ try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};} }
+  function saveAll(d){ try{localStorage.setItem(KEY,JSON.stringify(d));}catch(e){} }
+  function switchTab(tab){
+    var data=loadAll(); data[currentTab]=area.value; saveAll(data);
+    currentTab=tab; area.value=data[tab]||'';
+    tabs.forEach(function(t){t.classList.toggle('active',t.dataset.tab===tab);});
+  }
+  tabs.forEach(function(t){ t.addEventListener('click',function(){switchTab(this.dataset.tab);}); });
+  setInterval(function(){var data=loadAll();data[currentTab]=area.value;saveAll(data);},2000);
+  var data=loadAll(); area.value=data[currentTab]||'';
+  window.notizExport=function(){
+    var data=loadAll(); data[currentTab]=area.value;
+    var lines=['========================================','  FLUCH DES STERNENFALLS - NOTIZEN',
+      '  Exportiert: '+new Date().toLocaleString('de-CH'),'========================================',''];
+    var tn={allgemein:'ALLGEMEIN',quests:'QUESTS & AUFTRAEGE',verdacht:'VERDAECHTIGUNGEN',ideen:'IDEEN & THEORIEN'};
+    for(var k in tn){lines.push('--- '+tn[k]+' ---');lines.push(data[k]||'(leer)');lines.push('');}
+    var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='sternenfall_notizen_'+new Date().toISOString().slice(0,10)+'.txt';a.click();
+    var st=document.getElementById('notizStatus');
+    if(st){st.textContent='\u2713 Gespeichert!';setTimeout(function(){st.textContent='';},2500);}
+  };
+  window.notizClear=function(){
+    if(confirm('Wirklich ALLE Notizen loeschen?')){
+      localStorage.removeItem(KEY);area.value='';
+      var st=document.getElementById('notizStatus');
+      if(st){st.textContent='Geloescht.';setTimeout(function(){st.textContent='';},2000);}
+    }
+  };
+}
+
 /* ── SECTION EINF&UUML;GEN ── */
 function inject(id, html) {
   document.getElementById('app').innerHTML = html;
@@ -751,6 +889,7 @@ function inject(id, html) {
   // Section-spezifische Inits
   if (id === 'karte')     { if (typeof initMap === 'function')  initMap();  }
   if (id === 'verfolgung'){ if (typeof initVf  === 'function')  initVf();   }
+  if (id === 'notizen')   { if (typeof initNotizen === 'function') initNotizen(); }
   // Suche re-anwenden falls aktiv
   var q = document.getElementById('srch').value.trim();
   if (q) applySearch(q);
@@ -889,56 +1028,81 @@ function initVf() {
 function initMap() {
   var frame=document.getElementById('mapFrame');
   var stage=document.getElementById('mapStage');
-  if (!frame||!stage) return;
+  if(!frame||!stage) return;
   var img=stage.querySelector('img');
   var zoom=1,px=0,py=0;
+
   function apply(){
     stage.style.transform='translate('+px+'px,'+py+'px) scale('+zoom+')';
-    var lbl=document.getElementById('mapZlbl'); if(lbl) lbl.textContent=Math.round(zoom*100)+'%';
+    var lbl=document.getElementById('mapZlbl');if(lbl)lbl.textContent=Math.round(zoom*100)+'%';
     stage.querySelectorAll('.map-marker').forEach(function(m){
       m.style.transform='translate(-50%,-50%) scale('+(1/zoom)+')';
     });
   }
   function clamp(){
-    var fw=frame.clientWidth,fh=frame.clientHeight,sw=fw*zoom,sh=(img.clientHeight||fh)*zoom;
-    px=Math.min(0,Math.max(fw-sw,px)); py=Math.min(0,Math.max(fh-sh,py));
+    var fw=frame.clientWidth,fh=frame.clientHeight;
+    px=Math.min(0,Math.max(fw-fw*zoom,px));
+    py=Math.min(0,Math.max(fh-(img.clientHeight||fh)*zoom,py));
   }
   window.mapZoom=function(f){zoom=Math.min(6,Math.max(1,zoom*f));clamp();apply();};
   window.mapReset=function(){zoom=1;px=0;py=0;apply();};
+
   frame.addEventListener('wheel',function(e){
     e.preventDefault();
     var r=frame.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top,oz=zoom;
     zoom=Math.min(6,Math.max(1,zoom*(e.deltaY<0?1.15:0.87)));
-    px=cx-(cx-px)*(zoom/oz); py=cy-(cy-py)*(zoom/oz); clamp(); apply();
+    px=cx-(cx-px)*(zoom/oz);py=cy-(cy-py)*(zoom/oz);clamp();apply();
   },{passive:false});
-  var drag=false,sx=0,sy=0,spx=0,spy=0;
+
+  /* ── DRAG — Capture erst NACH Bewegung, nie bei einfachem Klick ── */
+  var dragging=false, startX=0, startY=0, startPx=0, startPy=0, pid=null;
+
   frame.addEventListener('pointerdown',function(e){
-    if(e.target.closest('.map-marker')) return;
-    drag=true;sx=e.clientX;sy=e.clientY;spx=px;spy=py;
-    frame.classList.add('grabbing');frame.setPointerCapture(e.pointerId);
+    startX=e.clientX; startY=e.clientY; startPx=px; startPy=py;
+    pid=e.pointerId; dragging=false;
+    /* KEIN setPointerCapture hier! Erst bei Bewegung. */
   });
+
   frame.addEventListener('pointermove',function(e){
-    if(!drag) return; px=spx+(e.clientX-sx); py=spy+(e.clientY-sy); clamp(); apply();
+    if(pid===null) return;
+    var dx=e.clientX-startX, dy=e.clientY-startY;
+    if(!dragging && (Math.abs(dx)>5||Math.abs(dy)>5)){
+      dragging=true;
+      frame.classList.add('grabbing');
+      try{frame.setPointerCapture(pid);}catch(ex){}
+    }
+    if(dragging){
+      px=startPx+dx; py=startPy+dy; clamp(); apply();
+    }
   });
-  frame.addEventListener('pointerup',function(){drag=false;frame.classList.remove('grabbing');});
-  stage.querySelectorAll('.map-marker').forEach(function(mk){
-    mk.addEventListener('click',function(e){
-      e.stopPropagation();
-      var was=mk.classList.contains('active');
+
+  frame.addEventListener('pointerup',function(e){
+    if(dragging) frame.classList.remove('grabbing');
+    try{frame.releasePointerCapture(e.pointerId);}catch(ex){}
+    dragging=false; pid=null;
+  });
+
+  /* ── MARKER CLICKS — normales onclick, kein Pointer-Konflikt mehr ── */
+  /* Popup-Marker: onclick="showMapPopup(this)" im HTML */
+  /* Normale Marker: Tooltip toggle via click auf stage */
+  stage.addEventListener('click',function(e){
+    var mk=e.target.closest('.map-marker');
+    if(!mk) {
       stage.querySelectorAll('.map-marker.active').forEach(function(o){o.classList.remove('active');});
-      if(!was) mk.classList.add('active');
-    });
-  });
-  frame.addEventListener('pointerdown',function(e){
-    if(e.target.closest('.map-marker')) return;
+      return;
+    }
+    if(mk.hasAttribute('data-popup')) return; /* onclick im HTML uebernimmt */
+    var was=mk.classList.contains('active');
     stage.querySelectorAll('.map-marker.active').forEach(function(o){o.classList.remove('active');});
+    if(!was) mk.classList.add('active');
   });
+
   if(img.complete) apply(); else img.addEventListener('load',apply);
 }
 
 /* ── PREFETCH ── */
 function prefetch() {
-  ['personen','netzwerk','orte','fraktionen','verfolgung','haendler','lore','karte'].forEach(function(id){
+  ['personen','netzwerk','orte','fraktionen','verfolgung','haendler','lore','karte','notizen'].forEach(function(id){
     if (!cache[id]) {
       fetch(BASE + 'sections/' + id + '.html')
         .then(function(r){ return r.text(); })
