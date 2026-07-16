@@ -951,7 +951,7 @@ function initQuestlog(){
 
 /* -- FUNDSTUECKE -- */
 function initFundstuecke(){
-  var activeFF={ besitzer:'all', zustand:'all', herkunft:'all', kategorie:'all' };
+  var activeFF={ besitzer:'all', zustand:'all', herkunft:'all', quelle:'all', kategorie:'all', reich:'all'};
   function apply(){
     var items=document.querySelectorAll('#fundList .fund-item');
     var v=0;
@@ -959,14 +959,16 @@ function initFundstuecke(){
       var show=(activeFF.besitzer==='all'||it.dataset.besitzer===activeFF.besitzer)&&
                (activeFF.zustand==='all'||it.dataset.zustand===activeFF.zustand)&&
                (activeFF.herkunft==='all'||it.dataset.herkunft===activeFF.herkunft)&&
-               (activeFF.kategorie==='all'||it.dataset.kategorie===activeFF.kategorie);
+               (activeFF.quelle==='all'||it.dataset.quelle===activeFF.quelle)&&
+               (activeFF.kategorie==='all'||it.dataset.kategorie===activeFF.kategorie)&&
+               (activeFF.reich==='all'||it.dataset.reich===activeFF.reich);
       it.style.display=show?'':'none'; if(show)v++;
     });
     var c=document.getElementById('fundCount'); if(c)c.textContent=v;
     var e=document.getElementById('fundEmpty'); if(e)e.style.display=v===0?'block':'none';
   }
   window.fundReset=function(){
-    activeFF={besitzer:'all',zustand:'all',herkunft:'all',kategorie:'all'};
+    activeFF={besitzer:'all',zustand:'all',herkunft:'all',quelle:'all',kategorie:'all',reich:'all'};
     document.querySelectorAll('.filt').forEach(function(b){b.classList.toggle('active',b.dataset.value==='all');});
     apply();
   };
@@ -979,6 +981,7 @@ function initFundstuecke(){
   });
   apply();
 }
+
 /* -- NOTIZEN -- */
 function initNotizen(){
   var tabs = document.querySelectorAll('#app .notiz-tab');
