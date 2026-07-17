@@ -558,16 +558,16 @@ body {
 .realm-empty{grid-column:1/-1;text-align:center;padding:2rem 1rem;
   color:var(--ink-4);font-style:italic;display:none;}
 
-
 /* ─── SECTION CONTAINER ─── */
 #app{min-height:60vh;padding:0 1rem 4rem;}
 #app > div{animation:fadeIn .3s ease;}
-
 
 /* ─── LOADING ─── */
 .app-loading{text-align:center;padding:4rem 1rem;
   font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:.1em;
   color:var(--ink-4);}
+
+
 
 
 /* --- QUESTLOG FILTER --- */
@@ -609,7 +609,6 @@ body {
 .quest-detail strong{font-family:'Cinzel',serif;font-size:.72rem;color:var(--ink-2);}
 .quest-empty{text-align:center;padding:2rem;color:var(--ink-4);font-style:italic;}
 
-
 /* ─── GLOSSAR ─── */
 .glossar-entry{padding:1rem 0;border-bottom:1px solid var(--border);transition:background .15s;}
 .glossar-entry:hover{background:rgba(120,80,200,.02);}
@@ -619,6 +618,16 @@ body {
 .glossar-def{font-size:.93rem;color:var(--ink-3);line-height:1.75;padding-left:1rem;
   border-left:2px solid rgba(196,154,34,.2);}
 
+
+
+/* --- FUNDSTUECKE NEUE TAG-FARBEN --- */
+.ftag-zustand{background:rgba(60,80,60,.5);color:#B0C8A8;}        /* generisch Zustand */
+.ftag-intakt{background:rgba(42,90,42,.5);color:#A0D0A0;}         /* Zustand: Intakt */
+.ftag-beschaedigt{background:rgba(120,80,20,.5);color:#D8B870;}   /* Zustand: Beschädigt */
+.ftag-zerstoert{background:rgba(120,30,30,.5);color:#D89090;}     /* Zustand: Zerstört */
+.ftag-verbraucht{background:rgba(80,40,40,.5);color:#C8A0A0;}     /* Zustand: Verbraucht */
+.ftag-quelle{background:rgba(30,50,80,.5);color:#90A8C8;}         /* generisch Quelle */
+.ftag-reich{background:rgba(60,40,80,.5);color:#B0A0D0;}          /* generisch Reich */
 
 /* --- FUNDSTUECKE FILTER --- */
 .fund-filters{background:var(--bg-card);border:1px solid var(--border);border-radius:3px;padding:1.2rem;margin-bottom:1.5rem;box-shadow:var(--sh-sm);}
@@ -783,19 +792,19 @@ body {
 
 <nav class="main-nav">
   <div class="nav-inner">
-	<button class="nav-btn active" data-s="chronik"><span class="nav-icon">&#127744;</span><span class="nav-label">Chronik</span></button>
-	<button class="nav-btn" data-s="questlog"><span class="nav-icon">&#128220;</span><span class="nav-label">Questlog</span></button>
+    <button class="nav-btn active" data-s="chronik"><span class="nav-icon">&#10059;</span><span class="nav-label">Chronik</span></button>
+    <button class="nav-btn" data-s="questlog"><span class="nav-icon">&#9873;</span><span class="nav-label">Quests</span></button>
 	<button class="nav-btn" data-s="personen"><span class="nav-icon">&#9876;</span><span class="nav-label">Personen</span></button>
-	<button class="nav-btn" data-s="netzwerk"><span class="nav-icon">&#128205;</span><span class="nav-label">Netzwerk</span></button>
-	<button class="nav-btn" data-s="orte"><span class="nav-icon">&#127960;</span><span class="nav-label">Orte</span></button>
-	<button class="nav-btn" data-s="karte"><span class="nav-icon">&#129517;</span><span class="nav-label">Karte</span></button>
-	<button class="nav-btn" data-s="verfolgung"><span class="nav-icon">&#128680;</span><span class="nav-label">Verfolgung</span></button>
-	<button class="nav-btn" data-s="fraktionen"><span class="nav-icon">&#127988;</span><span class="nav-label">Fraktionen</span></button>
-	<button class="nav-btn" data-s="fundstuecke"><span class="nav-icon">&#129668;</span><span class="nav-label">Fundst&uuml;cke</span></button>
-	<button class="nav-btn" data-s="haendler"><span class="nav-icon">&#129472;</span><span class="nav-label">H&auml;ndler</span></button>
-	<button class="nav-btn" data-s="lore"><span class="nav-icon">&#128214;</span><span class="nav-label">Lore</span></button>
-	<button class="nav-btn" data-s="glossar"><span class="nav-icon">&#128210;</span><span class="nav-label">Glossar</span></button>
-	<button class="nav-btn" data-s="notizen"><span class="nav-icon">&#128203;</span><span class="nav-label">Notizen</span></button>
+    <button class="nav-btn" data-s="netzwerk"><span class="nav-icon">&#9741;</span><span class="nav-label">Netzwerk</span></button>
+    <button class="nav-btn" data-s="orte"><span class="nav-icon">&#8962;</span><span class="nav-label">Orte</span></button>
+    <button class="nav-btn" data-s="karte"><span class="nav-icon">&#8857;</span><span class="nav-label">Karte</span></button>
+	<button class="nav-btn" data-s="verfolgung"><span class="nav-icon">&#9888;</span><span class="nav-label">Verfolgung</span></button>
+	<button class="nav-btn" data-s="fraktionen"><span class="nav-icon">&#9756;</span><span class="nav-label">Fraktionen</span></button>
+	<button class="nav-btn" data-s="fundstuecke"><span class="nav-icon">&#9878;</span><span class="nav-label">Funde</span></button>
+	<button class="nav-btn" data-s="haendler"><span class="nav-icon">&#9672;</span><span class="nav-label">H&auml;ndler</span></button>
+	<button class="nav-btn" data-s="lore"><span class="nav-icon">&#10022;</span><span class="nav-label">Lore</span></button>
+	<button class="nav-btn" data-s="glossar"><span class="nav-icon">&#128214;</span><span class="nav-label">Glossar</span></button>
+    <button class="nav-btn" data-s="notizen"><span class="nav-icon">&#9998;</span><span class="nav-label">Notizen</span></button>
   </div>
 </nav>
 
@@ -920,6 +929,7 @@ function closeMapPopup(){
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMapPopup();});
 
+
 /* -- QUESTLOG -- */
 function initQuestlog(){
   var activeQF = { status:'all', reich:'all' };
@@ -951,31 +961,43 @@ function initQuestlog(){
 
 /* -- FUNDSTUECKE -- */
 function initFundstuecke(){
-  var activeFF={ besitzer:'all', zustand:'all', herkunft:'all', quelle:'all', kategorie:'all', reich:'all'};
+  /* Filter-Gruppen: alle Gruppen aus den Buttons automatisch ermitteln */
+  var activeFF = { besitzer:'all', zustand:'all', herkunft:'all', kategorie:'all', quelle:'all', reich:'all' };
+
   function apply(){
-    var items=document.querySelectorAll('#fundList .fund-item');
-    var v=0;
+    var items = document.querySelectorAll('#fundList .fund-item');
+    var v = 0;
     items.forEach(function(it){
-      var show=(activeFF.besitzer==='all'||it.dataset.besitzer===activeFF.besitzer)&&
-               (activeFF.zustand==='all'||it.dataset.zustand===activeFF.zustand)&&
-               (activeFF.herkunft==='all'||it.dataset.herkunft===activeFF.herkunft)&&
-               (activeFF.quelle==='all'||it.dataset.quelle===activeFF.quelle)&&
-               (activeFF.kategorie==='all'||it.dataset.kategorie===activeFF.kategorie)&&
-               (activeFF.reich==='all'||it.dataset.reich===activeFF.reich);
-      it.style.display=show?'':'none'; if(show)v++;
+      var show = true;
+      for(var key in activeFF){
+        if(activeFF[key] === 'all') continue;
+        var val = (it.dataset[key] || '').trim();
+        /* Komma-getrennte Werte unterstützen (z.B. data-besitzer="skall,menrom") */
+        var vals = val.split(',').map(function(s){ return s.trim(); });
+        if(vals.indexOf(activeFF[key]) < 0){ show = false; break; }
+      }
+      it.style.display = show ? '' : 'none';
+      if(show) v++;
     });
-    var c=document.getElementById('fundCount'); if(c)c.textContent=v;
-    var e=document.getElementById('fundEmpty'); if(e)e.style.display=v===0?'block':'none';
+    var c = document.getElementById('fundCount'); if(c) c.textContent = v;
+    var e = document.getElementById('fundEmpty'); if(e) e.style.display = v===0 ? 'block' : 'none';
   }
-  window.fundReset=function(){
-    activeFF={besitzer:'all',zustand:'all',herkunft:'all',quelle:'all',kategorie:'all',reich:'all'};
-    document.querySelectorAll('.filt').forEach(function(b){b.classList.toggle('active',b.dataset.value==='all');});
+
+  window.fundReset = function(){
+    for(var k in activeFF) activeFF[k] = 'all';
+    document.querySelectorAll('.filt').forEach(function(b){
+      b.classList.toggle('active', b.dataset.value === 'all');
+    });
     apply();
   };
+
   document.querySelectorAll('.filt').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      var g=btn.dataset.filter; activeFF[g]=btn.dataset.value;
-      document.querySelectorAll('.filt[data-filter="'+g+'"]').forEach(function(b){b.classList.toggle('active',b.dataset.value===btn.dataset.value);});
+    btn.addEventListener('click', function(){
+      var g = btn.dataset.filter;
+      activeFF[g] = btn.dataset.value;
+      document.querySelectorAll('.filt[data-filter="'+g+'"]').forEach(function(b){
+        b.classList.toggle('active', b.dataset.value === btn.dataset.value);
+      });
       apply();
     });
   });
@@ -1041,9 +1063,6 @@ function inject(id, html) {
   if (id === 'notizen')      { if (typeof initNotizen    === 'function') initNotizen();    }
   if (id === 'questlog')    { if (typeof initQuestlog   === 'function') initQuestlog();   }
   if (id === 'fundstuecke') { if (typeof initFundstuecke === 'function') initFundstuecke(); }
-  // Suche re-anwenden falls aktiv
-  var q = document.getElementById('srch').value.trim();
-  if (q) applySearch(q);
   // Suche re-anwenden falls aktiv
   var q = document.getElementById('srch').value.trim();
   if (q) applySearch(q);
