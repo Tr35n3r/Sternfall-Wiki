@@ -33,7 +33,7 @@ All content contained in this repository — including but not limited to campai
 
 If you are interested in using, adapting, or building upon any content from this repository, please contact the author **before** doing so. Unauthorized use may constitute copyright infringement and may be subject to legal action.
 
-**For inquiries:** splinter60@msn.com
+**For inquiries:** DM
 
 ---
 
