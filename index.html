@@ -781,16 +781,16 @@ body {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   13  FUNDSTÜCKE
+   13  FUNDE
    SECTIONS-CSS: Verwendet in sections/funde.html
-   JS-ABHÄNGIG: initFundstuecke() in JS-Block "Fundstücke Filter"
+   JS-ABHÄNGIG: initFunde() in JS-Block "Funde Filter"
    - .filt: Filter-Buttons (Besitzer, Zustand, Herkunft, Quelle, Kategorie, Reich)
    - .ftag-*: Farbige Kategorie-Tags auf jedem Fund-Item
    - ERWEITERUNG: Neuen Besitzer → data-besitzer="name" + Button in HTML
      Komma-getrennte Werte möglich: data-besitzer="davian,skall"
    - HINWEIS: .ftag-verbraucht war dupliziert; Duplikat entfernt
 ═══════════════════════════════════════════════════════════════════════════ */
-/* --- FUNDSTUECKE NEUE TAG-FARBEN --- */
+/* --- FUNDE NEUE TAG-FARBEN --- */
 .ftag-zustand{background:rgba(60,80,60,.5);color:#B0C8A8;}        /* generisch Zustand */
 .ftag-intakt{background:rgba(42,90,42,.5);color:#A0D0A0;}         /* Zustand: Intakt */
 .ftag-beschaedigt{background:rgba(120,80,20,.5);color:#D8B870;}   /* Zustand: Beschädigt */
@@ -799,7 +799,7 @@ body {
 .ftag-quelle{background:rgba(30,50,80,.5);color:#90A8C8;}         /* generisch Quelle */
 .ftag-reich{background:rgba(60,40,80,.5);color:#B0A0D0;}          /* generisch Reich */
 
-/* --- FUNDSTUECKE FILTER --- */
+/* --- FUNDE FILTER --- */
 .fund-filters{background:var(--bg-card);border:1px solid var(--border);border-radius:3px;padding:1.2rem;margin-bottom:1.5rem;box-shadow:var(--sh-sm);}
 .fund-filter-group{margin-bottom:.9rem;}
 .fund-filter-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-4);margin-bottom:.4rem;}
@@ -988,7 +988,7 @@ body {
     <button class="nav-btn" data-s="karte"><span class="nav-icon">&#128506;</span><span class="nav-label">Karte</span></button>
 	<button class="nav-btn" data-s="verfolgung"><span class="nav-icon">&#9888;</span><span class="nav-label">Verfolgung</span></button>
 	<button class="nav-btn" data-s="fraktionen"><span class="nav-icon">&#128737;</span><span class="nav-label">Fraktionen</span></button>
-	<button class="nav-btn" data-s="fundstuecke"><span class="nav-icon">&#128269;</span><span class="nav-label">Funde</span></button>
+	<button class="nav-btn" data-s="fund"><span class="nav-icon">&#128269;</span><span class="nav-label">Funde</span></button>
 	<button class="nav-btn" data-s="haendler"><span class="nav-icon">&#128722;</span><span class="nav-label">H&auml;ndler</span></button>
 	<button class="nav-btn" data-s="lore"><span class="nav-icon">&#129718;</span><span class="nav-label">Lore</span></button>
 	<button class="nav-btn" data-s="glossar"><span class="nav-icon">&#128214;</span><span class="nav-label">Glossar</span></button>
@@ -1046,7 +1046,7 @@ body {
    F  KARTENLOGIK         — Zoom, Drag, Popup-System
    G  VF-COUNTER          — Verfolgungsgrad-Tracker
    H  QUESTFILTER         — Questlog Filter-Logik
-   I  FUNDSTÜCKE FILTER   — Multi-Filter + Komma-Besitzer
+   I  FUNDE FILTER   	  — Multi-Filter + Komma-Besitzer
    J  NOTIZEN             — Tab-System, Auto-Save, Export
    K  DM UNLOCK           — Passwort-Modal, Phase-Freischaltung
    L  INITIALISIERUNG     — Nav-Buttons, Start-Section, Prefetch
@@ -1192,15 +1192,15 @@ function initQuestlog(){
 }
 
 /* -------------------------------------------------------------
-   I  FUNDSTÜCKE FILTER
+   I  FUNDE FILTER
    Multi-Filter für sections/funde.html
    - 6 Filter-Gruppen: besitzer, zustand, herkunft, kategorie, quelle, reich
    - Komma-getrennte Besitzer: data-besitzer="skall,menrom" → split(',')
    - fundReset(): Setzt alle Filter zurück
    HINWEIS: Muss hier definiert sein, nicht in funde.html!
 -------------------------------------------------------------- */
-/* -- FUNDSTUECKE -- */
-function initFundstuecke(){
+/* -- FUNDE -- */
+function initFunde(){
   /* Filter-Gruppen: alle Gruppen aus den Buttons automatisch ermitteln */
   var activeFF = { besitzer:'all', zustand:'all', herkunft:'all', kategorie:'all', quelle:'all', reich:'all' };
 
@@ -1311,7 +1311,7 @@ function inject(id, html) {
   if (id === 'verfolgung'){ if (typeof initVf  === 'function')  initVf();   }
   if (id === 'notizen')      { if (typeof initNotizen    === 'function') initNotizen();    }
   if (id === 'questlog')    { if (typeof initQuestlog   === 'function') initQuestlog();   }
-  if (id === 'fundstuecke') { if (typeof initFundstuecke === 'function') initFundstuecke(); }
+  if (id === 'funde') { if (typeof initFunde === 'function') initFunde(); }
   // Suche re-anwenden falls aktiv
   var q = document.getElementById('srch').value.trim();
   if (q) applySearch(q);
@@ -1561,7 +1561,7 @@ function initMap() {
 -------------------------------------------------------------- */
 /* -- PREFETCH -- */
 function prefetch() {
-  ['personen','netzwerk','questlog','glossar','fundstuecke','orte','fraktionen','verfolgung','haendler','lore','karte','notizen'].forEach(function(id){
+  ['personen','netzwerk','questlog','glossar','funde','orte','fraktionen','verfolgung','haendler','lore','karte','notizen'].forEach(function(id){
     if (!cache[id]) {
       fetch(BASE + 'sections/' + id + '.html')
         .then(function(r){ return r.text(); })
