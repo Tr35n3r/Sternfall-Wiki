@@ -18,7 +18,7 @@
       lore.html
       karte.html            ← 58 Marker mit data-popup
       questlog.html
-      fundstuecke.html
+      funde.html
       glossar.html
       netzwerk.html
       notizen.html
@@ -782,7 +782,7 @@ body {
 
 /* ═══════════════════════════════════════════════════════════════════════════
    13  FUNDSTÜCKE
-   SECTIONS-CSS: Verwendet in sections/fundstuecke.html
+   SECTIONS-CSS: Verwendet in sections/funde.html
    JS-ABHÄNGIG: initFundstuecke() in JS-Block "Fundstücke Filter"
    - .filt: Filter-Buttons (Besitzer, Zustand, Herkunft, Quelle, Kategorie, Reich)
    - .ftag-*: Farbige Kategorie-Tags auf jedem Fund-Item
@@ -1193,11 +1193,11 @@ function initQuestlog(){
 
 /* -------------------------------------------------------------
    I  FUNDSTÜCKE FILTER
-   Multi-Filter für sections/fundstuecke.html
+   Multi-Filter für sections/funde.html
    - 6 Filter-Gruppen: besitzer, zustand, herkunft, kategorie, quelle, reich
    - Komma-getrennte Besitzer: data-besitzer="skall,menrom" → split(',')
    - fundReset(): Setzt alle Filter zurück
-   HINWEIS: Muss hier definiert sein, nicht in fundstuecke.html!
+   HINWEIS: Muss hier definiert sein, nicht in funde.html!
 -------------------------------------------------------------- */
 /* -- FUNDSTUECKE -- */
 function initFundstuecke(){
