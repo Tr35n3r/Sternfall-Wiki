@@ -1,13 +1,78 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+  <!--
+  ═══════════════════════════════════════════════════════════════════════════
+  STERNENFALL WIKI — index.html (Developer-Version)
+  ═══════════════════════════════════════════════════════════════════════════
+
+  DATEISTRUKTUR:
+    index.html              ← Diese Datei (Shell: CSS + JS + Grundstruktur)
+    sections/               ← Section-Inhalte (per fetch() geladen)
+      chronik.html
+      personen.html         ← Realm-Filter + neue NPCs
+      orte.html
+      fraktionen.html
+      verfolgung.html       ← VF-Tracker
+      haendler.html         ← Realm-Filter
+      lore.html
+      karte.html            ← 58 Marker mit data-popup
+      questlog.html
+      fundstuecke.html
+      glossar.html
+      netzwerk.html
+      notizen.html
+    portraits/              ← NPC-Portraits (360x449px JPEG)
+    karte/                  ← Weltkarte (atherion.jpg)
+    images/                 ← Ortsbilder, Stadtbilder etc.
+    sessions/               ← Session-Zusammenfassungen
+    README.md
+
+
+  DM-CODES (Phase-Freischaltung):
+    Phase 1: nebelkeller
+    Phase 2: nachtluft
+    → Weitere Phasen: var CODES im Abschnitt A definieren
+  ═══════════════════════════════════════════════════════════════════════════
+  -->
+
+  <!-- ── META DATEN ── -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fluch des Sternenfalls &#8212; Kompendium</title>
+
+  <!-- ── FONTS (Google Fonts — benötigt Internetverbindung) ── -->
+  <!-- Cinzel Decorative: Kapitelüberschriften | Cinzel: Labels, Nav, Badges -->
+  <!-- EB Garamond: Fliesstext, Beschreibungen -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+
+  <!-- ── STYLESHEET ── -->
   <style>
+
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   02  GRUNDLAYOUT
+   - Reset: margin/padding 0, box-sizing border-box
+   - body: margin:0 (entfernt Browser-Standard 8px), volle Breite
+   - #app: App-Container — lädt Sections via fetch() per JS
+   - .section-inner: Zentrierter Content-Block in jeder Section (max 1140px)
+   - fadeIn: Standard-Einblendung beim Laden einer Section
+═══════════════════════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   01  FARBVARIABLEN
+   Alle Farben zentral hier ändern — wirkt sich sofort auf die gesamte Seite aus.
+   Arcane Codex Theme: Tiefes Schwarz-Rot mit violett-goldenen Akzenten.
+   - --bg: Seitenhintergrund
+   - --bg-card: Karten-Hintergrund
+   - --ink-1 bis --ink-4: Textfarben (dunkel → transparent)
+   - --gold/--gold-lt: Goldakzente
+   - --border/--border-lt: Rahmenfarben
+   - --purple: Violetter Akzent (Magie, Arkanis, Geister)
+   - --red: Roter Akzent (Inquisition, Gefahr)
+═══════════════════════════════════════════════════════════════════════════ */
 :root {
   --bg:          #0C0808;
   --bg-card:     rgba(20,14,14,.95);
@@ -42,6 +107,13 @@ body {
   min-height:100vh;width:100%;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   03  HEADER
+   Titelbereich der Wiki-Seite.
+   - .site-header: Hintergrundfarbverlauf, Sternpartikel via ::after (Animation: starDrift)
+   - .site-title: Haupttitel, Cinzel Decorative, Schlagschatten
+   - NICHT LÖSCHEN: ::before und ::after sind für den kosmischen Hintergrundeffekt
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── HEADER ── */
 .site-header {
   background: linear-gradient(180deg, #080405 0%, #140A0A 60%, #1A0C0C 100%);
@@ -80,6 +152,14 @@ body {
 }
 .site-sub { font-style: italic; font-size: 1rem; color: rgba(200,180,255,.6); letter-spacing: .06em; position: relative; margin-top: .5rem; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   04  NAVIGATION
+   Sticky Navigationsleiste oben.
+   - .nav-inner: justify-content:center → zentriert alle Buttons
+   - .nav-btn.active: Aktiver Tab mit goldenem Unterstrich
+   - ACHTUNG: .active wird hier UND in anderen Kontexten definiert
+     (Badges, Filter-Buttons etc.) — jede Definition hat ihren eigenen Kontext
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── NAV ── */
 .main-nav {
   position: sticky; top: 0; z-index: 200;
@@ -100,6 +180,12 @@ body {
 .nav-btn:hover { color: rgba(200,180,255,.6); border-bottom-color: rgba(120,80,200,.3); }
 .nav-btn.active { color: #E8DCC8; border-bottom-color: rgba(196,154,34,.6); }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   05  SUCHFELD
+   Globales Suchfeld über dem App-Container.
+   - Suche funktioniert nur innerhalb der aktuell geladenen Section
+   - Keyboard-Shortcut: / zum Fokussieren, Esc zum Leeren (→ JS)
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── SEARCH ── */
 .search-wrap { max-width: 620px; margin: 1.6rem auto; padding: 0 1rem; position: relative; }
 .search-wrap input {
@@ -113,7 +199,7 @@ body {
 .search-icon { position: absolute; left: 1.85rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; color: rgba(200,180,255,.6); pointer-events: none; }
 
 /* ── CONTENT ── */
-/* .content-section (legacy) */
+/* .content-section (legacy) — VERALTET: War für Single-Page-Version. Kann entfernt werden sobald alle Sections migriert sind. */
 #app > div { animation: fadeIn .35s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .section-inner{max-width:1140px;width:100%;margin:0 auto;padding:2.2rem 1.5rem 0;box-sizing:border-box;}
@@ -128,6 +214,16 @@ body {
 .sec-heading .orn { color: rgba(120,80,200,.35); font-size: 1.1rem; letter-spacing: .4em; }
 .sec-heading p { font-style: italic; color: var(--ink-4); margin-top: .4rem; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   06  KARTEN (BASIS-KOMPONENTE)
+   Wird in ALLEN Sections verwendet: Personen, Orte, Fraktionen, etc.
+   SECTIONS-CSS: Klassen hier werden ausschliesslich in sections/*.html benötigt.
+   NICHT LÖSCHEN auch wenn sie nicht in index.html direkt vorkommen.
+   - .card: Pergament-Karte (Grundcontainer)
+   - .card-grid/.card-grid-wide: Responsive Raster
+   - .badge: Farbige Status-Labels (getroffen, bekannt, gerücht etc.)
+   - .gated: Phase-gegatete Karten (display:none bis Passwort eingegeben)
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── CARDS ── */
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
 .card-grid-wide { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1.5rem; }
@@ -168,6 +264,13 @@ body {
 .badge-dorf       { background: rgba(40,30,18,.6); color: #B8A880; border-color: rgba(80,60,30,.3); }
 .badge-ruine      { background: rgba(35,28,18,.6); color: #A89870; border-color: rgba(60,48,30,.3); }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   07  NPC KOMPONENTEN
+   SECTIONS-CSS: Verwendet in sections/personen.html und sections/netzwerk.html
+   - .npc-name/.npc-title/.npc-desc: Textstruktur der NPC-Karte
+   - .npc-portrait: Bildbehälter oben in der Karte (Seitenverhältnis auto)
+   - .npc-quote: Kursives Zitat mit violettem Randakzent
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── NPC CARD ── */
 .npc-name { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; color: var(--ink-1); margin-bottom: .12rem; line-height: 1.3; }
 .npc-title { font-style: italic; color: var(--ink-4); font-size: .92rem; margin-bottom: .15rem; }
@@ -183,6 +286,12 @@ body {
 .npc-portrait { margin-bottom: .8rem; border-radius: 3px; overflow: hidden; border: 1px solid var(--border); }
 .npc-portrait img { width: 100%; height: auto; display: block; filter: sepia(.1) brightness(.9); }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   08  ORTS-KOMPONENTEN
+   SECTIONS-CSS: Verwendet in sections/orte.html
+   - .ort-portrait: Bild rechts neben dem Text (float:right, 140px breit)
+   - .lore-entry: Lore-Textblock mit dekorativem Initial-Buchstaben
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── ORT / LOCATION CARD ── */
 .ort-type { font-family: 'Cinzel', serif; font-size: .72rem; color: var(--gold); letter-spacing: .1em; margin-bottom: .5rem; text-transform: uppercase; }
 .ort-name { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; color: var(--ink-1); margin-bottom: .6rem; }
@@ -192,6 +301,11 @@ body {
 .ort-list li { padding: .2rem 0 .2rem 1.2rem; font-size: .9rem; color: var(--ink-3); position: relative; }
 .ort-list li::before { content: '\2726'; position: absolute; left: 0; color: var(--gold); font-size: .6rem; top: .45rem; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   09  FRAKTIONEN
+   SECTIONS-CSS: Verwendet in sections/fraktionen.html
+   - .faction-lum/.faction-inq/.faction-ber/.faction-neb: Farbige Linker Rand
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── FACTIONS ── */
 .faction-card {
   background: var(--bg-card); border: 1px solid var(--border); border-radius: 2px;
@@ -215,6 +329,12 @@ body {
   font-style: italic; font-size: .88rem; color: var(--ink-4);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   10  HÄNDLER
+   SECTIONS-CSS: Verwendet in sections/haendler.html
+   - .price-table: Preisliste mit alternierenden Hover-Effekten
+   - .merchant-portrait: Portrait rechts neben Händler-Header (max-width:200px)
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── MERCHANTS ── */
 .merchant-card {
   background: var(--bg-card); border: 1px solid var(--border); border-radius: 2px;
@@ -292,6 +412,19 @@ body {
 .party-race { font-size: .78rem; color: var(--ink-4); }
 .party-icon { font-size: 1.8rem; margin-bottom: .4rem; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   11  KARTE (WELTKARTE)
+   SECTIONS-CSS: Verwendet in sections/karte.html
+   WIRD VON initMap() IN JS GESTEUERT — nicht löschen!
+   - .map-marker: Positionierter Marker auf der Karte (width:0 wichtig!)
+     → width:0 + transform:translate(-50%,-50%) = exakte Pin-Positionierung
+     → Ohne width:0 verschiebt sich der Pin je nach Label-Breite
+   - .marker-dot: Visueller Punkt, skaliert gegensätzlich zum Zoom (scale(1/zoom))
+   - .map-tooltip: Kleines Hover-Tooltip (einfache Marker)
+   - .map-popup*: Grosses Klick-Popup (Popup-Marker mit data-popup="true")
+   - .legend-full/.legend-toggle/.legend-table: Ausklappbares Ortsverzeichnis
+     → HINWEIS: legend-full/toggle/table waren dupliziert; Duplikat entfernt
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── MAP ── */
 .map-marker {
   position: absolute; width: 0; height: 0; transform: translate(-50%, -50%);
@@ -360,6 +493,15 @@ body {
 
 
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   17  PHASE GATING
+   Steuert die phasenbasierte Inhaltsfreischaltung.
+   - .gated: display:none !important → überschreibt ALLE anderen display-Werte
+   - .gone: Entfernt Lock-Hinweise nach Freischaltung
+   - Gating-System: JS prüft localStorage für freigeschaltete Phasen
+   - PASSWÖRTER: Werden in var CODES im JS definiert (nicht hier im CSS)
+   - ERWEITERUNG: Neue Phase → class="gated p3" im HTML + Passwort in JS CODES
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── PHASE GATING ── */
 .gated { display: none !important; }
 .gone  { display: none !important; }
@@ -377,6 +519,13 @@ body {
 }
 .lock-notice .lock-ic { font-size: 1.2rem; display:block; margin-bottom:.3rem; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   18  DM UNLOCK MODAL
+   Das Passwort-Eingabefenster für den DM.
+   - Ausgelöst durch: <button onclick="document.getElementById('unlockBg').classList.add('show')">
+   - .unlock-modal-bg.show: sichtbar (display:flex)
+   - .unlock-status.ok/.err: Grün/Rot Feedback nach Passworteingabe
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── DM UNLOCK ── */
 .dm-key-btn {
   background: none; border: 1px solid var(--border);
@@ -436,34 +585,8 @@ body {
 .map-stage { position: relative; transform-origin: 0 0; }
 .map-stage img { width:100%; height:auto; display:block; pointer-events:none; user-select:none; }
 
+/* Ausklappbares Ortsverzeichnis in sections/karte.html */
 /* full legend table */
-.legend-full { margin-top: 1.2rem; }
-.legend-toggle {
-  font-family:'Cinzel',serif; font-size:.78rem; letter-spacing:.06em;
-  background: rgba(20,14,14,.98); border:1px solid var(--border-lt); color:var(--ink-2);
-  padding:.5rem 1rem; border-radius:2px; cursor:pointer; width:100%;
-}
-.legend-table { width:100%; border-collapse:collapse; font-size:.85rem; margin-top:.8rem; display:none; }
-.legend-table.show { display: table; }
-.legend-table th { font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-4); text-align:left; padding:.4rem .6rem; border-bottom:2px solid var(--border-lt); }
-.legend-table td { padding:.35rem .6rem; color:var(--ink-3); border-bottom:1px solid rgba(196,168,112,.3); }
-.legend-table td:first-child { font-family:'Cinzel',serif; color:var(--gold); width:2.5rem; }
-.legend-table tr:hover td { background: rgba(196,168,112,.1); }
-
-/* full legend table */
-.legend-full { margin-top: 1.2rem; }
-.legend-toggle {
-  font-family:'Cinzel',serif; font-size:.78rem; letter-spacing:.06em;
-  background: rgba(20,14,14,.98); border:1px solid var(--border-lt); color:var(--ink-2);
-  padding:.5rem 1rem; border-radius:2px; cursor:pointer; width:100%;
-}
-.legend-table { width:100%; border-collapse:collapse; font-size:.85rem; margin-top:.8rem; display:none; }
-.legend-table.show { display: table; }
-.legend-table th { font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-4); text-align:left; padding:.4rem .6rem; border-bottom:2px solid var(--border-lt); }
-.legend-table td { padding:.35rem .6rem; color:var(--ink-3); border-bottom:1px solid rgba(196,168,112,.3); }
-.legend-table td:first-child { font-family:'Cinzel',serif; color:var(--gold); width:2.5rem; }
-.legend-table tr:hover td { background: rgba(196,168,112,.1); }
-
 /* ── PORTRAIT EXTERN ── */
 /* Wenn Bilder nicht geladen werden koennen (Datei fehlt), */
 /* zeige ein Parchment-Platzhalter-Feld statt gebrochenem Icon */
@@ -472,6 +595,15 @@ body {
   display: block; min-height: 10px;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   16  VERFOLGUNGSGRAD (VF-TRACKER)
+   SECTIONS-CSS: Verwendet in sections/verfolgung.html
+   JS-ABHÄNGIG: initVf() → vfStep(delta), vfSet(value)
+   - .vf-lvl.l0 bis .l5: Sechs Stufen mit eigenen Farben (grün→rot)
+   - .vf-btn.up/.dn/.dis/.ent/.rs: Aktions-Buttons (unterschiedlich benannt)
+     → HINWEIS: .up/.dn/.dis etc. sind generisch und könnten konfligieren
+     wenn andere Sections ähnliche Klassen verwenden
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── VERFOLGUNGSGRAD ── */
 .vf-rule {
   background: rgba(122,24,24,.08); border: 1px solid var(--border-lt);
@@ -531,6 +663,14 @@ body {
 .vf-disguise strong { font-family:'Cinzel',serif; font-size:.78rem; color:var(--ink-2); }
 .vf-foot { text-align:center; font-family:'Cinzel',serif; font-size:.78rem; letter-spacing:.06em; color:var(--gold); padding:1rem 0; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   20  RESPONSIVE DESIGN
+   Mobile Anpassungen ab 620px Breite.
+   - Karten: 1 Spalte statt Grid
+   - VF-Modifikatoren: 1 Spalte statt 2
+   - Fund-Items: horizontal → vertikal
+   - Nav: bleibt scrollbar (overflow-x:auto)
+═══════════════════════════════════════════════════════════════════════════ */
 /* ── RESPONSIVE ── */
 @media (max-width: 620px) {
   .card-grid, .card-grid-wide { grid-template-columns: 1fr; }
@@ -543,6 +683,14 @@ body {
   .nav-btn { padding: .8rem .8rem; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   19  REALM FILTER
+   Wird in sections/personen.html und sections/haendler.html verwendet.
+   - .rf.active: Aktiver Filter-Button (reich-spezifische Farbe)
+   - JS: realmFilter() in inject() aufgerufen nach jeder Section-Injection
+   - ERWEITERUNG: Neues Reich → .rf[data-r="NEU"].active Farbe hier definieren
+     + Button in HTML + data-realm="NEU" auf Karten
+═══════════════════════════════════════════════════════════════════════════ */
 /* ─── REALM FILTER ─── */
 .realm-filter{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem;}
 .rf{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.06em;
@@ -571,6 +719,15 @@ body {
 
 
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   12  QUESTLOG
+   SECTIONS-CSS: Verwendet in sections/questlog.html
+   JS-ABHÄNGIG: initQuestlog() in JS-Block "Questfilter"
+   - .qfilt: Filter-Buttons (Status + Reich)
+   - .qstatus-*: Farbige Status-Labels (offen=grün, abgeschlossen=grau etc.)
+   - .qreich-*: Farbige Reich-Labels (atherion=braun, arkanis=violett etc.)
+   - ERWEITERUNG: Neuen Status → .qstatus-NEU in CSS + data-status="neu" in HTML
+═══════════════════════════════════════════════════════════════════════════ */
 /* --- QUESTLOG FILTER --- */
 .quest-filters{background:var(--bg-card);border:1px solid var(--border);border-radius:3px;padding:1.2rem;margin-bottom:1.5rem;box-shadow:var(--sh-sm);}
 .quest-filter-group{margin-bottom:.9rem;}
@@ -621,12 +778,22 @@ body {
 
 
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   13  FUNDSTÜCKE
+   SECTIONS-CSS: Verwendet in sections/fundstuecke.html
+   JS-ABHÄNGIG: initFundstuecke() in JS-Block "Fundstücke Filter"
+   - .filt: Filter-Buttons (Besitzer, Zustand, Herkunft, Quelle, Kategorie, Reich)
+   - .ftag-*: Farbige Kategorie-Tags auf jedem Fund-Item
+   - ERWEITERUNG: Neuen Besitzer → data-besitzer="name" + Button in HTML
+     Komma-getrennte Werte möglich: data-besitzer="davian,skall"
+   - HINWEIS: .ftag-verbraucht war dupliziert; Duplikat entfernt
+═══════════════════════════════════════════════════════════════════════════ */
 /* --- FUNDSTUECKE NEUE TAG-FARBEN --- */
 .ftag-zustand{background:rgba(60,80,60,.5);color:#B0C8A8;}        /* generisch Zustand */
 .ftag-intakt{background:rgba(42,90,42,.5);color:#A0D0A0;}         /* Zustand: Intakt */
 .ftag-beschaedigt{background:rgba(120,80,20,.5);color:#D8B870;}   /* Zustand: Beschädigt */
 .ftag-zerstoert{background:rgba(120,30,30,.5);color:#D89090;}     /* Zustand: Zerstört */
-.ftag-verbraucht{background:rgba(80,40,40,.5);color:#C8A0A0;}     /* Zustand: Verbraucht */
+/* Zustand: Verbraucht */
 .ftag-quelle{background:rgba(30,50,80,.5);color:#90A8C8;}         /* generisch Quelle */
 .ftag-reich{background:rgba(60,40,80,.5);color:#B0A0D0;}          /* generisch Reich */
 
@@ -652,7 +819,6 @@ body {
 .ftag-besitzer{background:rgba(80,60,30,.5);color:#C8B878;}
 .ftag-untersucht{background:rgba(42,80,42,.5);color:#A8C8A8;}
 .ftag-unbekannt{background:rgba(60,50,80,.5);color:#B8B0D8;}
-.ftag-verbraucht{background:rgba(80,40,40,.5);color:#C8A0A0;}
 .ftag-herkunft{background:rgba(40,40,60,.5);color:#A8B0C8;}
 .ftag-magisch{background:rgba(80,40,120,.5);color:#C0A8E8;}
 .ftag-hinweis{background:rgba(120,80,20,.5);color:#D8B870;}
@@ -662,6 +828,15 @@ body {
 .fund-desc{font-size:.9rem;color:var(--ink-3);line-height:1.65;}
 @media(max-width:620px){.fund-item{flex-direction:column;}.fund-icon{width:auto;}}
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   15  NOTIZEN
+   SECTIONS-CSS: Verwendet in sections/notizen.html
+   JS-ABHÄNGIG: initNotizen() — MUSS in index.html sein, nicht in section!
+   (Script-Tags in fetch()-geladenen Dateien werden vom Browser NICHT ausgeführt)
+   - .notiz-tab: Tab-Buttons (Allgemein, Quests, Verdacht, Ideen)
+   - .notiz-input: Das Textarea-Feld; auto-save alle 2 Sekunden via localStorage
+   - Auto-Export → .txt Datei mit Datum im Dateinamen
+═══════════════════════════════════════════════════════════════════════════ */
 /* ─── NOTIZEN ─── */
 .notiz-toolbar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-bottom:1rem;}
 .notiz-btn{font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.05em;
@@ -737,6 +912,15 @@ body {
   border:2px solid var(--border-lt);margin-bottom:.4rem;box-shadow:var(--sh-sm);}
 .party-icon-inline{font-size:.9rem;margin-right:.15rem;}
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   14  NETZWERK
+   SECTIONS-CSS: Verwendet in sections/netzwerk.html
+   - .net-group: Gruppen-Container (Luminarismus, Dorfbewohner etc.)
+   - .net-node: Einzelner NPC-Knoten mit Portrait + Info
+   - .gated.net-node-locked: Blur-Effekt NUR wenn noch nicht freigeschaltet
+     → WICHTIG: .net-node-locked allein hat keinen Effekt; braucht .gated
+   - ZUKUNFT: Bei reichsübergreifenden Verbindungen → D3.js Force-Graph
+═══════════════════════════════════════════════════════════════════════════ */
 /* --- NETZWERK --- */
 .net-group{background:var(--bg-card);border:1px solid var(--border-lt);border-radius:2px;padding:1.5rem;margin-bottom:1.8rem;box-shadow:var(--sh-sm);position:relative;}
 .net-group::before{content:'';position:absolute;top:5px;right:5px;bottom:5px;left:5px;border:1px solid rgba(196,168,112,.3);pointer-events:none;}
@@ -781,16 +965,25 @@ body {
 .net-link-to{font-family:'Cinzel',serif;color:var(--ink-2);font-size:.8rem;}
 .net-link-type{color:var(--gold);font-size:.75rem;font-style:italic;}
 @media(max-width:620px){.net-grid{grid-template-columns:1fr 1fr;}.net-row{flex-direction:column;}.net-row .net-node{max-width:100%;}.net-conn{justify-content:center;padding:.3rem 0;}.net-conn-line{width:0;height:16px;border-left:1px solid var(--border);}}
-</style>
+
+  </style>
 </head>
 <body>
 
+<!-- ════════════════════════════════════════════════════════════════════════
+   BODY — Grundstruktur
+   Alle Sections werden dynamisch per JS in <main id="app"> geladen.
+   Der Body selbst enthält nur das permanente Gerüst.
+════════════════════════════════════════════════════════════════════════════ -->
+
+<!-- ── HEADER ── Titelbereich mit Sternenanimation -->
 <header class="site-header">
   <div class="header-ornament">&#10022; &middot; &#10022; &middot; &#10022;</div>
   <h1 class="site-title">Fluch des Sternenfalls</h1>
   <p class="site-sub">Kampagnen-Kompendium &nbsp;&middot;&nbsp; Atherion &amp; die vier Reiche</p>
 </header>
 
+<!-- ── NAVIGATION ── Sticky Leiste; Buttons via JS verdrahtet -->
 <nav class="main-nav">
   <div class="nav-inner">
     <button class="nav-btn active" data-s="chronik"><span class="nav-icon">&#10059;</span><span class="nav-label">Chronik</span></button>
@@ -809,22 +1002,18 @@ body {
   </div>
 </nav>
 
+<!-- ── SUCHFELD ── Global; filtert aktuell geladene Section -->
 <div class="search-wrap">
   <span class="search-icon">&#8981;</span>
   <input type="text" id="srch" placeholder="Suchen &hellip;" autocomplete="off" spellcheck="false">
 </div>
 
+<!-- ── APP CONTAINER ── Sections werden hier per fetch() injiziert -->
 <main id="app">
   <div class="app-loading">&#10022; &nbsp; Laden &nbsp; &#10022;</div>
 </main>
 
-<footer class="site-footer">
-  FLUCH DES STERNENFALLS &nbsp;·&nbsp; KAMPAGNEN-KOMPENDIUM &nbsp;·&nbsp; VERSION 2.0 &nbsp;·&nbsp; STUFE 1
-  <div style="margin-top:.9rem;">
-    <button class="dm-key-btn" onclick="document.getElementById('unlockBg').classList.add('show');setTimeout(function(){document.getElementById('unlockInput').focus();},50);">🔑 DM-Freischaltung</button>
-  </div>
-</footer>
-
+<!-- ── DM UNLOCK MODAL ── Ausgelöst via Footer-Button -->
 <div class="unlock-modal-bg" id="unlockBg">
   <div class="unlock-modal">
     <h3>DM-Freischaltung</h3>
@@ -840,26 +1029,76 @@ body {
       <button class="dm-key-btn" onclick="resetUnlocks();">↺ Alle Phasen zurücksetzen</button>
     </div>
   </div>
-</div>
 
+<!-- ── FOOTER ── DM-Freischaltungs-Button unten links -->
+<footer class="site-footer">
+  FLUCH DES STERNENFALLS &nbsp;·&nbsp; KAMPAGNEN-KOMPENDIUM &nbsp;·&nbsp; VERSION 2.0 &nbsp;·&nbsp; STUFE 1
+  <div style="margin-top:.9rem;">
+    <button class="dm-key-btn" onclick="document.getElementById('unlockBg').classList.add('show');setTimeout(function(){document.getElementById('unlockInput').focus();},50);">🔑 DM-Freischaltung</button>
+  </div>
+</footer>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+   JAVASCRIPT
+   Alle init*() Funktionen MÜSSEN hier sein (nicht in sections/*.html)!
+   Grund: Browser fuehrt Skript-Bloecke in fetch()-geladenen Fragmenten nicht aus.
+============================================================================ -->
 <script>
+/* ===========================================================================
+   STERNENFALL WIKI — JAVASCRIPT
+   Developer-Version | Strukturiert und kommentiert
+
+   WICHTIG: Skript-Tags in sections/*.html werden NICHT ausgefuehrt!
+   Alle Initialisierungsfunktionen müssen HIER definiert werden.
+   inject() ruft die passende init*()-Funktion nach dem Laden auf.
+
+   AUFBAU:
+   A  DM-KONFIGURATION    — Passwörter hier ändern
+   B  GLOBALE VARIABLEN   — Cache, Routing-State, BASE-URL
+   C  HILFSFUNKTIONEN     — Phase, Realm, Suche
+   D  SECTION LOADER      — fetch(), inject(), prefetch()
+   E  SUCHFUNKTION        — Input-Handler, Keyboard-Shortcuts
+   F  KARTENLOGIK         — Zoom, Drag, Popup-System
+   G  VF-COUNTER          — Verfolgungsgrad-Tracker
+   H  QUESTFILTER         — Questlog Filter-Logik
+   I  FUNDSTÜCKE FILTER   — Multi-Filter + Komma-Besitzer
+   J  NOTIZEN             — Tab-System, Auto-Save, Export
+   K  DM UNLOCK           — Passwort-Modal, Phase-Freischaltung
+   L  INITIALISIERUNG     — Nav-Buttons, Start-Section, Prefetch
+=========================================================================== */
+
+
 /* ============================================================
    STERNENFALL WIKI v4 — Main Script
    Alle Sections werden per fetch() geladen.
    Encoding: UTF-8 throughout.
    ============================================================ */
 
-/* ── BASE URL (funktioniert in Unterverzeichnissen) ── */
+/* -- BASE URL (funktioniert in Unterverzeichnissen) -- */
+/* -------------------------------------------------------------
+   B  GLOBALE VARIABLEN
+   - BASE: Basis-URL für fetch()-Aufrufe (funktioniert in Unterverzeichnissen)
+   - cache: Gecachte Section-HTML Strings (nach erstem Laden)
+   - current: Aktuell angezeigte Section-ID
+-------------------------------------------------------------- */
 var BASE = (function(){
   var p = window.location.pathname;
   return p.substring(0, p.lastIndexOf('/') + 1);
 })();
 
-/* ── CACHE & STATE ── */
+/* -- CACHE & STATE -- */
 var cache = {};
 var current = 'chronik';
 
-/* ── SECTION LADEN ── */
+/* -- SECTION LADEN -- */
+/* -------------------------------------------------------------
+   D  SECTION LOADER
+   Kernfunktion des Wiki. Lädt Section-HTML per fetch() und injiziert es.
+   - load(id): Lädt sections/{id}.html → inject(id, html)
+   - inject(id, html): Injiziert HTML in #app, ruft init*() auf
+   - prefetch(): Lädt alle Sections im Hintergrund nach 1 Sekunde
+   WICHTIG: fetch() braucht einen HTTP-Server.
+-------------------------------------------------------------- */
 function load(id) {
   current = id;
   // Nav: active class setzen
@@ -885,7 +1124,7 @@ function load(id) {
     })
     .catch(function(err) {
       document.getElementById('app').innerHTML =
-        '<div class="app-loading" style="color:#7A1818;">&#9888; Sektionsdatei nicht gefunden.<br><small>Serverstart: ins <strong>sternenfall-wiki/</strong> Verzeichnis wechseln, dann <code>python3 -m http.server 8080</code></small></div>';
+        '<div class="app-loading" style="color:#7A1818;">&#9888; Sektionsdatei nicht gefunden: sections/' + id + '.html</div>';
     });
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
@@ -893,7 +1132,8 @@ function load(id) {
 
 
 
-/* ── MAP POPUP (global, via onclick im HTML) ── */
+/* -- MAP POPUP (global, via onclick im HTML) -- */
+/* showMapPopup/closeMapPopup: Globale Funktionen — werden per onclick="showMapPopup(this)" aufgerufen */
 function showMapPopup(el){
   // Overlay erstellen falls nötig
   if(!document.getElementById('mapPopupOverlay')){
@@ -930,6 +1170,13 @@ function closeMapPopup(){
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMapPopup();});
 
 
+/* -------------------------------------------------------------
+   H  QUESTFILTER
+   Filter für sections/questlog.html
+   - Filter-Gruppen: status (offen/abgeschlossen/achtung/raetsel) + reich
+   - questReset(): Setzt alle Filter zurück
+   HINWEIS: Muss hier definiert sein, nicht in questlog.html!
+-------------------------------------------------------------- */
 /* -- QUESTLOG -- */
 function initQuestlog(){
   var activeQF = { status:'all', reich:'all' };
@@ -959,6 +1206,14 @@ function initQuestlog(){
   apply();
 }
 
+/* -------------------------------------------------------------
+   I  FUNDSTÜCKE FILTER
+   Multi-Filter für sections/fundstuecke.html
+   - 6 Filter-Gruppen: besitzer, zustand, herkunft, kategorie, quelle, reich
+   - Komma-getrennte Besitzer: data-besitzer="skall,menrom" → split(',')
+   - fundReset(): Setzt alle Filter zurück
+   HINWEIS: Muss hier definiert sein, nicht in fundstuecke.html!
+-------------------------------------------------------------- */
 /* -- FUNDSTUECKE -- */
 function initFundstuecke(){
   /* Filter-Gruppen: alle Gruppen aus den Buttons automatisch ermitteln */
@@ -1004,6 +1259,15 @@ function initFundstuecke(){
   apply();
 }
 
+/* -------------------------------------------------------------
+   J  NOTIZEN
+   Tab-System + Auto-Save für sections/notizen.html
+   - 4 Tabs: allgemein, quests, verdacht, ideen (in localStorage: sfk_notizen)
+   - Auto-Save alle 2 Sekunden
+   - notizExport(): Generiert .txt Download mit allen Tabs
+   - notizClear(): Löscht alles aus localStorage nach Bestätigung
+   HINWEIS: Muss hier definiert sein, nicht in notizen.html!
+-------------------------------------------------------------- */
 /* -- NOTIZEN -- */
 function initNotizen(){
   var tabs = document.querySelectorAll('#app .notiz-tab');
@@ -1042,7 +1306,7 @@ function initNotizen(){
   };
 }
 
-/* ── SECTION EINF&UUML;GEN ── */
+/* -- SECTION EINF&UUML;GEN -- */
 function inject(id, html) {
   document.getElementById('app').innerHTML = html;
   // Phase gating
@@ -1068,7 +1332,7 @@ function inject(id, html) {
   if (q) applySearch(q);
 }
 
-/* ── REALM FILTER ── */
+/* -- REALM FILTER -- */
 function realmFilter(r) {
   var any = false;
   document.querySelectorAll('#app [data-realm]').forEach(function(c) {
@@ -1082,7 +1346,7 @@ function realmFilter(r) {
   });
 }
 
-/* ── SUCHE ── */
+/* -- SUCHE -- */
 function applySearch(q) {
   q = q.toLowerCase().trim();
   document.querySelectorAll('#app .searchable').forEach(function(el) {
@@ -1090,6 +1354,12 @@ function applySearch(q) {
     el.style.display = (!q || t.includes(q)) ? '' : 'none';
   });
 }
+/* -------------------------------------------------------------
+   E  SUCHFUNKTION
+   - Sucht innerhalb der aktuell geladenen Section
+   - Keyboard: / = Fokus, Esc = Leeren
+   - filterSearchables(q): Zeigt/versteckt .searchable Elemente
+-------------------------------------------------------------- */
 document.getElementById('srch').addEventListener('input', function(){
   applySearch(this.value);
 });
@@ -1099,9 +1369,9 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') { s.value = ''; applySearch(''); s.blur(); }
 });
 
-/* ── PHASE UNLOCK ── */
-/* ════════════════════════════════════════════════════════════
-   DM-KONFIGURATION — NUR DIESEN BLOCK BEARBEITEN
+/* -- PHASE UNLOCK -- */
+/* -------------------------------------------------------------
+   A  DM-KONFIGURATION — NUR DIESEN BLOCK BEARBEITEN
    
    So funktioniert's:
    1. Neues Passwort unten eintragen (z.B. mondschein: 3)
@@ -1116,7 +1386,7 @@ document.addEventListener('keydown', function(e) {
    
    Die Karte erscheint erst, wenn ein Spieler "mondschein" eingibt.
    Beliebig viele Phasen möglich (p4, p5, p6...).
-   ════════════════════════════════════════════════════════════ */
+   ============================================================ */
 
 var CODES = {
   nebelkeller: 1,     // Phase 1
@@ -1126,6 +1396,14 @@ var CODES = {
   // beispiel:    4,   // Phase 4
 };
 
+/* -------------------------------------------------------------
+   C  HILFSFUNKTIONEN
+   Werden von mehreren anderen Funktionen aufgerufen.
+   - getUnlocked/setUnlocked: Liest/Schreibt freigeschaltete Phasen in localStorage
+   - applyPhase(p): Entfernt .gated von .p1/.p2 etc. Elementen
+   - realmFilter(r): Filtert [data-realm] Elemente nach Reich
+   - filterSearchables(q): Filtert .searchable Elemente nach Suchtext
+-------------------------------------------------------------- */
 function getUnlocked() {
   try { var v = localStorage.getItem('sfk_phases'); return v ? JSON.parse(v) : []; }
   catch(e) { return window._ph || []; }
@@ -1138,6 +1416,12 @@ function applyPhase(p) {
   document.querySelectorAll('#app .p'+p).forEach(function(el){ el.classList.remove('gated'); });
   document.querySelectorAll('#app .p'+p+'n').forEach(function(el){ el.classList.add('gone'); });
 }
+/* -------------------------------------------------------------
+   K  DM UNLOCK (PHASE-FREISCHALTUNG)
+   - tryUnlock(): Prüft Passwort gegen CODES, ruft applyPhase() auf
+   - resetUnlocks(): Löscht localStorage + Seite neu laden
+   - Passwörter → Abschnitt A (DM-Konfiguration)
+-------------------------------------------------------------- */
 function tryUnlock() {
   var code = (document.getElementById('unlockInput').value || '').trim().toLowerCase();
   var st = document.getElementById('unlockStatus');
@@ -1167,7 +1451,7 @@ document.addEventListener('keydown', function(e){
   if (e.key === 'Escape' && mb) mb.classList.remove('show');
 });
 
-/* ── VF COUNTER ── */
+/* -- VF COUNTER -- */
 function initVf() {
   var LV = [
     {n:'Unauff\u00e4llig', d:'Keine bekannten Vorkommnisse.', c:'#3E7A3E'},
@@ -1197,7 +1481,17 @@ function initVf() {
   render();
 }
 
-/* ── MAP ZOOM ── */
+/* -- MAP ZOOM -- */
+/* -------------------------------------------------------------
+   F  KARTENLOGIK
+   Initialisiert die interaktive Weltkarte (sections/karte.html).
+   - Drag: setPointerCapture erst nach 5px Bewegung (verhindert Click-Blocking)
+   - Zoom: Mausrad oder mapZoom()/mapReset() Buttons
+   - Popup-System: Marker mit data-popup="true" onclick="showMapPopup(this)"
+     → showMapPopup(el): Zeigt grosses Info-Popup
+     → closeMapPopup(): Schliesst Popup (auch via Esc)
+   - Normale Marker (ohne data-popup): Tooltip toggle via .active Klasse
+-------------------------------------------------------------- */
 function initMap() {
   var frame=document.getElementById('mapFrame');
   var stage=document.getElementById('mapStage');
@@ -1227,7 +1521,7 @@ function initMap() {
     px=cx-(cx-px)*(zoom/oz);py=cy-(cy-py)*(zoom/oz);clamp();apply();
   },{passive:false});
 
-  /* ── DRAG — Capture erst NACH Bewegung, nie bei einfachem Klick ── */
+  /* -- DRAG — Capture erst NACH Bewegung, nie bei einfachem Klick -- */
   var dragging=false, startX=0, startY=0, startPx=0, startPy=0, pid=null;
 
   frame.addEventListener('pointerdown',function(e){
@@ -1255,7 +1549,7 @@ function initMap() {
     dragging=false; pid=null;
   });
 
-  /* ── MARKER CLICKS — normales onclick, kein Pointer-Konflikt mehr ── */
+  /* -- MARKER CLICKS — normales onclick, kein Pointer-Konflikt mehr -- */
   /* Popup-Marker: onclick="showMapPopup(this)" im HTML */
   /* Normale Marker: Tooltip toggle via click auf stage */
   stage.addEventListener('click',function(e){
@@ -1273,7 +1567,14 @@ function initMap() {
   if(img.complete) apply(); else img.addEventListener('load',apply);
 }
 
-/* ── PREFETCH ── */
+/* -------------------------------------------------------------
+   L  INITIALISIERUNG
+   Wird beim ersten Laden ausgeführt.
+   - Nav-Buttons: Click-Handler hinzufügen
+   - load('chronik'): Erste Section laden
+   - prefetch(): Alle Sections im Hintergrund laden (1s Verzögerung)
+-------------------------------------------------------------- */
+/* -- PREFETCH -- */
 function prefetch() {
   ['personen','netzwerk','questlog','glossar','fundstuecke','orte','fraktionen','verfolgung','haendler','lore','karte','notizen'].forEach(function(id){
     if (!cache[id]) {
@@ -1285,14 +1586,15 @@ function prefetch() {
   });
 }
 
-/* ── NAV INIT ── */
+/* -- NAV INIT -- */
 document.querySelectorAll('.nav-btn').forEach(function(btn){
   btn.addEventListener('click', function(){ load(this.dataset.s); });
 });
 
-/* ── START ── */
+/* -- START -- */
 load('chronik');
 setTimeout(prefetch, 1200);
+
 </script>
 </body>
 </html>
