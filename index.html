@@ -826,6 +826,7 @@ body {
 .ftag-hinweis{background:rgba(120,80,20,.5);color:#D8B870;}
 .ftag-dokument{background:rgba(40,60,80,.5);color:#A0B8C8;}
 .ftag-schluessel{background:rgba(80,100,40,.5);color:#B8C890;}
+.ftag-waffe {background:rgba(65,72,85,.5);color: #DDEEFF;}
 .ftag-sonstiges{background:rgba(60,60,60,.5);color:#A8A8A8;}
 .fund-desc{font-size:.9rem;color:var(--ink-3);line-height:1.65;}
 @media(max-width:620px){.fund-item{flex-direction:column;}.fund-icon{width:auto;}}
@@ -1374,11 +1375,14 @@ document.addEventListener('keydown', function(e) {
    ============================================================ */
 
 var CODES = {
-  nebelkeller: 1,     // Phase 1
-  nachtluft:   2,     // Phase 2
+  nebelkeller: 1,     // Phase 1 Tomas Schwarzdorn, Galen und Galen Zauberbuch
+  nachtluft:   2,     // Phase 2 Finn
   // hierunter neue Phasen einfügen:
-  // mondschein:  3,   // Phase 3
-  // beispiel:    4,   // Phase 4
+  mutternatur:  3,   // Phase 3 Linde 
+  kohlenmeiler:    4,   // Phase 4 Rattenbrnad Quest
+  aufnachnorden:    5,   // Phase 5 Aufbruch nach Norden
+  reinheim: 11, //Reinheim
+  tempelstadt: 12, //Tempelstadt
 };
 
 /* -------------------------------------------------------------
