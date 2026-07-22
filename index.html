@@ -30,8 +30,8 @@
 
 
   DM-CODES (Phase-Freischaltung):
-    Phase 1: XXXX
-    Phase 2: XXXX
+    Phase 1: nebelkeller
+    Phase 2: nachtluft
     → Weitere Phasen: var CODES im Abschnitt A definieren
   ═══════════════════════════════════════════════════════════════════════════
   -->
@@ -39,7 +39,6 @@
   <!-- ── META DATEN ── -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
   <title>Fluch des Sternenfalls &#8212; Kompendium</title>
 
   <!-- ── FONTS (Google Fonts — benötigt Internetverbindung) ── -->
@@ -731,6 +730,170 @@ body {
    - .qreich-*: Farbige Reich-Labels (atherion=braun, arkanis=violett etc.)
    - ERWEITERUNG: Neuen Status → .qstatus-NEU in CSS + data-status="neu" in HTML
 ═══════════════════════════════════════════════════════════════════════════ */
+
+/* --- STATUS-SYSTEM ---
+   Wird vom Ereignis-System gesteuert (Abschnitt M im JS).
+   Klassen werden per JS auf Elemente mit id="" gesetzt.
+   NICHT LÖSCHEN — auch wenn keine Elemente aktuell betroffen sind. */
+
+/* Aktueller Aufenthaltsort — grün */
+.status-aktuell { border-left: 4px solid rgba(42,160,42,.8) !important; }
+.status-aktuell::before {
+  content: '\25CF  Aktueller Aufenthaltsort';
+  display: block; font-family: 'Cinzel', serif; font-size: .65rem;
+  letter-spacing: .08em; color: rgba(42,200,42,.8);
+  margin-bottom: .5rem; text-transform: uppercase;
+}
+
+/* Besucht — gedimmt */
+.status-besucht { opacity: .55; border-left: 4px solid rgba(150,150,150,.4) !important; }
+.status-besucht::before {
+  content: '\25A0  Besucht';
+  display: block; font-family: 'Cinzel', serif; font-size: .65rem;
+  letter-spacing: .08em; color: rgba(150,150,150,.7);
+  margin-bottom: .5rem; text-transform: uppercase;
+}
+
+/* Abgeschlossen — durchgestrichen, stark gedimmt */
+.status-abgeschlossen { opacity: .4; }
+.status-abgeschlossen .quest-title,
+.status-abgeschlossen .fund-name { text-decoration: line-through; }
+.status-abgeschlossen::before {
+  content: '\2713  Abgeschlossen';
+  display: block; font-family: 'Cinzel', serif; font-size: .65rem;
+  letter-spacing: .08em; color: rgba(42,160,42,.6);
+  margin-bottom: .5rem; text-transform: uppercase;
+}
+
+
+/* --- CHARAKTER-POPUP ---
+   Wird durch Klick auf .party-card mit data-char ausgelöst.
+   Arcane Codex Design: Dunkler Rahmen, Glow-Effekte, goldene Akzente. */
+
+.char-popup-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.65);
+  z-index: 600; display: none; align-items: center; justify-content: center;
+}
+.char-popup-overlay.show { display: flex; }
+
+.char-popup {
+  background: linear-gradient(160deg, rgba(16,10,10,.98) 0%, rgba(8,4,5,.99) 100%);
+  border: 1px solid rgba(196,154,34,.35);
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 1px rgba(120,80,200,.15),
+    0 0 30px rgba(120,80,200,.12),
+    0 0 60px rgba(196,154,34,.06),
+    0 20px 60px rgba(0,0,0,.8);
+  width: 420px; max-width: 92vw; max-height: 88vh;
+  overflow-y: auto; position: relative;
+  animation: charPopIn .25s ease;
+}
+@keyframes charPopIn {
+  from { opacity:0; transform: scale(.93) translateY(12px); }
+  to   { opacity:1; transform: scale(1)  translateY(0); }
+}
+
+/* Dekorativer Eckenrahmen */
+.char-popup::before {
+  content: '';
+  position: absolute; inset: 6px;
+  border: 1px solid rgba(196,154,34,.12);
+  border-radius: 3px; pointer-events: none;
+}
+
+.char-popup-close {
+  position: absolute; top: .7rem; right: .9rem;
+  background: none; border: none; color: rgba(200,180,255,.4);
+  font-size: 1.3rem; cursor: pointer; line-height: 1;
+  transition: color .15s;
+}
+.char-popup-close:hover { color: var(--ink-1); }
+
+/* Portrait-Bereich */
+.char-popup-header {
+  display: flex; align-items: center; gap: 1.1rem;
+  padding: 1.4rem 1.4rem .9rem;
+  border-bottom: 1px solid rgba(120,80,200,.1);
+}
+.char-popup-portrait {
+  width: 72px; height: 72px; border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(196,154,34,.4);
+  box-shadow: 0 0 14px rgba(196,154,34,.2), 0 0 28px rgba(120,80,200,.1);
+  flex-shrink: 0;
+}
+.char-popup-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.1rem; font-weight: 700;
+  color: #E8DCC8;
+  text-shadow: 0 0 20px rgba(196,154,34,.3);
+  line-height: 1.2; margin-bottom: .2rem;
+}
+.char-popup-sub {
+  font-size: .82rem; color: rgba(200,180,255,.5);
+  font-style: italic; letter-spacing: .03em;
+}
+
+/* Stats-Bereich */
+.char-popup-body { padding: 1rem 1.4rem 1.4rem; }
+
+.char-stat-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: .28rem 0; border-bottom: 1px solid rgba(120,80,200,.06);
+  font-size: .9rem;
+}
+.char-stat-row:last-child { border-bottom: none; }
+.char-stat-label { color: rgba(200,180,255,.5); font-size: .82rem; }
+.char-stat-value {
+  color: #E8DCC8; font-family: 'Cinzel', serif; font-size: .85rem;
+  text-shadow: 0 0 8px rgba(196,154,34,.15);
+}
+
+/* Trennlinie zwischen Abschnitten */
+.char-section-title {
+  font-family: 'Cinzel', serif; font-size: .7rem; letter-spacing: .1em;
+  text-transform: uppercase; color: rgba(196,154,34,.5);
+  margin: .9rem 0 .4rem;
+  padding-bottom: .3rem;
+  border-bottom: 1px solid rgba(196,154,34,.15);
+}
+
+/* Attribut-Raster 3x2 */
+.char-attr-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .4rem;
+  margin: .5rem 0 .8rem;
+}
+.char-attr {
+  background: rgba(120,80,200,.06);
+  border: 1px solid rgba(120,80,200,.1);
+  border-radius: 2px; padding: .45rem .3rem; text-align: center;
+}
+.char-attr-score {
+  font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700;
+  color: #E8DCC8; text-shadow: 0 0 10px rgba(196,154,34,.2);
+  line-height: 1;
+}
+.char-attr-mod {
+  font-size: .72rem; color: rgba(196,154,34,.7);
+  font-family: 'Cinzel', serif; margin-top: .1rem;
+}
+.char-attr-name {
+  font-size: .6rem; color: rgba(200,180,255,.4);
+  letter-spacing: .06em; text-transform: uppercase; margin-top: .15rem;
+}
+
+/* Fähigkeiten-Liste */
+.char-features { list-style: none; margin: .3rem 0; }
+.char-features li {
+  padding: .2rem 0 .2rem .9rem; font-size: .88rem;
+  color: rgba(200,180,255,.6); position: relative; line-height: 1.4;
+}
+.char-features li::before {
+  content: '\25C6'; position: absolute; left: 0;
+  color: rgba(196,154,34,.5); font-size: .5rem; top: .4rem;
+}
+
 /* --- QUESTLOG FILTER --- */
 .quest-filters{background:var(--bg-card);border:1px solid var(--border);border-radius:3px;padding:1.2rem;margin-bottom:1.5rem;box-shadow:var(--sh-sm);}
 .quest-filter-group{margin-bottom:.9rem;}
@@ -782,7 +945,7 @@ body {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   13  FUNDE
+   13  FUND
    SECTIONS-CSS: Verwendet in sections/funde.html
    JS-ABHÄNGIG: initFunde() in JS-Block "Funde Filter"
    - .filt: Filter-Buttons (Besitzer, Zustand, Herkunft, Quelle, Kategorie, Reich)
@@ -827,7 +990,6 @@ body {
 .ftag-hinweis{background:rgba(120,80,20,.5);color:#D8B870;}
 .ftag-dokument{background:rgba(40,60,80,.5);color:#A0B8C8;}
 .ftag-schluessel{background:rgba(80,100,40,.5);color:#B8C890;}
-.ftag-waffe {background:rgba(65,72,85,.5);color: #DDEEFF;}
 .ftag-sonstiges{background:rgba(60,60,60,.5);color:#A8A8A8;}
 .fund-desc{font-size:.9rem;color:var(--ink-3);line-height:1.65;}
 @media(max-width:620px){.fund-item{flex-direction:column;}.fund-icon{width:auto;}}
@@ -1017,7 +1179,11 @@ body {
 <div class="unlock-modal-bg" id="unlockBg">
   <div class="unlock-modal">
     <h3>DM-Freischaltung</h3>
-    <p>Code eingeben, um die nächste Phase für die Spieler sichtbar zu machen.</p>
+    <p>Passwort eingeben für Phasen-Freischaltung.</p>
+    <p style="font-size:.8rem;color:var(--ink-4);margin-top:.3rem;">
+      Oder Ereignis auslösen: <code style="color:var(--gold-lt);">event:NAME</code><br>
+      z.B. <code style="color:var(--gold-lt);">event:mila-gerettet</code>
+    </p>
     <input type="text" id="unlockInput" placeholder="Code …" autocomplete="off" spellcheck="false"
            onkeydown="if(event.key==='Enter')tryUnlock();">
     <div class="unlock-status" id="unlockStatus"></div>
@@ -1048,7 +1214,7 @@ body {
    F  KARTENLOGIK         — Zoom, Drag, Popup-System
    G  VF-COUNTER          — Verfolgungsgrad-Tracker
    H  QUESTFILTER         — Questlog Filter-Logik
-   I  FUNDE FILTER   	  — Multi-Filter + Komma-Besitzer
+   I  FUND FILTER   — Multi-Filter + Komma-Besitzer
    J  NOTIZEN             — Tab-System, Auto-Save, Export
    K  DM UNLOCK           — Passwort-Modal, Phase-Freischaltung
    L  INITIALISIERUNG     — Nav-Buttons, Start-Section, Prefetch
@@ -1194,7 +1360,7 @@ function initQuestlog(){
 }
 
 /* -------------------------------------------------------------
-   I  FUNDE FILTER
+   I  FUND FILTER
    Multi-Filter für sections/funde.html
    - 6 Filter-Gruppen: besitzer, zustand, herkunft, kategorie, quelle, reich
    - Komma-getrennte Besitzer: data-besitzer="skall,menrom" → split(',')
@@ -1255,6 +1421,326 @@ function initFunde(){
    - notizClear(): Löscht alles aus localStorage nach Bestätigung
    HINWEIS: Muss hier definiert sein, nicht in notizen.html!
 -------------------------------------------------------------- */
+
+/* ===========================================================================
+   M  EREIGNIS-SYSTEM (DM-Trigger)
+   ===========================================================================
+
+   ZWECK:
+   Mit einem einzigen Befehl im DM-Modal können mehrere Wiki-Elemente
+   gleichzeitig ihren Status ändern — ohne Code-Bearbeitung oder GitHub-Push.
+
+   BEFEHL-FORMAT im DM-Modal:
+     event:EREIGNISNAME
+
+   VERFÜGBARE EREIGNISSE (Session 2):
+     event:kinder-bestattet       → Elara & Tomasz zur Ruhe gebettet
+     event:mila-gerettet          → Mila lebt, Quest abgeschlossen
+     event:mila-geopfert          → Dunkle Entscheidung am Altar
+     event:haus-verlassen         → Gruppe verlässt das Haus (Stufe 3)
+     event:finn-dabei             → Finn begleitet die Gruppe
+     event:elira-bezahlt          → 250 GM erhalten, Verschwiegenheit
+     event:linde-bleibt           → Flussmühle: Linde bleibt (Quest-Hook)
+     event:linde-umgesiedelt      → Flussmühle: Linde zieht in Wald
+     event:holzhein-fertig        → Alle Session-2-Quests abgeschlossen
+
+   STATUS-WERTE:
+     aktuell      → Grüner Badge "Aktueller Aufenthaltsort"
+     besucht      → Gedimmter Badge "Besucht"
+     abgeschlossen→ Durchgestrichener Badge "Abgeschlossen"
+     sichtbar     → Normal sichtbar (wie nach Passwort-Eingabe)
+     versteckt    → Ausgeblendet
+
+   ELEMENT-IDs (in den Section-Dateien vergeben):
+   Quests:   quest-mila, quest-knochen, quest-finn, quest-voss, quest-flussmühle
+   Orte:     ort-holzhein, ort-haus-der-dursts, ort-flussmühle
+   Personen: npc-finn, npc-mila, npc-linde
+   Items:    item-knochen, item-galens-buch, item-kristallscherbe
+=========================================================================== */
+
+/* --- Ereignis-Definitionen --- */
+var EREIGNISSE = {
+
+  /* Elara & Tomasz wurden in den Familiengrüften bestattet */
+  'kinder-bestattet': [
+    { id: 'quest-knochen',        status: 'abgeschlossen' },
+    { id: 'item-knochen',         status: 'abgeschlossen' },
+  ],
+
+  /* Mila wurde lebend vom Altar befreit */
+  'mila-gerettet': [
+    { id: 'quest-mila',           status: 'abgeschlossen' },
+    { id: 'npc-mila',             status: 'sichtbar'      },
+  ],
+
+  /* Dunkle Entscheidung: Mila wurde geopfert (oder starb) */
+  'mila-geopfert': [
+    { id: 'quest-mila',           status: 'abgeschlossen' },
+    { id: 'npc-mila',             status: 'versteckt'     },
+  ],
+
+  /* Gruppe verlässt das Haus der Dursts lebend → Stufe 3 */
+  'haus-verlassen': [
+    { id: 'ort-haus-der-dursts',  status: 'besucht'       },
+    { id: 'npc-finn',             status: 'sichtbar'       },
+    { id: 'item-galens-buch',     status: 'sichtbar'       },
+  ],
+
+  /* Finn begleitet die Gruppe */
+  'finn-dabei': [
+    { id: 'npc-finn',             status: 'aktuell'        },
+    { id: 'quest-finn',           status: 'sichtbar'       },
+  ],
+
+  /* Elira hat bezahlt (250 GM), Verschwiegenheit vereinbart */
+  'elira-bezahlt': [
+    { id: 'quest-mila',           status: 'abgeschlossen'  },
+  ],
+
+  /* Flussmühle: Linde bleibt → Steinkreis-Quest-Hook */
+  'linde-bleibt': [
+    { id: 'ort-flussmühle',       status: 'besucht'        },
+    { id: 'npc-linde',            status: 'sichtbar'       },
+    { id: 'quest-flussmühle',     status: 'abgeschlossen'  },
+  ],
+
+  /* Flussmühle: Linde zieht in Wald */
+  'linde-umgesiedelt': [
+    { id: 'ort-flussmühle',       status: 'besucht'        },
+    { id: 'quest-flussmühle',     status: 'abgeschlossen'  },
+  ],
+
+  /* Session 2 vollständig abgeschlossen — Holzhein Phase beendet */
+  'holzhein-fertig': [
+    { id: 'ort-holzhein',         status: 'besucht'        },
+    { id: 'ort-haus-der-dursts',  status: 'besucht'        },
+    { id: 'quest-mila',           status: 'abgeschlossen'  },
+    { id: 'quest-knochen',        status: 'abgeschlossen'  },
+    { id: 'npc-finn',             status: 'sichtbar'       },
+    { id: 'npc-mila',             status: 'sichtbar'       },
+    { id: 'npc-linde',            status: 'sichtbar'       },
+  ],
+};
+
+/* --- Status-CSS-Klassen --- */
+/* Jeder Status wird als Klasse auf das Element gesetzt.
+   Das CSS steuert dann Badge-Farbe, Opacity etc. */
+var STATUS_KLASSEN = ['status-aktuell','status-besucht','status-abgeschlossen',
+                      'status-sichtbar','status-versteckt'];
+
+/* --- Status speichern/laden (localStorage) --- */
+var STATUS_KEY = 'sfk_status'; /* Schlüssel in localStorage */
+
+function getStatusSpeicher(){
+  try{ return JSON.parse(localStorage.getItem(STATUS_KEY))||{}; }
+  catch(e){ return {}; }
+}
+function setStatusSpeicher(data){
+  try{ localStorage.setItem(STATUS_KEY, JSON.stringify(data)); }
+  catch(e){}
+}
+
+/* --- Status auf ein Element anwenden --- */
+function applyStatus(el, status){
+  /* Alle alten Status-Klassen entfernen */
+  STATUS_KLASSEN.forEach(function(k){ el.classList.remove(k); });
+  if(status === 'versteckt'){
+    el.style.display = 'none';
+  } else if(status === 'sichtbar'){
+    el.style.display = '';
+    el.classList.remove('gated');
+  } else {
+    el.style.display = '';
+    el.classList.add('status-' + status);
+  }
+}
+
+/* --- Alle gespeicherten Status beim Section-Laden anwenden --- */
+function applyGespeicherteStatus(){
+  var data = getStatusSpeicher();
+  for(var id in data){
+    var el = document.getElementById(id);
+    if(el) applyStatus(el, data[id]);
+  }
+}
+
+/* --- Ereignis auslösen --- */
+function triggerEreignis(name){
+  var ereignis = EREIGNISSE[name];
+  if(!ereignis){
+    return false; /* Ereignis nicht gefunden */
+  }
+  var data = getStatusSpeicher();
+  ereignis.forEach(function(aktion){
+    data[aktion.id] = aktion.status;
+    var el = document.getElementById(aktion.id);
+    if(el) applyStatus(el, aktion.status);
+  });
+  setStatusSpeicher(data);
+  return true;
+}
+
+/* --- Status-Reset (alle Ereignisse zurücksetzen) --- */
+function resetEreignisse(){
+  localStorage.removeItem(STATUS_KEY);
+}
+
+
+/* ===========================================================================
+   N  CHARAKTER-POPUPS
+   ===========================================================================
+   Klick auf .party-card mit data-char="NAME" öffnet Stats-Popup.
+   Stats sind direkt im JS definiert — kein fetch(), kein externes File.
+   Portraits werden aus portraits/ geladen (gleiche Dateien wie personen.html).
+=========================================================================== */
+
+var CHAR_STATS = {
+
+  'davian': {
+    name:      'Davian',
+    sub:       'Kleriker · Halbelf · Stufe 2',
+    portrait:  'portraits/davian.jpg',
+    hp: 18, ac: 17, passWahr: 15, passEins: 15,
+    attrs: {
+      STR: [13,'+1'], DEX: [10,'+0'], CON: [15,'+2'],
+      INT: [8,'-1'],  WIS: [16,'+3'], CHA: [14,'+2']
+    },
+    features: [
+      'Channel Divinity (2× / Lange Rast)',
+      'Heilige Flamme (Cantrip)',
+      'Heilen (Cantrip)',
+      'Führungslicht (Göttlicher Zauber)',
+      'Immunität: Magischer Schlaf'
+    ]
+  },
+
+  'drazhar': {
+    name:      'Drazhar Do\u2019Veyr',
+    sub:       'Paladin · Drow (Elf) · Stufe 2',
+    portrait:  'portraits/drazhar.jpg',
+    hp: 20, ac: 20, passWahr: 13, passEins: 9,
+    attrs: {
+      STR: [17,'+3'], DEX: [10,'+0'], CON: [15,'+2'],
+      INT: [8,'-1'],  WIS: [12,'+1'], CHA: [13,'+1']
+    },
+    features: [
+      'Lay on Hands (10 HP / Lange Rast)',
+      'Göttliches Gespür (Aura)',
+      'Vorteil gegen Verzaubert',
+      'Immunität: Magischer Schlaf',
+      'Dunkelsicht 60 Fuss'
+    ]
+  },
+
+  'menrom': {
+    name:      'Menrom',
+    sub:       'Zauberer · Mensch · Stufe 2',
+    portrait:  'portraits/menrom.jpg',
+    hp: 15, ac: 12, passWahr: 15, passEins: 15,
+    attrs: {
+      STR: [8,'-1'],  DEX: [14,'+2'], CON: [14,'+2'],
+      INT: [17,'+3'], WIS: [12,'+1'], CHA: [10,'+0']
+    },
+    features: [
+      'Arkane Erholung (1× / Kurze Rast)',
+      'Zauberbuch (Zauberspezialist)',
+      'Electrify (Cantrip)',
+      'Arkane Schule: Evokation',
+      'Geformte Magie'
+    ]
+  },
+
+  'nyktarion': {
+    name:      'Nyktarion Kharos',
+    sub:       'Hexer · Teuflingsblut · Stufe 2',
+    portrait:  'portraits/nyktarion.jpg',
+    hp: 12, ac: 13, passWahr: 11, passEins: 11,
+    attrs: {
+      STR: [8,'-1'],  DEX: [14,'+2'], CON: [14,'+2'],
+      INT: [10,'+0'], WIS: [12,'+1'], CHA: [17,'+3']
+    },
+    features: [
+      'Eldritch Blast + Agonizing Blast',
+      "Dark One's Blessing (Temp HP bei Kill)",
+      'Hex (Verfluchung)',
+      'Feuerresistenz (Teuflingsblut)',
+      'Dunkelsicht 60 Fuss'
+    ]
+  },
+
+  'skall': {
+    name:      'Skall Ghartuk',
+    sub:       'Druide · Goliath · Stufe 2',
+    portrait:  'portraits/skall.jpg',
+    hp: 18, ac: 14, passWahr: 13, passEins: 15,
+    attrs: {
+      STR: [12,'+1'], DEX: [14,'+2'], CON: [15,'+2'],
+      INT: [11,'+0'], WIS: [16,'+3'], CHA: [8,'-1']
+    },
+    features: [
+      'Wildgestalt (2× / Kurze Rast)',
+      'Riesenabstieg (Hügel-Riese, 2× / Lange Rast)',
+      'Druidensprache',
+      'Kosmische Narbe (Hals) — Herkunft unbekannt',
+      'Bewegung 35 Fuss'
+    ]
+  }
+};
+
+/* Popup-Elemente erstellen (einmalig) */
+(function(){
+  var ov = document.createElement('div');
+  ov.className = 'char-popup-overlay';
+  ov.id = 'charPopupOverlay';
+  ov.innerHTML = '<div class="char-popup" id="charPopupBox"><button class="char-popup-close" onclick="closeCharPopup()">&times;</button><div id="charPopupContent"></div></div>';
+  ov.addEventListener('click', function(e){ if(e.target===ov) closeCharPopup(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeCharPopup(); });
+  document.body.appendChild(ov);
+})();
+
+function openCharPopup(charKey){
+  var c = CHAR_STATS[charKey];
+  if(!c) return;
+  var attrs = ['STR','DEX','CON','INT','WIS','CHA'];
+  var attrDE = {STR:'Stärke',DEX:'Gewandtheit',CON:'Konstitution',INT:'Intelligenz',WIS:'Weisheit',CHA:'Charisma'};
+
+  var attrGrid = attrs.map(function(a){
+    return '<div class="char-attr">'
+      + '<div class="char-attr-score">'+c.attrs[a][0]+'</div>'
+      + '<div class="char-attr-mod">'+c.attrs[a][1]+'</div>'
+      + '<div class="char-attr-name">'+attrDE[a]+'</div>'
+      + '</div>';
+  }).join('');
+
+  var features = c.features.map(function(f){
+    return '<li>'+f+'</li>';
+  }).join('');
+
+  document.getElementById('charPopupContent').innerHTML =
+    '<div class="char-popup-header">'
+    + '<img src="'+c.portrait+'" alt="'+c.name+'" class="char-popup-portrait">'
+    + '<div><div class="char-popup-name">'+c.name+'</div>'
+    + '<div class="char-popup-sub">'+c.sub+'</div></div>'
+    + '</div>'
+    + '<div class="char-popup-body">'
+    + '<div class="char-section-title">Kampfwerte</div>'
+    + '<div class="char-stat-row"><span class="char-stat-label">Trefferpunkte</span><span class="char-stat-value">'+c.hp+' HP</span></div>'
+    + '<div class="char-stat-row"><span class="char-stat-label">Rüstungsklasse</span><span class="char-stat-value">'+c.ac+' RK</span></div>'
+    + '<div class="char-stat-row"><span class="char-stat-label">Passive Wahrnehmung</span><span class="char-stat-value">'+c.passWahr+'</span></div>'
+    + '<div class="char-stat-row"><span class="char-stat-label">Passive Einsicht</span><span class="char-stat-value">'+c.passEins+'</span></div>'
+    + '<div class="char-section-title">Attribute</div>'
+    + '<div class="char-attr-grid">'+attrGrid+'</div>'
+    + '<div class="char-section-title">Besondere Fähigkeiten</div>'
+    + '<ul class="char-features">'+features+'</ul>'
+    + '</div>';
+
+  document.getElementById('charPopupOverlay').classList.add('show');
+}
+
+function closeCharPopup(){
+  document.getElementById('charPopupOverlay').classList.remove('show');
+}
+
 /* -- NOTIZEN -- */
 function initNotizen(){
   var tabs = document.querySelectorAll('#app .notiz-tab');
@@ -1376,14 +1862,11 @@ document.addEventListener('keydown', function(e) {
    ============================================================ */
 
 var CODES = {
-  nebelkeller: 1,     // Phase 1 Tomas Schwarzdorn, Galen und Galen Zauberbuch
-  nachtluft:   2,     // Phase 2 Finn
+  nebelkeller: 1,     // Phase 1
+  nachtluft:   2,     // Phase 2
   // hierunter neue Phasen einfügen:
-  mutternatur:  3,   // Phase 3 Linde 
-  kohlenmeiler:    4,   // Phase 4 Rattenbrnad Quest
-  aufnachnorden:    5,   // Phase 5 Aufbruch nach Norden
-  reinheim: 11, //Reinheim
-  tempelstadt: 12, //Tempelstadt
+  // mondschein:  3,   // Phase 3
+  // beispiel:    4,   // Phase 4
 };
 
 /* -------------------------------------------------------------
@@ -1413,8 +1896,25 @@ function applyPhase(p) {
    - Passwörter → Abschnitt A (DM-Konfiguration)
 -------------------------------------------------------------- */
 function tryUnlock() {
-  var code = (document.getElementById('unlockInput').value || '').trim().toLowerCase();
-  var st = document.getElementById('unlockStatus');
+  var input = (document.getElementById('unlockInput').value || '').trim();
+  var code  = input.toLowerCase();
+  var st    = document.getElementById('unlockStatus');
+
+  /* --- Ereignis-Befehl: "event:NAME" --- */
+  if(code.indexOf('event:') === 0){
+    var eventName = code.slice(6).trim();
+    if(triggerEreignis(eventName)){
+      st.className = 'unlock-status ok';
+      st.textContent = '\u2713 Ereignis "' + eventName + '" ausgelöst.';
+      document.getElementById('unlockInput').value = '';
+    } else {
+      st.className = 'unlock-status err';
+      st.textContent = '\u2717 Unbekanntes Ereignis: ' + eventName;
+    }
+    return;
+  }
+
+  /* --- Passwort-Freischaltung (wie bisher) --- */
   if (CODES.hasOwnProperty(code)) {
     var p = CODES[code]; var arr = getUnlocked();
     if (arr.indexOf(p) < 0) arr.push(p);
@@ -1427,7 +1927,7 @@ function tryUnlock() {
     st.textContent = '\u2717 Unbekannter Code.';
   }
 }
-function resetUnlocks() {
+function resetUnlocks() /* Setzt Phasen UND Ereignisse zurück */ {
   setUnlocked([]);
   document.getElementById('unlockStatus').textContent = 'Zur\u00fcckgesetzt.';
   setTimeout(function(){ location.reload(); }, 500);
