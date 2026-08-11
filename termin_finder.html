@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sternenfall · Terminfinder</title>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     STERNENFALL TERMINFINDER
+     ─────────────────────────────────────────────────────────────────────────
+     Funktionsweise:
+       1. Teilnehmer wählt seinen Charakter-/DM-Namen per Dropdown
+       2. Klick auf Kalendertag = Toggle (verfügbar / nicht verfügbar)
+       3. Daten werden als JSON in einem GitHub Gist gespeichert
+       4. Wenn alle 6 Teilnehmer denselben Tag markiert haben:
+          → EmailJS verschickt automatisch eine Benachrichtigung an alle
+
+     Externe Dienste (einmalig einrichten — siehe ANLEITUNG am Seitenende):
+       - GitHub Gist (kostenlos): Datenspeicher
+       - EmailJS (kostenlos, 200 Mails/Monat): Mailversand
+
+     Konfiguration: nur den KONFIG-Block unten anpassen.
+     ══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- Google Fonts: Cinzel (Fantasy-Titel) + EB Garamond (Fliesstext) -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<!-- EmailJS SDK — für Mailversand direkt aus dem Browser -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   CSS — Arcane-Codex-Stil: Dunkel, Fantasy, Gold-Akzente
+   Identische Variablen wie quest_kompendium.html für Designkonsistenz.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --bg:         #0a0a0f;
+  --panel:      #10101a;
+  --panel2:     #16162a;
+  --border:     #2a2a45;
+  --gold:       #c9a84c;
+  --gold2:      #f0c94a;
+  --ink:        #d4cfc0;
+  --faint:      #666;
+  --red:        #8b2020;
+  --violet:     #5a2d82;
+  --green:      #1a4a1a;
+  --green-c:    #66cc66;
+  --font-display: 'Cinzel', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  min-height: 100vh;
+  /* Subtiler Sternenhintergrund — kleines weisses Rauschen */
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(90,45,130,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(140,60,20,0.06) 0%, transparent 60%);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+header {
+  background: linear-gradient(180deg, #12091e 0%, var(--panel) 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 24px 40px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-icon {
+  font-size: 32px;
+  filter: drop-shadow(0 0 8px rgba(201,168,76,0.5));
+}
+
+.header-text h1 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--gold2);
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+}
+
+.header-text p {
+  color: var(--faint);
+  font-size: 14px;
+  margin-top: 3px;
+}
+
+/* ── Status-Banner (Anzeige: wer ist eingeloggt, letztes Speichern) ──────── */
+#statusBar {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 14px;
+  color: var(--faint);
+  flex-wrap: wrap;
+}
+
+#statusBar .status-pill {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 13px;
+}
+
+#statusBar .status-pill.ok   { border-color: #1a4a1a; color: var(--green-c); }
+#statusBar .status-pill.warn { border-color: #4a3a1a; color: #ccaa44; }
+#statusBar .status-pill.err  { border-color: #4a1a1a; color: #cc6666; }
+
+/* ── Haupt-Layout ───────────────────────────────────────────────────────── */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 40px;
+}
+
+/* ── Login-Panel (Charakter-Auswahl + Jahr-Navigation) ──────────────────── */
+.controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+  padding: 18px 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.controls label {
+  font-size: 13px;
+  color: var(--faint);
+  margin-right: 6px;
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+}
+
+/* Charakter-Dropdown */
+#charSelect {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  cursor: pointer;
+  min-width: 160px;
+}
+#charSelect:focus { outline: none; border-color: var(--gold); }
+
+/* Einloggen-Button */
+#btnLogin {
+  background: var(--panel2);
+  border: 1px solid var(--gold);
+  color: var(--gold2);
+  padding: 7px 20px;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all .15s;
+}
+#btnLogin:hover { background: #1a1a2a; }
+
+/* Jahr-Navigation */
+.year-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.year-nav button {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.year-nav button:hover { border-color: var(--gold); color: var(--gold2); }
+
+#yearDisplay {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--gold);
+  min-width: 60px;
+  text-align: center;
+}
+
+/* Alle löschen Button */
+#btnClear {
+  background: transparent;
+  border: 1px solid #4a1a1a;
+  color: #cc6666;
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .15s;
+  margin-left: 8px;
+}
+#btnClear:hover { background: #1a0808; }
+
+/* ── Legende ────────────────────────────────────────────────────────────── */
+.legend {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--faint);
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Farb-Chips für Charakter-Namen in der Legende */
+.char-chip {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Übersicht: wer hat sich schon eingetragen */
+.participant-overview {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.participant-badge {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all .15s;
+}
+
+.participant-badge.has-entries {
+  border-color: var(--gold);
+  color: var(--gold2);
+}
+
+.participant-badge .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--faint);
+  flex-shrink: 0;
+}
+
+.participant-badge.has-entries .dot {
+  background: var(--green-c);
+}
+
+/* ── Kalender-Grid ──────────────────────────────────────────────────────── */
+#calendarGrid {
+  display: grid;
+  /* 3 Monate pro Zeile auf breiten Screens */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) { #calendarGrid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { #calendarGrid { grid-template-columns: 1fr; } }
+
+/* ── Monats-Card ────────────────────────────────────────────────────────── */
+.month-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.month-header {
+  background: linear-gradient(135deg, #1a0f2e 0%, #12101e 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  text-align: center;
+}
+
+/* Wochentag-Kopfzeile Mo–So */
+.weekday-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 6px 8px 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.weekday-label {
+  text-align: center;
+  font-size: 11px;
+  color: var(--faint);
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+
+/* Tag-Grid für einen Monat */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  padding: 8px;
+}
+
+/* Einzelner Tag */
+.day-cell {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  position: relative;
+  transition: all .12s;
+  border: 1px solid transparent;
+  user-select: none;
+  /* Standardfarbe: kein Eintrag */
+  background: var(--panel2);
+  color: var(--faint);
+}
+
+/* Leere Platzhalter-Zellen (Wochentage vor Monatsstart) */
+.day-cell.empty {
+  background: transparent;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Vergangene Tage: gedimmt, nicht klickbar */
+.day-cell.past {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Hover (nur für aktive, zukünftige Tage) */
+.day-cell:not(.empty):not(.past):hover {
+  border-color: var(--gold);
+  color: var(--ink);
+  background: #1a1a30;
+  z-index: 1;
+}
+
+/* Heute */
+.day-cell.today {
+  border-color: var(--gold);
+  color: var(--gold2);
+}
+
+/* Vom aktiven Nutzer als verfügbar markiert */
+.day-cell.my-pick {
+  border-color: var(--gold);
+  color: var(--gold2);
+}
+
+/* Hat Einträge von anderen Teilnehmern — Farbindikator-Punkte unten */
+.day-cell.has-votes {
+  background: var(--panel2);
+}
+
+/* Voller Match: alle 6 Teilnehmer verfügbar → grüner Hintergrund */
+.day-cell.full-match {
+  background: rgba(26, 74, 26, 0.6) !important;
+  border-color: var(--green-c) !important;
+  color: var(--green-c) !important;
+  font-weight: bold;
+  box-shadow: 0 0 8px rgba(102, 204, 102, 0.3);
+}
+
+/* Punkte-Container (Teilnehmer-Farben) */
+.vote-dots {
+  position: absolute;
+  bottom: 2px;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1px;
+  flex-wrap: wrap;
+  padding: 0 2px;
+}
+
+.vote-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Tag-Zahl (oben in der Zelle) */
+.day-num {
+  position: absolute;
+  top: 3px;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* ── Tooltip (hover zeigt Teilnehmer-Namen) ─────────────────────────────── */
+.tooltip {
+  position: fixed;
+  background: #1a1a30;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--ink);
+  pointer-events: none;
+  z-index: 1000;
+  display: none;
+  max-width: 200px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+
+.tooltip-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.tooltip-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+/* ── Match-Banner (erscheint wenn voller Match gefunden) ────────────────── */
+#matchBanner {
+  display: none;
+  background: linear-gradient(135deg, #0a1a0a 0%, #0f2a0f 100%);
+  border: 1px solid var(--green-c);
+  border-radius: 8px;
+  padding: 20px 28px;
+  margin-bottom: 24px;
+  animation: glow-pulse 2s infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(102,204,102,0.2); }
+  50%       { box-shadow: 0 0 24px rgba(102,204,102,0.4); }
+}
+
+#matchBanner h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--green-c);
+  margin-bottom: 8px;
+}
+
+#matchBanner p {
+  color: var(--ink);
+  font-size: 15px;
+}
+
+/* ── Spar-Indikator (Spinner während GitHub Gist Save) ──────────────────── */
+#saveIndicator {
+  position: fixed;
+  bottom: 20px; right: 20px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  color: var(--faint);
+  display: none;
+  z-index: 999;
+  transition: all .2s;
+}
+#saveIndicator.saving { border-color: var(--gold); color: var(--gold); }
+#saveIndicator.saved  { border-color: #1a4a1a; color: var(--green-c); }
+#saveIndicator.error  { border-color: #4a1a1a; color: #cc6666; }
+
+/* Token-Input Fokus */
+#tokenInput:focus { outline: none; border-color: var(--gold) !important; }
+
+/* ── Anleitung (aufklappbar am Seitenende) ──────────────────────────────── */
+#anleitungSection {
+  margin-top: 48px;
+  border-top: 1px solid var(--border);
+  padding-top: 32px;
+}
+
+#anleitungSection summary {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+#anleitungSection summary::before {
+  content: '▶';
+  font-size: 11px;
+  transition: transform .2s;
+}
+
+details[open] summary::before { transform: rotate(90deg); }
+
+.anleitung-content {
+  margin-top: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.anleitung-step {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.anleitung-step h3 {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+.anleitung-step p, .anleitung-step li {
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.7;
+}
+
+.anleitung-step code {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 13px;
+  font-family: 'Courier New', monospace;
+  color: var(--gold2);
+  display: inline-block;
+  margin: 2px 0;
+}
+
+.anleitung-step code.block {
+  display: block;
+  white-space: pre;
+  margin: 8px 0;
+  padding: 10px 14px;
+  overflow-x: auto;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HEADER
+     ══════════════════════════════════════════════════════════════════════════ -->
+<header>
+  <div class="header-icon">⚔️</div>
+  <div class="header-text">
+    <h1>STERNENFALL · TERMINFINDER</h1>
+    <p>Fluch des Sternenfalls — Sessionplanung für alle Teilnehmer</p>
+  </div>
+</header>
+
+<!-- Status-Bar: zeigt aktiven Nutzer + letzten Speicher-Zeitstempel -->
+<div id="statusBar">
+  <span id="statusUser" class="status-pill">Nicht eingeloggt</span>
+  <span id="statusSync" class="status-pill">—</span>
+  <span id="statusMatch" class="status-pill" style="display:none"></span>
+</div>
+
+<!-- Tooltip (folgt Maus) -->
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-title">VERFÜGBAR</div>
+  <div id="tooltipNames"></div>
+</div>
+
+<!-- Speicher-Indikator (fixiert unten rechts) -->
+<div id="saveIndicator">Speichern…</div>
+
+<!-- ── DM TOKEN MODAL ────────────────────────────────────────────────────────
+     Erscheint nur wenn kein Token im localStorage vorhanden ist.
+     Nur der DM braucht dieses Modal — Spieler können lesen ohne Token.
+     ──────────────────────────────────────────────────────────────────────── -->
+<div id="tokenModalBg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2000;align-items:center;justify-content:center;">
+  <div style="background:#10101a;border:1px solid #c9a84c;border-radius:8px;padding:28px 32px;max-width:440px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.7);">
+    <div style="font-family:'Cinzel',Georgia,serif;font-size:15px;color:#f0c94a;letter-spacing:.08em;margin-bottom:6px;">🔑 DM-TOKEN ERFORDERLICH</div>
+    <p style="font-size:13px;color:#888;margin-bottom:16px;line-height:1.6;">
+      Zum Speichern wird ein GitHub Personal Access Token mit <code style="background:#16162a;padding:1px 6px;border-radius:3px;color:#f0c94a;font-size:12px;">gist</code>-Scope benötigt.<br>
+      Der Token wird nur in deinem Browser gespeichert — nie im Code.
+    </p>
+    <input id="tokenInput" type="password"
+      placeholder="ghp_..."
+      style="width:100%;background:#16162a;border:1px solid #2a2a45;color:#d4cfc0;padding:9px 14px;border-radius:6px;font-family:monospace;font-size:13px;margin-bottom:10px;box-sizing:border-box;"
+      onkeydown="if(event.key==='Enter')saveToken();">
+    <div id="tokenStatus" style="font-size:12px;color:#cc6666;min-height:18px;margin-bottom:12px;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button onclick="closeTokenModal()" style="background:transparent;border:1px solid #2a2a45;color:#666;padding:7px 18px;border-radius:6px;font-family:'Cinzel',serif;font-size:12px;cursor:pointer;">Abbrechen</button>
+      <button onclick="saveToken()" style="background:#16162a;border:1px solid #c9a84c;color:#f0c94a;padding:7px 18px;border-radius:6px;font-family:'Cinzel',serif;font-size:12px;cursor:pointer;letter-spacing:.06em;">Speichern</button>
+    </div>
+    <p style="font-size:11px;color:#444;margin-top:14px;border-top:1px solid #1a1a2a;padding-top:10px;">
+      Token erstellen: github.com/settings/tokens → "Generate new token (classic)" → nur <strong style="color:#555;">gist</strong> ankreuzen
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HAUPT-INHALT
+     ══════════════════════════════════════════════════════════════════════════ -->
+<main>
+
+  <!-- Match-Banner (erscheint bei vollem Match) -->
+  <div id="matchBanner">
+    <h2>⚔️ SESSION BEREIT!</h2>
+    <p id="matchText"></p>
+  </div>
+
+  <!-- Steuerleiste: Charakter-Auswahl + Jahr-Navigation -->
+  <div class="controls">
+    <label for="charSelect">CHARAKTER</label>
+    <select id="charSelect">
+      <option value="">— Wählen —</option>
+      <option value="DM">DM</option>
+      <option value="Davian">Davian</option>
+      <option value="Drazhar">Drazhar</option>
+      <option value="Menrom">Menrom</option>
+      <option value="Nyktarion">Nyktarion</option>
+      <option value="Skall">Skall</option>
+    </select>
+    <button id="btnLogin">Einloggen</button>
+    <button id="btnClear" title="Alle eigenen Markierungen löschen">Meine Einträge löschen</button>
+
+    <!-- Jahr-Navigation -->
+    <div class="year-nav">
+      <button id="btnPrevYear" title="Vorjahr">◀</button>
+      <span id="yearDisplay">2026</span>
+      <button id="btnNextYear" title="Nächstes Jahr">▶</button>
+    </div>
+  </div>
+
+  <!-- Teilnehmer-Übersicht: wer hat schon Tage eingetragen -->
+  <div class="participant-overview" id="participantOverview"></div>
+
+  <!-- Legende: Charakter-Farben -->
+  <div class="legend" id="legend"></div>
+
+  <!-- Kalender-Grid: 12 Monate -->
+  <div id="calendarGrid"></div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       EINRICHTUNGS-ANLEITUNG (aufklappbar)
+       ══════════════════════════════════════════════════════════════════════ -->
+  <div id="anleitungSection">
+    <details>
+      <summary>⚙️ BEDIENUNGSANLEITUNG</summary>
+      <div class="anleitung-content">
+        <div class="anleitung-step">
+          <h3>VERWENDUNG (für Spieler)</h3>
+          <p>1. Charakter-Namen aus dem Dropdown wählen → "Einloggen"</p>
+          <p>2. Auf Tage klicken, die passen → grün markiert</p>
+          <p>3. Nochmals klicken → Markierung entfernt</p>
+          <p>4. Speichern passiert automatisch (ca. 1,5 Sekunden nach dem letzten Klick)</p>
+          <p>5. Hover über einen Tag mit Einträgen → Tooltip zeigt, wer den Tag gewählt hat</p>
+          <p>6. Bei vollem Match (alle 6) → Mail geht automatisch raus ✉️</p>
+        </div>
+      </div>
+    </details>
+  </div>
+
+</main>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+ 
+/* ═══════════════════════════════════════════════════════════════════════════
+   KONFIG-BLOCK — hier alles eintragen, bevor die Seite verteilt wird
+   ═══════════════════════════════════════════════════════════════════════════ */
+const KONFIG = {
+ 
+  // ── GitHub Gist (Datenspeicher) ──────────────────────────────────────────
+  // GIST_ID: nur der hex-String aus der Gist-URL (nach dem Username)
+  GIST_ID: 'e74b9111ce9b5c6760e2c1a4b55706d2',
+
+  // GITHUB_TOKEN: immer null lassen — der DM gibt ihn einmalig per Modal ein.
+  // Er wird im localStorage des Browsers gespeichert, nie im Code.
+  GITHUB_TOKEN: null,
+ 
+  // ── EmailJS ──────────────────────────────────────────────────────────────
+  // Alle drei Werte aus dem EmailJS-Dashboard kopieren
+  EMAILJS_SERVICE_ID:  'service_23q08mp',
+  EMAILJS_TEMPLATE_ID: 'template_sternfall_date',
+  EMAILJS_PUBLIC_KEY:  'QAJt7KnzxsxtQJ6X5',
+ 
+  // ── Teilnehmer ───────────────────────────────────────────────────────────
+  // email: Adresse für Benachrichtigungen
+  // color: Farbe im Kalender (Punkte + Legende)
+  PARTICIPANTS: {
+    'DM':        { email: 'sternenfall.dm@gmail.com',  color: '#c9a84c' }, // Gold (DM)
+    'Davian':    { email: 'reg@dap.li',                color: '#7ecfff' }, // Hellblau
+    'Drazhar':   { email: 'gstoehl.michael@hotmail.com', color: '#bb77ff' }, // Violett
+    'Menrom':    { email: 'kussi85@hotmail.com',        color: '#ff9944' }, // Orange
+    'Nyktarion': { email: 'jan.konrad679@gmail.com',    color: '#ff5577' }, // Rot-Rosa
+    'Skall':     { email: 'steffo.moutaftsidis@gmail.com', color: '#55cc88' }, // Grün
+  },
+ 
+  // Anzahl Teilnehmer die zustimmen müssen für einen vollen Match
+  // (6 = alle: DM + 5 Spieler)
+  REQUIRED_COUNT: 6,
+};
+/* ═════════════════════════════════ KONFIG ENDE ════════════════════════════ */
+ 
+ 
+/* ── Globaler App-State ─────────────────────────────────────────────────── */
+let state = {
+  activeUser: null,          // aktuell eingeloggter Charakter-Name
+  currentYear: new Date().getFullYear(),  // angezeigtes Jahr
+  // data: { 'YYYY-MM-DD': { 'Davian': true, 'DM': true, ... } }
+  data: {},
+  lastNotified: new Set(),   // bereits gemeldete Match-Dates (verhindert Doppelmails)
+  saving: false,
+  saveTimer: null,
+};
+ 
+const MONTH_NAMES = [
+  'Januar','Februar','März','April','Mai','Juni',
+  'Juli','August','September','Oktober','November','Dezember'
+];
+const WEEKDAY_LABELS = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   INITIALISIERUNG
+   ══════════════════════════════════════════════════════════════════════════ */
+ 
+// EmailJS initialisieren (mit Public Key)
+// Erst nach DOM-Load aufrufen
+window.addEventListener('DOMContentLoaded', () => {
+  // EmailJS initialisieren — Public Key aus Konfig
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init({ publicKey: KONFIG.EMAILJS_PUBLIC_KEY });
+  }
+ 
+  // Event-Listener einrichten
+  setupEventListeners();
+ 
+  // Legende rendern
+  renderLegend();
+ 
+  // Teilnehmer-Übersicht rendern (initial leer)
+  renderParticipantOverview();
+ 
+  // Daten vom Gist laden, dann Kalender rendern
+  loadFromGist();
+});
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   EVENT LISTENERS
+   ══════════════════════════════════════════════════════════════════════════ */
+function setupEventListeners() {
+ 
+  // Login-Button: Charakter aus Dropdown übernehmen
+  document.getElementById('btnLogin').addEventListener('click', () => {
+    const sel = document.getElementById('charSelect').value;
+    if (!sel) { alert('Bitte zuerst einen Charakter wählen.'); return; }
+    state.activeUser = sel;
+ 
+    // Status-Bar aktualisieren
+    const pill = document.getElementById('statusUser');
+    pill.textContent = `⚔ Eingeloggt als: ${sel}`;
+    pill.className = 'status-pill ok';
+  });
+ 
+  // Alle eigenen Einträge löschen
+  document.getElementById('btnClear').addEventListener('click', () => {
+    if (!state.activeUser) { alert('Zuerst einloggen.'); return; }
+    if (!confirm(`Alle Einträge von ${state.activeUser} wirklich löschen?`)) return;
+ 
+    // Alle Tage im state bereinigen
+    for (const dateKey in state.data) {
+      delete state.data[dateKey][state.activeUser];
+      // Leere Objekte entfernen
+      if (Object.keys(state.data[dateKey]).length === 0) {
+        delete state.data[dateKey];
+      }
+    }
+    renderCalendar();
+    scheduleSave();
+  });
+ 
+  // Jahr-Navigation
+  document.getElementById('btnPrevYear').addEventListener('click', () => {
+    state.currentYear--;
+    document.getElementById('yearDisplay').textContent = state.currentYear;
+    renderCalendar();
+  });
+  document.getElementById('btnNextYear').addEventListener('click', () => {
+    state.currentYear++;
+    document.getElementById('yearDisplay').textContent = state.currentYear;
+    renderCalendar();
+  });
+}
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   GITHUB GIST — LADEN
+   Liest die JSON-Daten aus dem öffentlichen Gist.
+   Gists sind read-only ohne Token abrufbar (raw URL).
+   ══════════════════════════════════════════════════════════════════════════ */
+async function loadFromGist() {
+  setStatusSync('Lade Daten…', 'warn');
+ 
+  // Prüfen ob Gist-ID konfiguriert ist
+  if (KONFIG.GIST_ID === 'HIER_GIST_ID_EINTRAGEN') {
+    setStatusSync('⚠ Gist nicht konfiguriert — lokaler Modus', 'warn');
+    renderCalendar();
+    return;
+  }
+ 
+  try {
+    // Token aus localStorage lesen (nur DM hat diesen gesetzt)
+    const token = localStorage.getItem('sfk_dm_token');
+    const url = `https://api.github.com/gists/${KONFIG.GIST_ID}`;
+    const resp = await fetch(url, {
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        // Auth-Header: falls Token vorhanden, Rate-Limiting verhindern
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      }
+    });
+ 
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+ 
+    const gistData = await resp.json();
+    const file = gistData.files['sternenfall_termine.json'];
+ 
+    if (!file || !file.content) {
+      // Leerer Gist — kein Problem
+      state.data = {};
+    } else {
+      state.data = JSON.parse(file.content);
+    }
+ 
+    const ts = new Date().toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' });
+    setStatusSync(`Synchronisiert um ${ts}`, 'ok');
+ 
+  } catch (err) {
+    console.warn('Gist laden fehlgeschlagen:', err);
+    setStatusSync('⚠ Offline — Änderungen lokal', 'warn');
+    state.data = state.data || {};
+  }
+ 
+  renderCalendar();
+  renderParticipantOverview();
+  checkForMatches(false); // keine Mails beim initialen Laden
+}
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   GITHUB GIST — SPEICHERN
+   Schreibt den aktuellen state.data als JSON in den Gist.
+   Benötigt den GitHub Token mit gist-Scope.
+   ══════════════════════════════════════════════════════════════════════════ */
+async function saveToGist() {
+  // Token aus localStorage holen
+  const token = localStorage.getItem('sfk_dm_token');
+
+  if (!token) {
+    // Kein Token gespeichert → DM-Modal öffnen
+    openTokenModal(() => saveToGist());
+    return;
+  }
+
+  setSaveIndicator('saving', 'Speichern…');
+  state.saving = true;
+
+  try {
+    const resp = await fetch(`https://api.github.com/gists/${KONFIG.GIST_ID}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github+json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        files: {
+          'sternenfall_termine.json': {
+            content: JSON.stringify(state.data, null, 2),
+          }
+        }
+      })
+    });
+ 
+    if (resp.status === 401) {
+      // Token ungültig → löschen und neu anfordern
+      localStorage.removeItem('sfk_dm_token');
+      setSaveIndicator('error', '✕ Token ungültig');
+      setTimeout(() => openTokenModal(() => saveToGist()), 500);
+      return;
+    }
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+    const ts = new Date().toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' });
+    setSaveIndicator('saved', `✓ Gespeichert ${ts}`);
+    setStatusSync(`Synchronisiert um ${ts}`, 'ok');
+
+    // Nach erfolgreichem Speichern auf Matches prüfen
+    checkForMatches(true);
+
+  } catch (err) {
+    console.error('Gist speichern fehlgeschlagen:', err);
+    setSaveIndicator('error', '✕ Speichern fehlgeschlagen');
+  } finally {
+    state.saving = false;
+    // Indikator nach 3 Sekunden ausblenden
+    setTimeout(() => { document.getElementById('saveIndicator').style.display = 'none'; }, 3000);
+  }
+}
+ 
+/* Debounced Save: 1,5 Sekunden nach letzter Änderung auslösen */
+function scheduleSave() {
+  if (state.saveTimer) clearTimeout(state.saveTimer);
+  state.saveTimer = setTimeout(() => saveToGist(), 1500);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DM TOKEN MODAL
+   Wird geöffnet wenn kein Token im localStorage vorhanden ist.
+   onSuccess: Callback-Funktion die nach erfolgreichem Speichern aufgerufen wird.
+   ══════════════════════════════════════════════════════════════════════════ */
+let _tokenCallback = null; // Callback nach Token-Eingabe
+
+/* Modal öffnen — callback wird nach erfolgreichem Token-Speichern aufgerufen */
+function openTokenModal(callback) {
+  _tokenCallback = callback || null;
+  const bg = document.getElementById('tokenModalBg');
+  bg.style.display = 'flex';
+  document.getElementById('tokenInput').value = '';
+  document.getElementById('tokenStatus').textContent = '';
+  setTimeout(() => document.getElementById('tokenInput').focus(), 50);
+}
+
+/* Modal schliessen */
+function closeTokenModal() {
+  document.getElementById('tokenModalBg').style.display = 'none';
+  _tokenCallback = null;
+}
+
+/* Token validieren und in localStorage speichern */
+async function saveToken() {
+  const input = document.getElementById('tokenInput').value.trim();
+  const statusEl = document.getElementById('tokenStatus');
+
+  if (!input.startsWith('ghp_') && !input.startsWith('github_pat_')) {
+    statusEl.textContent = '⚠ Ungültiges Format — Token beginnt mit ghp_ oder github_pat_';
+    return;
+  }
+
+  statusEl.style.color = '#ccaa44';
+  statusEl.textContent = 'Prüfe Token…';
+
+  // Token gegen GitHub API testen
+  try {
+    const resp = await fetch('https://api.github.com/user', {
+      headers: {
+        'Authorization': `Bearer ${input}`,
+        'Accept': 'application/vnd.github+json',
+      }
+    });
+
+    if (resp.status === 401) {
+      statusEl.style.color = '#cc6666';
+      statusEl.textContent = '✕ Token ungültig — bitte nochmals prüfen.';
+      return;
+    }
+    if (!resp.ok) {
+      statusEl.style.color = '#cc6666';
+      statusEl.textContent = `✕ Fehler ${resp.status} — bitte nochmals versuchen.`;
+      return;
+    }
+
+    // Token gültig → in localStorage speichern
+    localStorage.setItem('sfk_dm_token', input);
+    statusEl.style.color = '#66cc66';
+    statusEl.textContent = '✓ Token gespeichert!';
+
+    setTimeout(() => {
+      closeTokenModal();
+      // Callback aufrufen (z.B. saveToGist erneut starten)
+      if (_tokenCallback) _tokenCallback();
+    }, 800);
+
+  } catch (err) {
+    statusEl.style.color = '#cc6666';
+    statusEl.textContent = '✕ Netzwerkfehler — bitte Verbindung prüfen.';
+  }
+}
+
+/* Modal bei Klick auf Hintergrund schliessen */
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('tokenModalBg').addEventListener('click', function(e) {
+    if (e.target === this) closeTokenModal();
+  });
+});
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   KALENDER RENDERN
+   Erstellt alle 12 Monats-Cards für das aktuelle Jahr.
+   ══════════════════════════════════════════════════════════════════════════ */
+function renderCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+ 
+  const today = new Date();
+  today.setHours(0,0,0,0);
+ 
+  for (let month = 0; month < 12; month++) {
+    grid.appendChild(buildMonthCard(state.currentYear, month, today));
+  }
+}
+ 
+/* Baut eine einzelne Monats-Card */
+function buildMonthCard(year, month, today) {
+  const card = document.createElement('div');
+  card.className = 'month-card';
+ 
+  // Monats-Header
+  const header = document.createElement('div');
+  header.className = 'month-header';
+  header.textContent = `${MONTH_NAMES[month]} ${year}`;
+  card.appendChild(header);
+ 
+  // Wochentag-Labels (Mo–So)
+  const weekRow = document.createElement('div');
+  weekRow.className = 'weekday-row';
+  WEEKDAY_LABELS.forEach(d => {
+    const lbl = document.createElement('div');
+    lbl.className = 'weekday-label';
+    lbl.textContent = d;
+    weekRow.appendChild(lbl);
+  });
+  card.appendChild(weekRow);
+ 
+  // Tag-Grid
+  const daysGrid = document.createElement('div');
+  daysGrid.className = 'days-grid';
+ 
+  // Erster Tag des Monats: welcher Wochentag? (0=So, angepasst zu Mo=0)
+  const firstDay = new Date(year, month, 1).getDay();
+  // JavaScript: 0=So, 1=Mo, ... 6=Sa → umrechnen auf Mo=0
+  const offset = (firstDay === 0) ? 6 : firstDay - 1;
+ 
+  // Leere Platzhalter vor dem 1.
+  for (let i = 0; i < offset; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'day-cell empty';
+    daysGrid.appendChild(empty);
+  }
+ 
+  // Alle Tage des Monats
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateObj = new Date(year, month, day);
+    dateObj.setHours(0,0,0,0);
+    const dateKey = formatDateKey(year, month + 1, day);
+    const votes = state.data[dateKey] || {};
+    const participants = Object.keys(votes);
+    const matchCount = participants.length;
+    const isToday = dateObj.getTime() === today.getTime();
+    const isPast = dateObj < today;
+    const isMyPick = state.activeUser && votes[state.activeUser] === true;
+    const isFullMatch = matchCount === KONFIG.REQUIRED_COUNT;
+ 
+    const cell = document.createElement('div');
+    cell.className = 'day-cell';
+    if (isPast) cell.classList.add('past');
+    if (isToday) cell.classList.add('today');
+    if (isMyPick) cell.classList.add('my-pick');
+    if (matchCount > 0) cell.classList.add('has-votes');
+    if (isFullMatch) cell.classList.add('full-match');
+ 
+    // Tag-Zahl
+    const numEl = document.createElement('div');
+    numEl.className = 'day-num';
+    numEl.textContent = day;
+    cell.appendChild(numEl);
+ 
+    // Farbpunkte für Teilnehmer-Stimmen
+    if (matchCount > 0) {
+      const dots = document.createElement('div');
+      dots.className = 'vote-dots';
+      participants.forEach(name => {
+        const color = KONFIG.PARTICIPANTS[name]?.color || '#888';
+        const dot = document.createElement('div');
+        dot.className = 'vote-dot';
+        dot.style.background = color;
+        dots.appendChild(dot);
+      });
+      cell.appendChild(dots);
+    }
+ 
+    // Klick: Toggle eigenen Eintrag
+    if (!isPast) {
+      cell.addEventListener('click', () => onDayClick(dateKey, cell));
+    }
+ 
+    // Hover: Tooltip mit Teilnehmer-Namen
+    cell.addEventListener('mouseenter', (e) => showTooltip(e, participants));
+    cell.addEventListener('mousemove', moveTooltip);
+    cell.addEventListener('mouseleave', hideTooltip);
+ 
+    daysGrid.appendChild(cell);
+  }
+ 
+  card.appendChild(daysGrid);
+  return card;
+}
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   TAG-KLICK
+   Toggle: eigenen Namen auf diesem Tag setzen / entfernen
+   ══════════════════════════════════════════════════════════════════════════ */
+function onDayClick(dateKey, cellEl) {
+  if (!state.activeUser) {
+    // Sanfter Hinweis statt Alert
+    const pill = document.getElementById('statusUser');
+    pill.textContent = '⚠ Zuerst einloggen!';
+    pill.className = 'status-pill warn';
+    setTimeout(() => {
+      pill.textContent = 'Nicht eingeloggt';
+      pill.className = 'status-pill';
+    }, 2000);
+    return;
+  }
+ 
+  // State updaten
+  if (!state.data[dateKey]) state.data[dateKey] = {};
+ 
+  if (state.data[dateKey][state.activeUser]) {
+    // War markiert → entfernen
+    delete state.data[dateKey][state.activeUser];
+    if (Object.keys(state.data[dateKey]).length === 0) {
+      delete state.data[dateKey];
+    }
+  } else {
+    // Noch nicht markiert → setzen
+    state.data[dateKey][state.activeUser] = true;
+  }
+ 
+  // Kalender neu rendern (nur die Zelle wäre effizienter, aber voller Re-render ist sicher)
+  renderCalendar();
+  renderParticipantOverview();
+  scheduleSave();
+}
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   MATCH-PRÜFUNG
+   Durchsucht alle Daten nach Tagen mit REQUIRED_COUNT Stimmen.
+   sendMail: true = bei neuem Match Mail verschicken.
+   ══════════════════════════════════════════════════════════════════════════ */
+function checkForMatches(sendMail) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+ 
+  const matches = [];
+  for (const dateKey in state.data) {
+    const votes = state.data[dateKey];
+    const count = Object.keys(votes).length;
+    if (count >= KONFIG.REQUIRED_COUNT) {
+      // Nur zukünftige/heutige Matches zählen
+      const [y, m, d] = dateKey.split('-').map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      if (dateObj >= today) {
+        matches.push(dateKey);
+      }
+    }
+  }
+ 
+  // Match-Banner
+  const banner = document.getElementById('matchBanner');
+  const matchStatus = document.getElementById('statusMatch');
+ 
+  if (matches.length > 0) {
+    const formatted = matches.map(k => {
+      const [y, m, d] = k.split('-').map(Number);
+      return `${d}. ${MONTH_NAMES[m-1]} ${y}`;
+    });
+ 
+    banner.style.display = 'block';
+    document.getElementById('matchText').textContent =
+      `Alle ${KONFIG.REQUIRED_COUNT} Teilnehmer sind verfügbar am: ${formatted.join(', ')}`;
+ 
+    matchStatus.style.display = 'inline-block';
+    matchStatus.textContent = `✓ ${matches.length} Termin-Match${matches.length > 1 ? 's' : ''}`;
+    matchStatus.className = 'status-pill ok';
+ 
+    // Mail verschicken (nur bei neuen Matches, nicht bei jedem Laden)
+    if (sendMail) {
+      const newMatches = matches.filter(k => !state.lastNotified.has(k));
+      if (newMatches.length > 0) {
+        const newFormatted = newMatches.map(k => {
+          const [y, m, d] = k.split('-').map(Number);
+          return `${d}. ${MONTH_NAMES[m-1]} ${y}`;
+        });
+        sendMatchNotification(newFormatted);
+        newMatches.forEach(k => state.lastNotified.add(k));
+      }
+    }
+  } else {
+    banner.style.display = 'none';
+    matchStatus.style.display = 'none';
+  }
+}
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   EMAILJS — MAIL VERSENDEN
+   Schickt eine Benachrichtigung an alle Teilnehmer wenn ein Match gefunden.
+   ══════════════════════════════════════════════════════════════════════════ */
+async function sendMatchNotification(matchDates) {
+  if (KONFIG.EMAILJS_SERVICE_ID === 'HIER_SERVICE_ID') {
+    console.log('EmailJS nicht konfiguriert — Mail übersprungen.');
+    return;
+  }
+ 
+  const dateText = matchDates.join(', ');
+  const allEmails = Object.values(KONFIG.PARTICIPANTS).map(p => p.email);
+ 
+  // EmailJS kann pro Aufruf nur eine Ziel-Adresse senden.
+  // Daher: Template-Params so setzen, dass alle Adressen im "To"-Feld stehen,
+  // ODER: eine Mail pro Teilnehmer senden (sicherer, falls Template einzeln adressiert).
+  // Hier: eine Mail pro Teilnehmer für maximale Kompatibilität.
+ 
+  let successCount = 0;
+  for (const participant of Object.keys(KONFIG.PARTICIPANTS)) {
+    const email = KONFIG.PARTICIPANTS[participant].email;
+    try {
+      await emailjs.send(
+        KONFIG.EMAILJS_SERVICE_ID,
+        KONFIG.EMAILJS_TEMPLATE_ID,
+        {
+          to_email:    email,
+          to_name:     participant,
+          match_dates: dateText,
+        }
+      );
+      successCount++;
+    } catch (err) {
+      console.error(`Mail an ${participant} (${email}) fehlgeschlagen:`, err);
+    }
+  }
+ 
+  console.log(`Benachrichtigung gesendet an ${successCount}/${allEmails.length} Teilnehmer.`);
+}
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   LEGENDE RENDERN
+   Zeigt Charakter-Namen mit ihren Farbpunkten.
+   ══════════════════════════════════════════════════════════════════════════ */
+function renderLegend() {
+  const el = document.getElementById('legend');
+  el.innerHTML = '<span style="margin-right:4px;color:var(--faint);font-size:13px">Farben:</span>';
+ 
+  Object.entries(KONFIG.PARTICIPANTS).forEach(([name, p]) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `
+      <div class="char-chip" style="background:${p.color}"></div>
+      <span style="color:${p.color}">${name}</span>
+    `;
+    el.appendChild(item);
+  });
+}
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   TEILNEHMER-ÜBERSICHT RENDERN
+   Zeigt für jeden Teilnehmer ob er bereits Tage eingetragen hat.
+   ══════════════════════════════════════════════════════════════════════════ */
+function renderParticipantOverview() {
+  const el = document.getElementById('participantOverview');
+  el.innerHTML = '';
+ 
+  Object.entries(KONFIG.PARTICIPANTS).forEach(([name, p]) => {
+    // Zähle Einträge dieses Teilnehmers
+    const entryCount = Object.values(state.data)
+      .filter(votes => votes[name] === true).length;
+ 
+    const badge = document.createElement('div');
+    badge.className = `participant-badge${entryCount > 0 ? ' has-entries' : ''}`;
+    badge.style.borderColor = entryCount > 0 ? p.color + '88' : '';
+    badge.innerHTML = `
+      <div class="dot" style="${entryCount > 0 ? `background:${p.color}` : ''}"></div>
+      <span style="${entryCount > 0 ? `color:${p.color}` : ''}">${name}</span>
+      <span style="color:var(--faint);font-size:12px">${entryCount > 0 ? entryCount + ' Tage' : 'ausstehend'}</span>
+    `;
+    el.appendChild(badge);
+  });
+}
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   TOOLTIP
+   ══════════════════════════════════════════════════════════════════════════ */
+function showTooltip(e, participants) {
+  if (participants.length === 0) return;
+ 
+  const tt = document.getElementById('tooltip');
+  const namesEl = document.getElementById('tooltipNames');
+ 
+  namesEl.innerHTML = participants.map(name => {
+    const color = KONFIG.PARTICIPANTS[name]?.color || '#888';
+    return `<div class="tooltip-name">
+      <div class="char-chip" style="background:${color};width:10px;height:10px;border-radius:2px"></div>
+      <span style="color:${color}">${name}</span>
+    </div>`;
+  }).join('');
+ 
+  tt.style.display = 'block';
+  moveTooltip(e);
+}
+ 
+function moveTooltip(e) {
+  const tt = document.getElementById('tooltip');
+  if (tt.style.display === 'none') return;
+  const x = e.clientX + 14;
+  const y = e.clientY + 14;
+  // Sicherstellen dass Tooltip nicht aus dem Fenster ragt
+  const maxX = window.innerWidth - tt.offsetWidth - 10;
+  const maxY = window.innerHeight - tt.offsetHeight - 10;
+  tt.style.left = Math.min(x, maxX) + 'px';
+  tt.style.top  = Math.min(y, maxY) + 'px';
+}
+ 
+function hideTooltip() {
+  document.getElementById('tooltip').style.display = 'none';
+}
+ 
+ 
+/* ══════════════════════════════════════════════════════════════════════════
+   HILFSFUNKTIONEN
+   ══════════════════════════════════════════════════════════════════════════ */
+ 
+/* Datum als ISO-String formatieren: YYYY-MM-DD */
+function formatDateKey(year, month, day) {
+  return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+}
+ 
+/* Status-Bar Sync-Anzeige updaten */
+function setStatusSync(text, type) {
+  const el = document.getElementById('statusSync');
+  el.textContent = text;
+  el.className = `status-pill ${type}`;
+}
+ 
+/* Speicher-Indikator (unten rechts) */
+function setSaveIndicator(type, text) {
+  const el = document.getElementById('saveIndicator');
+  el.textContent = text;
+  el.className = type;
+  el.style.display = 'block';
+}
+ 
+</script>
+</body>
+</html>
