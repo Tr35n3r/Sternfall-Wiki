@@ -506,9 +506,6 @@ main {
 #saveIndicator.saved  { border-color: #1a4a1a; color: var(--green-c); }
 #saveIndicator.error  { border-color: #4a1a1a; color: #cc6666; }
 
-/* Token-Input Fokus */
-#tokenInput:focus { outline: none; border-color: var(--gold) !important; }
-
 /* ── Anleitung (aufklappbar am Seitenende) ──────────────────────────────── */
 #anleitungSection {
   margin-top: 48px;
@@ -616,32 +613,6 @@ details[open] summary::before { transform: rotate(90deg); }
 <!-- Speicher-Indikator (fixiert unten rechts) -->
 <div id="saveIndicator">Speichern…</div>
 
-<!-- ── DM TOKEN MODAL ────────────────────────────────────────────────────────
-     Erscheint nur wenn kein Token im localStorage vorhanden ist.
-     Nur der DM braucht dieses Modal — Spieler können lesen ohne Token.
-     ──────────────────────────────────────────────────────────────────────── -->
-<div id="tokenModalBg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2000;align-items:center;justify-content:center;">
-  <div style="background:#10101a;border:1px solid #c9a84c;border-radius:8px;padding:28px 32px;max-width:440px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.7);">
-    <div style="font-family:'Cinzel',Georgia,serif;font-size:15px;color:#f0c94a;letter-spacing:.08em;margin-bottom:6px;">🔑 DM-TOKEN ERFORDERLICH</div>
-    <p style="font-size:13px;color:#888;margin-bottom:16px;line-height:1.6;">
-      Zum Speichern wird ein GitHub Personal Access Token mit <code style="background:#16162a;padding:1px 6px;border-radius:3px;color:#f0c94a;font-size:12px;">gist</code>-Scope benötigt.<br>
-      Der Token wird nur in deinem Browser gespeichert — nie im Code.
-    </p>
-    <input id="tokenInput" type="password"
-      placeholder="ghp_..."
-      style="width:100%;background:#16162a;border:1px solid #2a2a45;color:#d4cfc0;padding:9px 14px;border-radius:6px;font-family:monospace;font-size:13px;margin-bottom:10px;box-sizing:border-box;"
-      onkeydown="if(event.key==='Enter')saveToken();">
-    <div id="tokenStatus" style="font-size:12px;color:#cc6666;min-height:18px;margin-bottom:12px;"></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-      <button onclick="closeTokenModal()" style="background:transparent;border:1px solid #2a2a45;color:#666;padding:7px 18px;border-radius:6px;font-family:'Cinzel',serif;font-size:12px;cursor:pointer;">Abbrechen</button>
-      <button onclick="saveToken()" style="background:#16162a;border:1px solid #c9a84c;color:#f0c94a;padding:7px 18px;border-radius:6px;font-family:'Cinzel',serif;font-size:12px;cursor:pointer;letter-spacing:.06em;">Speichern</button>
-    </div>
-    <p style="font-size:11px;color:#444;margin-top:14px;border-top:1px solid #1a1a2a;padding-top:10px;">
-      Token erstellen: github.com/settings/tokens → "Generate new token (classic)" → nur <strong style="color:#555;">gist</strong> ankreuzen
-    </p>
-  </div>
-</div>
-
 <!-- ══════════════════════════════════════════════════════════════════════════
      HAUPT-INHALT
      ══════════════════════════════════════════════════════════════════════════ -->
@@ -719,13 +690,12 @@ details[open] summary::before { transform: rotate(90deg); }
    ═══════════════════════════════════════════════════════════════════════════ */
 const KONFIG = {
  
-  // ── GitHub Gist (Datenspeicher) ──────────────────────────────────────────
-  // GIST_ID: nur der hex-String aus der Gist-URL (nach dem Username)
-  GIST_ID: 'e74b9111ce9b5c6760e2c1a4b55706d2',
+  // ── Pipedream Endpunkt (Datenspeicher via GitHub Gist) ───────────────────
+  // Der Token liegt sicher auf Pipedream — nie im Code hier.
+  PIPEDREAM_URL: 'https://eol7ss19vpj7wgs.m.pipedream.net',
 
-  // GITHUB_TOKEN: immer null lassen — der DM gibt ihn einmalig per Modal ein.
-  // Er wird im localStorage des Browsers gespeichert, nie im Code.
-  GITHUB_TOKEN: null,
+  // Gist-ID nur noch für das Laden (Lesen braucht keinen Token)
+  GIST_ID: 'e74b9111ce9b5c6760e2c1a4b55706d2',
  
   // ── EmailJS ──────────────────────────────────────────────────────────────
   // Alle drei Werte aus dem EmailJS-Dashboard kopieren
@@ -865,7 +835,6 @@ async function loadFromGist() {
     const resp = await fetch(url, {
       headers: {
         'Accept': 'application/vnd.github+json',
-        // Auth-Header: falls Token vorhanden, Rate-Limiting verhindern
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       }
     });
@@ -903,57 +872,28 @@ async function loadFromGist() {
    Benötigt den GitHub Token mit gist-Scope.
    ══════════════════════════════════════════════════════════════════════════ */
 async function saveToGist() {
-  // Token aus localStorage holen
-  const token = localStorage.getItem('sfk_dm_token');
-
-  if (!token) {
-    // Kein Token gespeichert → DM-Modal öffnen
-    openTokenModal(() => saveToGist());
-    return;
-  }
-
   setSaveIndicator('saving', 'Speichern…');
   state.saving = true;
 
   try {
-    const resp = await fetch(`https://api.github.com/gists/${KONFIG.GIST_ID}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/vnd.github+json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        files: {
-          'sternenfall_termine.json': {
-            content: JSON.stringify(state.data, null, 2),
-          }
-        }
-      })
+    const resp = await fetch(KONFIG.PIPEDREAM_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: state.data }),
     });
- 
-    if (resp.status === 401) {
-      // Token ungültig → löschen und neu anfordern
-      localStorage.removeItem('sfk_dm_token');
-      setSaveIndicator('error', '✕ Token ungültig');
-      setTimeout(() => openTokenModal(() => saveToGist()), 500);
-      return;
-    }
+
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
     const ts = new Date().toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' });
     setSaveIndicator('saved', `✓ Gespeichert ${ts}`);
     setStatusSync(`Synchronisiert um ${ts}`, 'ok');
-
-    // Nach erfolgreichem Speichern auf Matches prüfen
     checkForMatches(true);
 
   } catch (err) {
-    console.error('Gist speichern fehlgeschlagen:', err);
+    console.error('Speichern fehlgeschlagen:', err);
     setSaveIndicator('error', '✕ Speichern fehlgeschlagen');
   } finally {
     state.saving = false;
-    // Indikator nach 3 Sekunden ausblenden
     setTimeout(() => { document.getElementById('saveIndicator').style.display = 'none'; }, 3000);
   }
 }
@@ -963,87 +903,6 @@ function scheduleSave() {
   if (state.saveTimer) clearTimeout(state.saveTimer);
   state.saveTimer = setTimeout(() => saveToGist(), 1500);
 }
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   DM TOKEN MODAL
-   Wird geöffnet wenn kein Token im localStorage vorhanden ist.
-   onSuccess: Callback-Funktion die nach erfolgreichem Speichern aufgerufen wird.
-   ══════════════════════════════════════════════════════════════════════════ */
-let _tokenCallback = null; // Callback nach Token-Eingabe
-
-/* Modal öffnen — callback wird nach erfolgreichem Token-Speichern aufgerufen */
-function openTokenModal(callback) {
-  _tokenCallback = callback || null;
-  const bg = document.getElementById('tokenModalBg');
-  bg.style.display = 'flex';
-  document.getElementById('tokenInput').value = '';
-  document.getElementById('tokenStatus').textContent = '';
-  setTimeout(() => document.getElementById('tokenInput').focus(), 50);
-}
-
-/* Modal schliessen */
-function closeTokenModal() {
-  document.getElementById('tokenModalBg').style.display = 'none';
-  _tokenCallback = null;
-}
-
-/* Token validieren und in localStorage speichern */
-async function saveToken() {
-  const input = document.getElementById('tokenInput').value.trim();
-  const statusEl = document.getElementById('tokenStatus');
-
-  if (!input.startsWith('ghp_') && !input.startsWith('github_pat_')) {
-    statusEl.textContent = '⚠ Ungültiges Format — Token beginnt mit ghp_ oder github_pat_';
-    return;
-  }
-
-  statusEl.style.color = '#ccaa44';
-  statusEl.textContent = 'Prüfe Token…';
-
-  // Token gegen GitHub API testen
-  try {
-    const resp = await fetch('https://api.github.com/user', {
-      headers: {
-        'Authorization': `Bearer ${input}`,
-        'Accept': 'application/vnd.github+json',
-      }
-    });
-
-    if (resp.status === 401) {
-      statusEl.style.color = '#cc6666';
-      statusEl.textContent = '✕ Token ungültig — bitte nochmals prüfen.';
-      return;
-    }
-    if (!resp.ok) {
-      statusEl.style.color = '#cc6666';
-      statusEl.textContent = `✕ Fehler ${resp.status} — bitte nochmals versuchen.`;
-      return;
-    }
-
-    // Token gültig → in localStorage speichern
-    localStorage.setItem('sfk_dm_token', input);
-    statusEl.style.color = '#66cc66';
-    statusEl.textContent = '✓ Token gespeichert!';
-
-    setTimeout(() => {
-      closeTokenModal();
-      // Callback aufrufen (z.B. saveToGist erneut starten)
-      if (_tokenCallback) _tokenCallback();
-    }, 800);
-
-  } catch (err) {
-    statusEl.style.color = '#cc6666';
-    statusEl.textContent = '✕ Netzwerkfehler — bitte Verbindung prüfen.';
-  }
-}
-
-/* Modal bei Klick auf Hintergrund schliessen */
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('tokenModalBg').addEventListener('click', function(e) {
-    if (e.target === this) closeTokenModal();
-  });
-});
  
  
 /* ══════════════════════════════════════════════════════════════════════════
