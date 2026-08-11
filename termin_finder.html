@@ -695,7 +695,7 @@ const KONFIG = {
   PIPEDREAM_URL: 'https://90e4e4378ce46a514894e2eb5bab1ee0.m.pipedream.net',
 
   // Gist-ID nur noch für das Laden (Lesen braucht keinen Token)
-  GIST_ID: 'e74b9111ce9b5c6760e2c1a4b55706d2',
+  GIST_ID: '8c4a52264df0e5d286d83826f8352c27',
  
   // ── EmailJS ──────────────────────────────────────────────────────────────
   // Alle drei Werte aus dem EmailJS-Dashboard kopieren
@@ -822,7 +822,7 @@ async function loadFromGist() {
   setStatusSync('Lade Daten…', 'warn');
  
   // Prüfen ob Gist-ID konfiguriert ist
-  if (KONFIG.GIST_ID === 'HIER_GIST_ID_EINTRAGEN') {
+  if (KONFIG.GIST_ID === '8c4a52264df0e5d286d83826f8352c27') {
     setStatusSync('⚠ Gist nicht konfiguriert — lokaler Modus', 'warn');
     renderCalendar();
     return;
