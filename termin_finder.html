@@ -734,15 +734,14 @@ const KONFIG = {
   EMAILJS_PUBLIC_KEY:  'QAJt7KnzxsxtQJ6X5',
  
   // ── Teilnehmer ───────────────────────────────────────────────────────────
-  // email: Adresse für Benachrichtigungen
-  // color: Farbe im Kalender (Punkte + Legende)
+  // Nur Farben — E-Mail-Adressen werden im EmailJS-Dashboard hinterlegt (Contacts-Tab)
   PARTICIPANTS: {
-    'DM':        { email: 'sternenfall.dm@gmail.com',  color: '#c9a84c' }, // Gold (DM)
-    'Davian':    { email: 'reg@dap.li',                color: '#7ecfff' }, // Hellblau
-    'Drazhar':   { email: 'gstoehl.michael@hotmail.com', color: '#bb77ff' }, // Violett
-    'Menrom':    { email: 'kussi85@hotmail.com',        color: '#ff9944' }, // Orange
-    'Nyktarion': { email: 'jan.konrad679@gmail.com',    color: '#ff5577' }, // Rot-Rosa
-    'Skall':     { email: 'steffo.moutaftsidis@gmail.com', color: '#55cc88' }, // Grün
+    'DM':        { color: '#c9a84c' }, // Gold
+    'Davian':    { color: '#7ecfff' }, // Hellblau
+    'Drazhar':   { color: '#bb77ff' }, // Violett
+    'Menrom':    { color: '#ff9944' }, // Orange
+    'Nyktarion': { color: '#ff5577' }, // Rot-Rosa
+    'Skall':     { color: '#55cc88' }, // Grün
   },
  
   // Anzahl Teilnehmer die zustimmen müssen für einen vollen Match
@@ -1268,35 +1267,23 @@ async function sendMatchNotification(matchDates) {
     console.log('EmailJS nicht konfiguriert — Mail übersprungen.');
     return;
   }
- 
+
   const dateText = matchDates.join(', ');
-  const allEmails = Object.values(KONFIG.PARTICIPANTS).map(p => p.email);
- 
-  // EmailJS kann pro Aufruf nur eine Ziel-Adresse senden.
-  // Daher: Template-Params so setzen, dass alle Adressen im "To"-Feld stehen,
-  // ODER: eine Mail pro Teilnehmer senden (sicherer, falls Template einzeln adressiert).
-  // Hier: eine Mail pro Teilnehmer für maximale Kompatibilität.
- 
-  let successCount = 0;
-  for (const participant of Object.keys(KONFIG.PARTICIPANTS)) {
-    const email = KONFIG.PARTICIPANTS[participant].email;
-    try {
-      await emailjs.send(
-        KONFIG.EMAILJS_SERVICE_ID,
-        KONFIG.EMAILJS_TEMPLATE_ID,
-        {
-          to_email:    email,
-          to_name:     participant,
-          match_dates: dateText,
-        }
-      );
-      successCount++;
-    } catch (err) {
-      console.error(`Mail an ${participant} (${email}) fehlgeschlagen:`, err);
-    }
+
+  // Eine einzige Mail — EmailJS verteilt an alle im Dashboard hinterlegten Contacts.
+  // Keine E-Mail-Adressen im Code nötig.
+  try {
+    await emailjs.send(
+      KONFIG.EMAILJS_SERVICE_ID,
+      KONFIG.EMAILJS_TEMPLATE_ID,
+      {
+        match_dates: dateText,
+      }
+    );
+    console.log('Benachrichtigung erfolgreich gesendet.');
+  } catch (err) {
+    console.error('Mail fehlgeschlagen:', err);
   }
- 
-  console.log(`Benachrichtigung gesendet an ${successCount}/${allEmails.length} Teilnehmer.`);
 }
  
  
