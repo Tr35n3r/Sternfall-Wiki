@@ -820,23 +820,11 @@ function setupEventListeners() {
    ══════════════════════════════════════════════════════════════════════════ */
 async function loadFromGist() {
   setStatusSync('Lade Daten…', 'warn');
- 
-  // Prüfen ob Gist-ID konfiguriert ist
-  if (KONFIG.GIST_ID === '8c4a52264df0e5d286d83826f8352c27') {
-    setStatusSync('⚠ Gist nicht konfiguriert — lokaler Modus', 'warn');
-    renderCalendar();
-    return;
-  }
- 
+
   try {
-    // Token aus localStorage lesen (nur DM hat diesen gesetzt)
-    const token = localStorage.getItem('sfk_dm_token');
     const url = `https://api.github.com/gists/${KONFIG.GIST_ID}`;
     const resp = await fetch(url, {
-      headers: {
-        'Accept': 'application/vnd.github+json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-      }
+      headers: { 'Accept': 'application/vnd.github+json' }
     });
  
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -912,11 +900,16 @@ function scheduleSave() {
 function renderCalendar() {
   const grid = document.getElementById('calendarGrid');
   grid.innerHTML = '';
- 
+
   const today = new Date();
   today.setHours(0,0,0,0);
- 
-  for (let month = 0; month < 12; month++) {
+  const currentRealMonth = today.getMonth();
+  const currentRealYear  = today.getFullYear();
+
+  // Vergangene Monate im aktuellen Jahr überspringen
+  const startMonth = (state.currentYear === currentRealYear) ? currentRealMonth : 0;
+
+  for (let month = startMonth; month < 12; month++) {
     grid.appendChild(buildMonthCard(state.currentYear, month, today));
   }
 }
